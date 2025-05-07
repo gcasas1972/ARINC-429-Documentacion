@@ -1,0 +1,8 @@
+Catalogacion de los documentos
+
+(libro) tiene ISBN (international serial book number), prologo, indice, contenido y referencias
+(tesis) es un texto de alta calidad que se utiliza para las carreras universitarias
+(manual) da informaciòn util sobre un equipo o software o un tema determinado.
+(paper) es informacion sobre un tema especifico
+
+
