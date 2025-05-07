@@ -1,0 +1,38 @@
+'	SaveDataToExcel.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	This is the simplest example of how to write CoPilot data to Microsoft Excel
+'
+'	Databuses:	All
+'
+
+Sub ScriptStart 
+End Sub
+ 
+Sub ScriptStop 
+	Dim objExcel 
+	Dim ExcelSheet 
+	'Create the Excel application object
+	Set objExcel = CreateObject("Excel.Application") 
+	objExcel.UserControl = True 
+	'Create a spreadsheet
+	Set ExcelSheet = CreateObject("Excel.Sheet") 
+	ExcelSheet.Application.Visible = True 
+	'Add data from CoPilot and save
+	ExcelSheet.ActiveSheet.Cells(1,1).Value = Msg1.ValueEngr 
+	ExcelSheet.SaveAs "C:\COPILOT PROJECTS\EXAMPLE.XLS" 
+	'Close the Excel application
+	ExcelSheet.Application.Quit 
+	Set objExcel = Nothing 
+	Set ExcelSheet = Nothing 
+End Sub
+
+
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

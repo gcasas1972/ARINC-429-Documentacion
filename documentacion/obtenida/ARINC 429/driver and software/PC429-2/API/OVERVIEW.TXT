@@ -1,0 +1,3899 @@
+NAME:    PC429_Active -- Selects which channels are active.
+
+SYNOPSIS:
+oldchannels = PC429_Active(channels,handleval);
+USHORT channels;       Which channels are active or inactive.
+HCARD handle;          Device handle of PC429 card.
+USHORT oldchannels;    Returns previous channels that were active.
+
+DESCRIPTION:
+  The procedure PC429_Active() selects the channels which
+  are active when the PC429 card with the specified
+  device handle begins operation.
+
+  The channels parameter selects which channels on the
+  PC429 card are active.  Any combination of the
+  predefined constants CH0, CH1, CH2, and CH3 are ORed
+  together for this value.  Each constant represents a
+  bit in the channels parameter (i.e., CH0=1, CH1=2,
+  CH2=4, CH3=8, etc.).  The value CHNONE inactivates all
+  channels on the PC429.
+
+  The procedure PC429_Reset() or power-on sets all
+  channels of the board to inactive.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous channels that were active.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Active(CH0|CH1,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_Start().
+
+NAME:    PC429_BrdNum -- Sets the board number.
+
+SYNOPSIS:
+oldbrdnum = PC429_BrdNum(brdnum,handleval);
+USHORT brdnum;         Board number to assign to card.
+HCARD handleval;       Device handle of PC429 card.
+USHORT oldbrdnum;      Returns previous board number assigned to card.
+
+DESCRIPTION:
+  The procedure PC429_BrdNum() sets the board number for
+  the PC429 card with the specified device handle.
+  Only the 3 least significant bits of the brdnum
+  parameter are used.
+
+  The procedure PC429_Reset() or power-on sets the board
+  number to 1.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous board number.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_BrdNum(1,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_Start().
+
+NAME:    PC429_Check -- Tests for presence of PC429 hardware.
+
+SYNOPSIS:
+handleval = PC429_Check(memval,ioval,irqval,drqval);
+INT memval;              Memory address of card
+INT ioval;               I/O address of card
+INT irqval;              IRQ of card (don't care)
+INT drqval;              DRQ of card (don't care)
+HCARD handleval;         Negative if unable to create handle for device.
+
+DESCRIPTION:
+  The procedure PC429_Check() tests for the existence of a
+  PC429 card with the specified memory and I/O address.  It
+  returns a negative value if the PC429 card does not exist
+  or a device handle cannot be allocated to the card. 
+  Otherwise, it returns a device handle.  This handle is used
+  by subsequent calls to the library to specify the PC429
+  card to access.
+
+  The user must call PC429_Check() for each PC429 card
+  installed in the computer before access to the hardware
+  is made.
+
+  Other functions in this library that access the hardware
+  need the returned device handle as an input parameter.
+
+RETURNS:
+  A device handle if successful, or a negative value if a
+  PC429 card with the specified path and name does not exist.
+
+CAUTIONS:
+  This procedure must be called for each PC429 card
+  installed in the computer and used by the user's
+  application.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ handleval0 = PC429_Check(0xCE00,0x250,2,1);
+ if (handleval<0)
+     printf("Could not open the card at 0xCE00,0x250");
+
+ handleval0 = PC429_Check(0xCF00,0x260,2,1);
+ if (handleval<0)
+     printf("Could not open the card at 0xCF00,0x260");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_CheckChan -- Reports the configuration of PC429 hardware.
+
+SYNOPSIS:
+result = PC429_CheckChan(handleval);
+HCARD handleval;       Device handle of PC429 card.
+USHORT result;         Returns channel configuration.
+
+DESCRIPTION:
+  The procedure PC429_CheckChan() reports the channel
+  configuration of the PC429 card with the specified
+  device handle.  It returns the channel configuration in a
+  16-bit word.  Each of the 8 bits in the most
+  significant byte and in the least significant byte
+  correspond to a channel.  The bit position indicates
+  the channel number.
+
+  The most significant byte determines which channels are
+  available, and the least significant byte determines
+  whether the channel is a transmitter or receiver as
+  shown below:
+
+              HIGH BYTE                         LOW BYTE
+               CHANNEL                           CHANNEL
+    7   6   5   4   3   2   1   0     7   6   5   4   3   2   1   0
+  ÚÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄ¿ ÚÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄ¿
+  ³   ³   ³   ³   ³   ³   ³   ³   ³ ³   ³   ³   ³   ³   ³   ³   ³   ³
+  ÀÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÙ ÀÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÙ
+       0 = CHANNEL NOT PRESENT           0 = CHANNEL RECEIVER
+       1 = CHANNEL PRESENT               1 = CHANNEL TRANSMITTER
+
+RETURNS:
+  A 16-bit value in which the most significant 8 bits
+  indicate which channels are available, and the least
+  significant 8 bits indicate which channels are
+  transmitters or receivers.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ avail = (PC429_CheckChan(handleval) >> 8) & 0xFF;
+ tr    = (PC429_CheckChan(handleval) >> 0) & 0xFF;
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_IsRcv(), PC429_IsXmit().
+
+NAME:    PC429_ClrMsgFilt -- Clears the board of all messages and filters.
+
+SYNOPSIS:
+result = PC429_ClrMsgFilt(handleval);
+HCARD handleval;         Device handle of PC429 card.
+USHORT result;           Returns a non-zero value if an error occurred.
+
+DESCRIPTION:
+  The procedure PC429_ClrMsgFilt() clears the specified
+  PC429 card of all messages and filters.  The user must
+  call this procedure before any call to the procedures
+  PC429_InsFilt(), PC429_InsMsg(), or PC429_UserCode()
+  are made.
+
+  The procedure returns a non-zero value if an error
+  occurred.
+
+RETURNS:
+  A non-zero value if an error occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ if (PC429_ClrMsgFilt(handleval))
+     printf("Could not clear card of messages and filters.");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_InsFilt(), PC429_InsMsg(), PC429_UserCode().
+
+NAME:    PC429_ElapseClk -- Selects whether elapsed time is recorded in receive channels.
+
+SYNOPSIS:
+oldchannels = PC429_ElapseClk(channels,handleval);
+USHORT channels;       Non-zero to enable elapse clock mode.
+HCARD handleval;       Device handle of PC429 card.
+USHORT oldchannels;    Returns previous value of elapse clock mode.
+
+DESCRIPTION:
+  The procedure PC429_ElapseClk() enables elapse mode for
+  the receive channels on the PC429 card with the
+  specified device handle.
+
+  The channels parameter selects which receive channels
+  on the PC429 card have elapse mode enabled.  Any
+  combination of the predefined constants CH0, CH1, CH2,
+  and CH3 are ORed together for this value.  Each
+  constant represents a bit in the channels parameter
+  (i.e., CH0=1, CH1=2, CH2=4, CH3=8, etc.).  The value
+  CHNONE disables elapse mode on all channels on the
+  PC429.
+
+  When elapse mode is enabled on a receive channel, the
+  time recorded for each received message is the elapsed
+  time since the message was last received.  If elapse
+  mode is disabled on a receive channel, the time
+  recorded for each received message is the absolute time
+  the message was received.
+
+  The procedure PC429_Reset() or power-on disables elapse
+  mode on all receive channels.
+
+RETURNS:
+  The previous value of elapse clock mode.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_ElapseClk(CH0,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_Start().
+
+NAME:    PC429_Error -- Enables errors on transmit channels.
+
+SYNOPSIS:
+oldchannels = PC429_Error(channels,handleval);
+USHORT channels;       Non-zero to enable errors in transmitter.
+HCARD handleval;       Device handle of PC429 card.
+USHORT oldchannels;    Returns previous value of error.
+
+DESCRIPTION:
+  The procedure PC429_Error() enables error generation
+  for the transmit channels on the PC429 card with the
+  specified device handle.
+
+  The channels parameter selects which transmit channels
+  on the PC429 card have errors enabled.  Any combination
+  of the predefined constants CH0, CH1, CH2, and CH3 can
+  be ORed together for this value.  Each constant
+  represents a bit in the channels parameter (i.e.,
+  CH0=1, CH1=2, CH2=4, CH3=8, etc.).  The value CHNONE
+  disables errors on all channels on the PC429.
+
+  When errors are enabled on a transmit channel, the user
+  can generate both parity errors and gap errors for
+  transmitted messages.  First, the user must call the
+  procedure PC429_WrGap() to set the ERWRD bit for each
+  transmitted message with errors.
+
+  The user generates gap errors for a particular message
+  by setting the GAP field in the corresponding gap to a
+  value below 4 using the procedure PC429_WrGap().
+
+  The user generates parity errors by calling the
+  procedure PC429_Parity() and enabling even parity for
+  the same channel.
+
+  The procedure PC429_Reset() or power-on disables error
+  generation.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous value of error.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Error(CH1, handleval);
+ PC429_Parity(CH1,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_Start().
+
+NAME:    PC429_Extern -- Enables sync/external trigger for each channel.
+
+SYNOPSIS:
+oldchannels = PC429_Extern(channels,handleval);
+USHORT channels;       Which channel have external enabled.
+HCARD handleval;       Device handle of PC429 card.
+USHORT oldchannels;    Returns previous value of external.
+
+DESCRIPTION:
+  The procedure PC429_Extern() enables external trigger
+  for transmit channels, and external sync for receive
+  channels on the PC429 card with the specified device
+  handle.
+
+  The channels parameter selects which transmit channels
+  have external trigger enabled, and which receive
+  channels have external sync enabled.  Any combination
+  of the predefined constants CH0, CH1, CH2, and CH3 can
+  be ORed together for this value.  Each constant
+  represents a bit in the channels parameter (i.e.,
+  CH0=1, CH1=2, CH2=4, CH3=8, etc.).  The value CHNONE
+  disables external trigger and external sync on all
+  channels on the PC429.
+
+  Note also that the each message on the transmit channel
+  can pulse the external sync line by setting the SYNC
+  bit using the procedure PC429_WrGap().
+
+  The procedure PC429_Reset() or power-on disables
+  external trigger on all transmit channels, and external
+  sync on all receive channels.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous value of external.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Extern(CH1,handleval);
+ PC429_Single(CH1,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_Start().
+
+NAME:    PC429_FromAscii -- Converts an ASCII string to a 32-bit unsigned value.
+
+SYNOPSIS:
+result = PC429_FromAscii(asciistr,radix);
+PCHAR asciistr;      Pointer to null-terminated string to convert.
+USHORT radix;        Radix of string.
+ULONG result;        Returns result of conversion.
+
+DESCRIPTION:
+  The procedure PC429_FromAscii() converts a
+  null-terminated ASCII string to an unsigned 32-bit
+  value.  The asciistr parameter points to the ASCII string to
+  convert.  It can contain leading zeros.  The radix
+  parameter specifies the radix of the string (2 for
+  binary, 10 for decimal, 16 for hexadecimal, etc).  The
+  resulting unsigned 32-bit value is returned.
+
+  Note that this function is simply a utility that
+  operates on a variable (asciistr) and does not access
+  the Copilot image file or the PC429 hardware.
+
+RETURNS:
+  32-bit unsigned result of conversion.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ value = PC429_FromAscii("10101010101010101010101010101010",2);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_ToAscii().
+
+NAME:    PC429_GetBCDData -- Extracts the data value from a BCD message word.
+
+SYNOPSIS:
+result = PC429_GetBCDData(msg,msb,lsb);
+ULONG msg;       BCD message word to extract data from.
+USHORT msb;      Most significant bit number of BCD field.
+USHORT lsb;      Least significant bit number of BCD field.
+ULONG result;    Returns the data field value.
+
+DESCRIPTION:
+  The procedure PC429_GetBCDData() extracts the data
+  field of the BCD message word.  The msg parameter
+  contains the 32-bit BCD message word to extract data
+  from.  The msb and lsb parameters specify the most
+  significant and least significant bits of the field
+  respectively.
+
+  The result returned by the procedure is the BCD field
+  specified by the msb and lsb parameters converted to a
+  32-bit unsigned value.  No other conversion is made.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  32-bit value of data field.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ data = PC429_GetBCDData(msg,29,11);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBCDData().
+
+NAME:    PC429_GetBCDMant -- Extracts the mantissa value from a BCD message word.
+
+SYNOPSIS:
+result = PC429_GetBCDMant(msg,sigdig);
+ULONG msg;       BCD message word to extract data from.
+USHORT sigdig;   Number of significant digits in BCD field.
+ULONG result;    Returns the data field mantissa.
+
+DESCRIPTION:
+  The procedure PC429_GetBCDMant() extracts the data
+  field of the BCD message word.  The msg parameter
+  contains the 32-bit BCD message word to extract data
+  from.  The sigdig parameter specifies the number of BCD
+  digits in the data field.
+
+  The result returned by the procedure is the specified
+  BCD field converted to a 32-bit unsigned value.  No
+  other conversion is made.
+
+  The procedure assumes the BCD data field is divided
+  into the following fields:
+
+   32 30  29  28   25 24   21 20   17 16    13 12     9 1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³BCD5³ BCD4  ³ BCD3  ³ BCD2  ³  BCD1  ³  BCD0  ³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+                      6 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD4 ³  BCD3  ³  BCD2  ³  BCD1  ³  BCD0  ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      5 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD3 ³  BCD2  ³  BCD1  ³  BCD0  ³        ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      4 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18             11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD2 ³  BCD1  ³  BCD0  ³                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      3 SIGNIFICANT DIGITS
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  32-bit value of data field.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ data = PC429_GetBCDMant(msg,5);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBCDMant().
+
+NAME:    PC429_GetBCDSign -- Extracts the sign from a BCD message word.
+
+SYNOPSIS:
+sign = PC429_GetBCDSign(msg);
+ULONG msg;       BCD message word to extract data from.
+USHORT sign;     Non-zero if the sign of the BCD message word is negative.
+
+DESCRIPTION:
+  The procedure PC429_GetBCDSign() returns the sign of
+  the BCD message word.  The msg parameter contains the
+  32-bit BCD message word.
+
+  The result is non-zero if the sign of the BCD message
+  word is negative (SSM field equals 11 binary).
+  Otherwise, the procedure returns a zero value.
+
+  The procedure assumes the SSM field is located at bits
+  30 through 31 as shown below:
+
+     31 30                                       11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³               BCD DATA                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  A non-zero value if sign of BCD message word is
+  negative.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ sign = PC429_GetBCDSign(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBCDSign().
+
+NAME:    PC429_GetBCDSSM -- Extracts the SSM field from a BCD message word.
+
+SYNOPSIS:
+result = PC429_GetBCDSSM(msg);
+ULONG msg;       BCD message word to extract data from.
+USHORT result;   Returns the SSM field of the BCD message word.
+
+DESCRIPTION:
+  The procedure PC429_GetBCDSSM() extracts the SSM field
+  of the BCD message word.  The msg parameter contains
+  the 32-bit BCD message word.
+
+  The procedure assumes the SSM field is located at bits
+  30 through 31 as shown below:
+
+     31 30                                       11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³               BCD DATA                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  Value of SSM field.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ ssm = PC429_GetBCDSSM(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBCDSSM().
+
+NAME:    PC429_GetBCDVal -- Calculates the value of a BCD message word.
+
+SYNOPSIS:
+VOID PC429_GetBCDVal(resultstr,msg,sigdig,resolstr);
+PCHAR resultstr;   Pointer to resulting null-terminated ASCII string.
+ULONG msg;         BCD message word to extract data from.
+USHORT sigdig;     Number of significant digits in BCD field.
+PCHAR resolstr;    Pointer to null-terminated resolution string.
+
+DESCRIPTION:
+  The procedure PC429_GetBCDVal() extracts the data field
+  of the BCD message word.
+
+  The resultstr parameter points to the ASCII string which
+  contains the results.  This string may contain a
+  decimal point and may be signed.
+
+  The msg parameter contains the 32-bit BCD message word
+  to extract data from.
+
+  The sigdig parameter specifies the number of BCD digits
+  in the data field.
+
+  The resolstr parameter points to the ASCII string
+  specifying the resolution of the BCD data.  This string
+  may contain a decimal point if needed, but should not
+  have a sign.
+
+  The procedure assumes the BCD data field is divided
+  into the following fields:
+
+   32 30  29  28   25 24   21 20   17 16    13 12     9 1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³BCD5³ BCD4  ³ BCD3  ³ BCD2  ³  BCD1  ³  BCD0  ³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+                      6 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD4 ³  BCD3  ³  BCD2  ³  BCD1  ³  BCD0  ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      5 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD3 ³  BCD2  ³  BCD1  ³  BCD0  ³        ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      4 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18             11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD2 ³  BCD1  ³  BCD0  ³                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      3 SIGNIFICANT DIGITS
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_GetBCDVal(str,msg,5,"0.1");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBCDVal().
+
+NAME:    PC429_GetBNRData -- Extracts the data value from a BNR message word.
+
+SYNOPSIS:
+result = PC429_GetBNRData(msg,msb,lsb,twos);
+ULONG msg;       BNR message word to extract data from.
+USHORT msb;      Most significant bit number of BNR field.
+USHORT lsb;      Least significant bit number of BNR field.
+USHORT twos;     Non-zero if two's complement conversion is needed.
+ULONG result;    Returns the data field value.
+
+DESCRIPTION:
+  The procedure PC429_GetBNRData() extracts the data
+  field of the BNR message word.  The msg parameter
+  contains the 32-bit BNR message word to extract data
+  from.  The msb and lsb parameters specify the most
+  significant and least significant bits of the field
+  respectively.
+
+  The result returned by the procedure is the BNR field
+  specified by the msb and lsb parameters converted to a
+  32-bit unsigned value.  If the twos parameter is a
+  non-zero value, then the two's complement of the BNR
+  field is returned.  No other conversion is made.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  32-bit value of data field.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ data = PC429_GetBNRData(msg,28,11,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBNRData().
+
+NAME:    PC429_GetBNRMant -- Extracts the mantissa value from a BNR message word.
+
+SYNOPSIS:
+result = PC429_GetBNRMant(msg,sigbit);
+ULONG msg;       BNR message word to extract data from.
+USHORT sigbit;   Number of significant digits in BNR field.
+ULONG result;    Returns the data field mantissa.
+
+DESCRIPTION:
+  The procedure PC429_GetBNRMant() extracts the data
+  field of the BNR message word.  The msg parameter
+  contains the 32-bit BNR message word to extract data
+  from.  The sigbit parameter specifies the number of
+  significant bits in the data field.
+
+  The result returned by the procedure is the specified
+  BNR field converted to a 32-bit unsigned value.  If the
+  SSM field of the BNR word specifies a signed value,
+  then the two's complement of the data field is
+  returned.  No other conversion is made.
+
+  The BNR data field is signed if bit 29 in the SSM field
+  is non-zero.  The BNR data field is assumed to be
+  left-adjusted at bit 28 as shown below.
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  32-bit value of data field.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ data = PC429_GetBNRMant(msg,9);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBNRMant().
+
+NAME:    PC429_GetBNRSign -- Extracts the sign from a BNR message word.
+
+SYNOPSIS:
+sign = PC429_GetBNRSign(msg);
+ULONG msg;       BNR message word to extract data from.
+USHORT sign;     Non-zero if the sign of the BNR message word is negative.
+
+DESCRIPTION:
+  The procedure PC429_GetBNRSign() returns the sign of
+  the BNR message word.  The msg parameter contains the
+  32-bit BNR message word.
+
+  The result is non-zero if the sign of the BNR message
+  word is negative which is case when bit 29 of the SSM
+  field is non-zero.  Otherwise, the procedure returns a
+  zero value.
+
+  The procedure assumes the SSM field is located at bits
+  29 through 31 as shown below:
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  A non-zero value if sign of BNR message word is
+  negative.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ sign = PC429_GetBNRSign(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBNRSign().
+
+NAME:    PC429_GetBNRSSM -- Extracts the SSM field from a BNR message word.
+
+SYNOPSIS:
+result = PC429_GetBNRSSM(msg);
+ULONG msg;       BNR message word to extract data from.
+USHORT result;   Returns the SSM field in the message word.
+
+DESCRIPTION:
+  The procedure PC429_GetBNRSSM() extracts the SSM field
+  of the BNR message word.  The msg parameter contains
+  the 32-bit BNR message word.
+
+  The procedure assumes the SSM field is located at bits
+  29 through 31 as shown below:
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  Value of SSM field.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ ssm = PC429_GetBNRSSM(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBNRSSM().
+
+NAME:    PC429_GetBNRVal -- Calculates the value of a BNR message word.
+
+SYNOPSIS:
+VOID PC429_GetBNRVal(resultstr,msg,sigbit,resolstr);
+PCHAR resultstr;   Pointer to resulting null-terminated ASCII string.
+ULONG msg;         BNR message word to extract data from.
+USHORT sigdig;     Number of significant digits in BNR field.
+PCHAR resolstr;    Pointer to null-terminated resolution string.
+
+DESCRIPTION:
+  The procedure PC429_GetBNRVal() extracts the data field
+  of the BNR message word.
+
+  The resultstr parameter points to the ASCII string which
+  contains the results.  This string may contain a
+  decimal point and may be signed.
+
+  The msg parameter contains the 32-bit BNR message word
+  to extract data from.
+
+  The sigbit parameter specifies the number of
+  significant bits in the data field.  The procedure
+  assumes the data field is left-adjusted at bit 28 as
+  shown below:
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  The resolstr parameter points to the ASCII string
+  specifying the resolution of the BNR data.  This string
+  may contain a decimal point if needed, but should not
+  have a sign.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_GetBNRVal(str,msg,9,".125");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutBNRVal().
+
+NAME:    PC429_GetFilt -- Gets address of the specified filter.
+
+SYNOPSIS:
+address = PC429_GetFilt(label,sdi,channel,handleval);
+USHORT label;      Lable value of filter to get address of.
+USHORT sdi;        SDI value of filter to get address of.
+USHORT channel;    Which channel to get address from.
+HCARD handleval;   Device handle of PC429 card.
+ULONG address;     Returns address of filter, zero if error.
+
+DESCRIPTION:
+  The procedure PC429_GetFilt() retrieves the address of
+  a filter on the PC429 card with the specified device
+  handle.  The label parameter specifies the label of
+  the filter.
+
+  The sdi parameter selects the SDI value of the filter.
+  One of four predefined constants SDI00, SDI01, SDI10,
+  or SDI11 must be used.
+
+  The channel parameter selects the channel of the
+  filter.  One of four predefined constants CH0, CH1,
+  CH2, or CH3 must be specified.  Each constant
+  represents a bit in the channel parameter (i.e., CH0=1,
+  CH1=2, CH2=4, CH3=8, etc.).
+
+  If no filter is present for the specified label and
+  SDI, a zero value is returned.
+
+  The procedures PC429_RdMsg() and PC429_RdTime() are
+  used to read the current message and timestamp values
+  for the filter.
+
+RETURNS:
+  Address of filter, or zero if an error occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_GetFilt(0xFF,SDI00,CH1,handleval);
+ msg  = PC429_RdMsg(addr);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, CH3,
+  SDI00, SDI01, SDI10 and SDI11.
+
+SEE ALSO:
+  PC429_RdMsg(), PC429_RdTime().
+
+NAME:    PC429_GetFldData -- Extracts data field from a 32-bit ARINC 429 word.
+
+SYNOPSIS:
+data = PC429_GetFldData(msg);
+ULONG msg;       32-bit ARINC 429 message word.
+ULONG data;      Returns the 23-bit data field value.
+
+DESCRIPTION:
+  The procedure PC429_GetFldData() extracts the 23-bit
+  data field of an ARINC 429 message word.  The extracted
+  23-bit data field is right shifted and zero filled in
+  the result as shown below:
+
+                     ARINC 429 bit number
+     31                                               9 1   8
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD                   ³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+  31 30                                               8 7   0
+      \             msg variable bit number            \
+        \                                               \
+          \                                              \
+            \        ARINC 429 bit number                  \
+             31                                             9
+  ÚÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³000000000³                   DATA FIELD                   ³
+  ÀÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+  31         22                                             0
+                    data variable bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The 23-bit data field of an ARINC 429 message word.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_RdMsg(addr);
+ data = PC429_GetFldData(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutFldData().
+
+NAME:    PC429_GetFldLabel -- Extracts the label field from a 32-bit ARINC 429 word.
+
+SYNOPSIS:
+label = PC429_GetFldLabel(msg);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT label;    Returns the 8-bit label field value.
+
+DESCRIPTION:
+  The procedure PC429_GetFldLabel() extracts the 8-bit
+  label field of an ARINC 429 message word.  The
+  extracted 8-bit label field is right shifted and zero
+  filled in the result as shown below:
+
+                     ARINC 429 bit number
+  32 31                                               9 1   8
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD                   ³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+  31 30                                               8 7   0
+                    msg variable bit number             |   |
+                                                        |   |
+                                                        |   |
+                     ARINC 429 bit number               |   |
+                                                        1   8
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   ³LABEL³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+  31                                                  8 7   0
+                    label variable bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The 8-bit label field of an ARINC 429 message word.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg   = PC429_RdMsg(addr);
+ label = PC429_GetFldLabel(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutFldLabel().
+
+NAME:    PC429_GetFldParity -- Extracts the parity bit from a 32-bit ARINC 429 word.
+
+SYNOPSIS:
+parity = PC429_GetFldParity(msg);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT parity;   Returns the parity bit value.
+
+DESCRIPTION:
+  The procedure PC429_GetFldParity() extracts the parity
+  bit of an ARINC 429 message word.  The extracted parity
+  bit is right shifted and zero filled in the result as
+  shown below:
+
+                     ARINC 429 bit number
+  32 31                                               9 1   8
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD                   ³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+  31 30                                               8 7   0
+   ³                msg variable bit number
+   ³
+   ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+                     ARINC 429 bit number                   ³
+                                                           32
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄ¿
+  ³ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0³P³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÙ
+  31                                                      1 0
+                   parity variable bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The parity bit of an ARINC 429 message word.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr   = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg    = PC429_RdMsg(addr);
+ parity = PC429_GetFldParity(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_GetFldSDI -- Extracts the SDI field from a 32-bit ARINC 429 word.
+
+SYNOPSIS:
+sdi = PC429_GetFldSDI(msg);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT sdi;      Returns the 2-bit SDI field value.
+
+DESCRIPTION:
+  The procedure PC429_GetFldSDI() extracts the 2-bit SDI
+  field of an ARINC 429 message word.  The extracted SDI
+  field is right shifted and zero filled in the result as
+  shown below:
+
+                     ARINC 429 bit number
+  32 31                                            10 9 1   8
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD               ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+  31 30                                             9 8 7   0
+                    msg variable bit number           \
+                                                       \
+                                                        \
+                     ARINC 429 bit number                \
+                                                         10 9
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄ¿
+  ³ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0³SDI³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÙ
+  31                                                    2 1 0
+                     SDI variable bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The 2-bit SDI field of an ARINC 429 message word.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_RdMsg(addr);
+ sdi  = PC429_GetFldSDI(msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutFldSDI().
+
+NAME:    PC429_GetFldValue -- Gets value of specified field of ARINC 429 word.
+
+SYNOPSIS:
+value = PC429_GetFldValue(msg,startbit,endbit);
+ULONG msg;         32-bit ARINC 429 message word.
+USHORT startbit;   Starting bit number of BCD field.
+USHORT endbit;     Ending bit number of BCD field.
+
+DESCRIPTION:
+  The PC429_GetFldValue() procedure extracts any field
+  from an ARINC 429 message word.  The startbit and
+  endbit values determine the lowest and highest bit
+  position of the field to extract.  The extracted field
+  is right shifted and zero filled in the result.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The specified field of an ARINC 429 message word.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_RdMsg(addr);
+ data = PC429_GetFldValue(msg,8,30);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_PutFldValue().
+
+NAME:    PC429_GetGap -- Gets the address of a specified gap.
+
+SYNOPSIS:
+address = PC429_GetGap(index,channel,handleval);
+USHORT index;      Index of gap.
+USHORT channel;    Which channel to get address from.
+HCARD handleval;   Device handle of PC429 card.
+ULONG address;     Returns address of gap, zero if error.
+
+DESCRIPTION:
+  The procedure PC429_GetGap() retrieves the address of a
+  gap on the PC429 card with the specified device
+  handle.
+
+  The index parameter specifies the index of the gap
+  which cannot equal or exceed the value returned by
+  PC429_GetMsgCnt().
+
+  The channel parameter selects the channel of the gap.
+  One of four predefined constants CH0, CH1, CH2, or CH3
+  must be specified.  Each constant represents a bit in
+  the channel parameter (i.e., CH0=1, CH1=2, CH2=4,
+  CH3=8, etc.).
+
+  If no gap is present at the specified index, a zero
+  value is returned.
+
+  The procedures PC429_RdGap() and PC429_WrGap() read and
+  write the actual 32-bit value of the gap.
+
+RETURNS:
+  Address of the specified gap, or zero if an error
+  occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The index parameter cannot equal or exceed the value
+  returned by the procedure PC429_GetMsgCnt();
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_GetGap(1,CH1,handleval);
+ gap  = PC429_RdGap(addr);
+ addr = PC429_GetMsg(1,CH1,handleval);
+ msg  = PC429_RdMsg(addr);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_RdGap(), PC429_WrGap().
+
+NAME:    PC429_GetMsg -- Gets the address of a specified message.
+
+SYNOPSIS:
+address = PC429_GetMsg(index,channel,handleval);
+USHORT index;      Index of message.
+USHORT channel;    Which channel to get address from.
+HCARD handleval;   Device handle of PC429 card.
+ULONG address;     Returns address of message, zero if error.
+
+DESCRIPTION:
+  The procedure PC429_GetMsg() retrieves the address of a
+  message on the PC429 card with the specified device
+  handle.
+
+  The index parameter specifies the index of the message
+  which cannot equal or exceed the value returned by
+  PC429_GetMsgCnt().
+
+  The channel parameter selects the channel of the
+  message.  One of four predefined constants CH0, CH1,
+  CH2, or CH3 must be specified.  Each constant
+  represents a bit in the channel parameter (i.e., CH0=1,
+  CH1=2, CH2=4, CH3=8, etc.).
+
+  If no message is present at the specified index, a zero
+  value is returned.
+
+  The procedures PC429_RdMsg() and PC429_WrMsg() read and
+  write the actual 32-bit value of the message.
+
+RETURNS:
+  Address of the specified message, or zero if an error
+  occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The index parameter cannot equal or exceed the value
+  returned by the procedure PC429_GetMsgCnt();
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_GetGap(1,CH1,handleval);
+ gap  = PC429_RdGap(addr);
+ addr = PC429_GetMsg(1,CH1,handleval);
+ msg  = PC429_RdMsg(addr);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_RdMsg(), PC429_WrMsg().
+
+NAME:    PC429_GetMsgCnt -- Gets the count of messages in a transmit channel.
+
+SYNOPSIS:
+count = PC429_GetMsgCnt(channel,handleval);
+USHORT channel;    Which channel to count.
+HCARD handleval;   Device handle of PC429 card.
+USHORT count;      Returns count of messages in a transmit channel.
+
+DESCRIPTION:
+  The procedure PC429_GetMsgCnt() returns the number of
+  messages in the specified transmit channel on the PC429
+  card with the specified device handle.
+
+  The channel parameter selects the channel containing
+  the messages to count.  One of four predefined
+  constants CH0, CH1, CH2, or CH3 must be specified.
+  Each constant represents a bit in the channel parameter
+  (i.e., CH0=1, CH1=2, CH2=4, CH3=8, etc.).
+
+  Note that the first empty index marks the end of the
+  transmit cycle.  As a result, a channel with count
+  number of messages uses indexes zero through count-1.
+
+RETURNS:
+  Count of messages in the specified transmit channel.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ count = PC429_GetMsgCnt(CH1,handleval);
+ addr  = PC429_GetMsg(count-1,CH1,handleval);
+ msg   = PC429_RdMsg(addr);
+ addr  = PC429_GetGap(count-1,CH1,handleval);
+ gap   = PC429_RdGap(addr);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_GetMsg().
+
+NAME:    PC429_Halt -- Halts the on-board CPU.
+
+SYNOPSIS:
+VOID PC429_Halt(handleval);
+HCARD handleval;       Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_Halt() halts the PC429 card with
+  the specified device handle.  The PC429 card remains
+  inoperative until the PC429_Reset() procedure is
+  called.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Halt(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_HighSpeed -- Selects which channels operate at high speed.
+
+SYNOPSIS:
+oldchannels = PC429_HighSpeed(channels,handleval);
+USHORT channels;       Which channels to set at high speed.
+HCARD handleval;       Device handle of PC429 card.
+USHORT oldchannels;    Returns old value of high speed.
+
+DESCRIPTION:
+  The procedure PC429_HighSpeed() selects which channels
+  operate at high speed on the PC429 card with the
+  specified device handle.
+
+  The channels parameter selects which channels on the
+  PC429 card operate at high speed.  Any combination of
+  the predefined constants CH0, CH1, CH2, and CH3 are
+  ORed together for this value.  Each constant represents
+  a bit in the channels parameter (i.e., CH0=1, CH1=2,
+  CH2=4, CH3=8, etc.).  The value CHNONE sets all
+  channels to low speed.
+
+  The procedure PC429_Reset() or power-on sets both the
+  transmit and receives channels to low speed.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous value of high speed.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_HighSpeed(CH0|CH1,handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_Start().
+
+NAME:    PC429_Init -- Initializes the PC429 Driver library.
+
+SYNOPSIS:
+result = PC429_Init(VOID);
+SHORT result;       Returns a non-zero value if an error occurred.
+
+DESCRIPTION:
+  The procedure PC429_Init() initializes the PC429 driver
+  library by initializing its internal variables.
+
+  The user can call this routine, but only once before
+  any other routines in the driver library are called.
+  If the user does not call PC429_Init(), it will
+  automatically be called by the first call to the
+  procedure PC429_Check().
+
+RETURNS:
+  A non-zero value if an error occurred.
+
+CAUTIONS:
+  Must be called once before any other routines are
+  called.  Should not be called again during the lifetime
+  of the user application.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ if (PC429_Init())
+     printf("Unable to init driver.");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_Check().
+
+NAME:    PC429_InsFilt -- Adds a filter to a receive channel.
+
+SYNOPSIS:
+address = PC429_InsFilt(label,sdi,channel,handleval);
+USHORT label;      Lable value of filter.
+USHORT sdi;        SDI value of filter.
+USHORT channel;    Which channel to insert filter into.
+HCARD handleval;   Device handle of PC429 card.
+ULONG address;     Returns address of filter, zero if error.
+
+DESCRIPTION:
+  The procedure PC429_InsFilt() inserts a filter into a
+  receive channel on the PC429 card with the specified
+  device handle.
+
+  The label parameter specifies the label value of the
+  filter.
+
+  The sdi parameter selects the SDI value of the filter.
+  Any combination of the predefined constants SDI00,
+  SDI01, SDI10, and SDI11 are ORed together for this
+  value.  Each constant represents a bit in the sdi
+  parameter (i.e., SDI00=1, SDI01=2, SDI10=4, SDI11=8).
+
+  The channel parameter selects the channel of the
+  filter.  One of four predefined constants CH0, CH1,
+  CH2, or CH3 must be specified.  Each constant
+  represents a bit in the channel parameter (i.e., CH0=1,
+  CH1=2, CH2=4, CH3=8, etc.).
+
+  The procedure returns a zero value if it cannot add the
+  filter to the specified receive channel.  Otherwise, it
+  returns the address of the filter.  The procedure
+  PC429_GetFilt() retrieves the address of the filter.
+
+  The user must call PC429_ClrMsgFilt() before calling
+  this procedure.
+
+RETURNS:
+  Address of inserted filter, or zero if an error
+  occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  A call to the procedure PC429_ClrMsgFilt() must be made
+  before calling this procedure.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_InsFilt(0xFF,SDI00+SDI01+SDI10+SDI11,CH1,handleval);
+ msg = PC429_RdMsg(addr);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3,
+  SDI00, SDI01, SDI10 and SDI11.
+
+SEE ALSO:
+  PC429_GetFilt(), PC429_ClrMsgFilt().
+
+NAME:    PC429_InsMsg -- Adds a message and gap to a transmit channel.
+
+SYNOPSIS:
+address = PC429_InsMsg(index,msg,gap,channel,handleval);
+USHORT index;      Index of message to insert.
+ULONG msg;         32-bit message value.
+ULONG gap;         32-bit gap value.
+USHORT channel;    Which channel to insert message into.
+HCARD handleval;   Device handle of PC429 card.
+ULONG address;     Returns address of message, zero if error.
+
+DESCRIPTION:
+  The procedure PC429_InsMsg() inserts a message into a
+  transmit channel on the PC429 card with the specified
+  device handle.
+
+  The index parameter specifies the index of the message
+  and must fall within the range 0 through 511.
+
+  The msg parameter and the gap parameter specify the
+  values of the message and gap to use respectively.
+
+  The channel parameter selects the channel of the
+  message.  One of four predefined constants CH0, CH1,
+  CH2, or CH3 must be specified.  Each constant
+  represents a bit in the channel parameter (i.e., CH0=1,
+  CH1=2, CH2=4, CH3=8, etc.).
+
+  If the procedure cannot insert the message, it returns
+  a zero value.  Otherwise, it returns the address of the
+  message.
+
+  The procedures PC429_GetMsg() and PC429_GetGap()
+  retrieve the address of the message and gap
+  respectively.
+
+  The user must call PC429_ClrMsgFilt() before calling
+  this procedure.
+
+RETURNS:
+  Address of inserted message, or zero if an error
+  occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  A call to the procedure PC429_ClrMsgFilt() must be made
+  before calling this procedure.
+
+  The index parameter must fall within the range 0 through
+  511.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ gap  = 0x00000004L;
+ msg  = PC429_PutFldLabel(0L,0xFF);
+ addr = PC429_InsMsg(0,msg,gap,CH1,handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+ PC429_GetMsg(), PC429_GetGap(), PC429_ClrMsgFilt().
+
+NAME:    PC429_IsRcv -- Checks if a channel is a receiver.
+
+SYNOPSIS:
+result = PC429_IsRcv(channel,handleval);
+USHORT channel;    Which channel to check.
+HCARD handleval;   Device handle of PC429 card to load.
+USHORT result;     Returns a non-zero value if channel is a receiver.
+
+DESCRIPTION:
+  The procedure PC429_IsRcv() checks whether a channel is
+  a receiver on the PC429 card with the specified device
+  handle.
+
+  The channel parameter selects the channel to check.
+  One of four predefined constants CH0, CH1, CH2, or CH3
+  must be specified.  Each constant represents a bit in
+  the channel parameter (i.e., CH0=1, CH1=2, CH2=4,
+  CH3=8, etc.).
+
+  The procedure returns a non-zero value if the channel
+  is a receiver.  Otherwise, the channel is a
+  transmitter, or the channel does not exist.
+
+RETURNS:
+  A non-zero value if the specified channel is a receive
+  channel.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ if (PC429_IsRcv(CH0,handleval))
+     printf("Channel 0 is a receive channel.");
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_CheckChan().
+
+NAME:    PC429_IsXmit -- Checks if a channel is a transmitter.
+
+SYNOPSIS:
+result = PC429_IsXmit(channel,handleval);
+USHORT channel;    Which channel to check.
+HCARD handleval;   Device handle of PC429 card to load.
+USHORT result;     Returns a non-zero value if channel is a transmitter.
+
+DESCRIPTION:
+  The procedure PC429_IsXmit() checks whether a channel
+  is a transmitter on the PC429 card with the specified
+  device handle.
+
+  The channel parameter selects the channel to check.
+  One of four predefined constants CH0, CH1, CH2, or CH3
+  must be specified.  Each constant represents a bit in
+  the channel parameter (i.e., CH0=1, CH1=2, CH2=4,
+  CH3=8, etc.).
+
+  The procedure returns a non-zero value if the channel
+  is a transmitter.  Otherwise, the channel is a
+  receiver, or the channel does not exist.
+
+RETURNS:
+  A non-zero value if the specified channel is a transmit
+  channel.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ if (PC429_IsXmit(CH1,handleval))
+     printf("Channel 1 is a transmit channel.");
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+  PC429_CheckChan().
+
+NAME:    PC429_Load -- Loads the image from the file into the PC429.
+
+SYNOPSIS:
+result = PC429_Load(filename,handleval);
+LPSTR filename;  Name of file to load.
+HCARD handleval; Device handle of PC429 card to load.
+SHORT result;    Returns a non-zero value if an error occurred.
+
+DESCRIPTION:
+  The procedure PC429_Load() loads the image information
+  from the specified Copilot image file into the PC429.
+  The user must open the file for reading.
+
+RETURNS:
+  A non-zero value if the operation is unsuccessful.
+
+CAUTIONS:
+  The specified file must already be opened for reading.
+  Note that a file handle is required.
+
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ if (PC429_Load("TEST.429",handleval))
+     printf("Error loading card at handleval.");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_NameToAddr().
+
+NAME:    PC429_NameToAddr -- Extracts an address from the image file.
+
+SYNOPSIS:
+address = PC429_NameToAddr(name,handleval,imagefh);
+PCHAR name;      Pointer to null-terminated name of message or filter.
+HCARD handleval; Device handle of PC429 card.
+HANDLE imagefh;  File handle of an opened file.
+ULONG address;   Returns address of message or filter, zero if error.
+
+DESCRIPTION:
+  The procedure PC429_NameToAddr() gets the address of
+  the specified message or filter.  It returns a zero
+  value if the item is not found,
+
+RETURNS:
+  The address of the named message or filter, zero if an
+  error occurred.
+
+CAUTIONS:
+  The specified file must already be opened for reading.
+  Note that a file handle is required.
+
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_RdMsg(addr);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_RdMsg(), PC429_WrMsg(), PC429_RdTime().
+
+NAME:    PC429_OscClk -- Informs the firmware of the CPU clock speed.
+
+SYNOPSIS:
+oldvalue = PC429_OscClk(oscval,handleval);
+USHORT oscval;    Oscillator clock value.
+HCARD handleval;  Device handle of PC429 card.
+USHORT oldvalue;  Returns old oscillator clock value.
+
+DESCRIPTION:
+  The procedure PC429_OscClk() specifies the clock
+  oscillator used by the PC429 hardware.
+
+  The procedure PC429_Reset() or power-on sets the clock
+  oscillator to 24MHz.
+
+RETURNS:
+  The previous oscillator clock value.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_OscClk(16,handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_Start().
+
+NAME:    PC429_Parity -- Selects the parity of each channel.
+
+SYNOPSIS:
+oldchannels = PC429_Parity(channels,handleval);
+USHORT channels;     Parity of each channel.
+HCARD handleval;     Device handle of PC429 card.
+USHORT oldchannels;  Returns old value of parity.
+
+DESCRIPTION:
+  The procedure PC429_Parity() selects the parity of each
+  channel on the PC429 card with the specified device
+  handle.
+
+  The channels parameter selects which channels on the
+  PC429 card operate with even parity.  Any combination
+  of the predefined constants CH0, CH1, CH2, and CH3 are
+  ORed together for this value.  Each constant represents
+  a bit in the channels parameter (i.e., CH0=1, CH1=2,
+  CH2=4, CH3=8, etc.).  The value CHNONE sets all
+  channels on the PC429 to odd parity.
+
+  To generate parity errors on a transmitted message, the
+  user must call the procedure PC429_Error() to enable
+  errors on the transmit channel, and call the procedure
+  PC429_WrGap() to set the ERWRD bit in the corresponding
+  gap of the message.
+
+  The procedure PC429_Reset() or power-on sets both the
+  transmit channel and receive channel to odd parity.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous value of parity.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Error(CH1,handleval);
+ PC429_Parity(CHNONE,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+ PC429_Start().
+
+NAME:    PC429_PeekMsg -- Reads a message using communication process.
+
+SYNOPSIS:
+msg = PC429_PeekMsg(address);
+ULONG address;   Address of message to read.
+ULONG msg;       Returns 32-bit value of message.
+
+DESCRIPTION:
+  The procedure PC429_PeekMsg() reads the 32-bit value
+  from the address on the PC429.  This is used to read
+  the value of received ARINC 429 words.
+
+  This procedure uses the PC429 on-board communication
+  process which guarantees data integrity (i.e.,  all 32
+  bits will be from the same transmission of the
+  message).
+
+  The procedures PC429_GetFilt(), PC429_GetMsg(), and
+  PC429_NameToAddr() provide the message address.
+
+RETURNS:
+  The 32-bit value from the specified address on the PC429
+  card.
+
+CAUTIONS:
+  Only those message addresses provided by the procedures
+  PC429_GetFilt(), PC429_GetMsg(), PC429_InsFilt(),
+  PC429_InsMsg(), or PC429_NameToAddr() should be used.
+  The use of other address values will return an undefined
+  value.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_PeekMsg(addr);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFilt(), PC429_GetMsg(), PC429_NameToAddr().
+
+NAME:    PC429_PokeMsg -- Writes a message using communication process.
+
+SYNOPSIS:
+VOID PC429_PokeMsg(address,msg);
+ULONG address;   Address of message to write.
+ULONG msg;       Returns 32-bit value of message.
+
+DESCRIPTION:
+  The procedure PC429_PokeMsg() moves the value of the
+  32-bit message to the address on the PC429 card.  This
+  is used to alter the value of ARINC 429 words to be
+  transmitted.
+
+  This procedure uses the PC429 on-board communication
+  process which guarantees data integrity (ie.  all 32
+  bits will be from the same transmission of the
+  message).
+
+  The procedures PC429_GetFilt(), PC429_GetMsg(), and
+  PC429_NameToAddr() provide the message address.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  Only those transmit message addresses provided by the
+  procedures PC429_GetMsg(), PC429_InsMsg(), or
+  PC429_NameToAddr() should be used.  The use of other
+  address values or addresses of received messages will
+  result in unpredictable behavior.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("TRANSMIT MSG 1",handleval,"TEST.429");
+ PC429_PokeMsg(addr,0x000000FFL);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFilt(), PC429_GetMsg(), PC429_NameToAddr().
+
+NAME:    PC429_Pulse -- Pulses pin 25.
+
+SYNOPSIS:
+VOID PC429_Pulse(handleval);
+HCARD handleval;   Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_Pulse() pulses pin 25 of the PC429.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Pulse(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_PutBCDData -- Inserts the data value into a BCD message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBCDData(msg,value,msb,lsb);
+ULONG msg;       32-bit ARINC 429 message word.
+ULONG value;     New data value.
+USHORT msb;      Most significant bit number of BCD field.
+USHORT lsb;      Least significant bit number of BCD field.
+ULONG newmsg;    Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutBCDData() inserts the value of
+  the data field into the specified BCD message word.
+  The msg parameter contains the 32-bit BCD message word
+  to modify.
+
+  The msb and lsb parameters specify the most significant
+  and least significant bits of the field respectively.
+
+  The value parameter is converted to BCD and inserted
+  into the data field specified by the msb and lsb
+  parameters.  No other conversion is made.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBCDData(msg,0L,29,11);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBCDData().
+
+NAME:    PC429_PutBCDMant -- Inserts the mantissa value into a BCD message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBCDMant(msg,value,sigdig,sign);
+ULONG msg;       32-bit ARINC 429 message word.
+ULONG value;     New data value.
+USHORT sigdig;   Number of significant digits in BCD field.
+USHORT sign;     Non-zero if to take two's complement.
+ULONG newmsg;    Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutBCDMant() inserts the value of
+  the data field into the specified BCD message word.
+  The msg parameter contains the 32-bit BCD message word
+  to modify.
+
+  The sigdig parameter specifies the number of digits in
+  the BCD field.
+
+  The value parameter is converted to BCD and inserted
+  into the data field.  The BCD data field is assumed to
+  be divided into the following fields:
+
+   32 30  29  28   25 24   21 20   17 16    13 12     9 1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³BCD5³ BCD4  ³ BCD3  ³ BCD2  ³  BCD1  ³  BCD0  ³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+                      6 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD4 ³  BCD3  ³  BCD2  ³  BCD1  ³  BCD0  ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      5 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD3 ³  BCD2  ³  BCD1  ³  BCD0  ³        ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      4 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18             11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD2 ³  BCD1  ³  BCD0  ³                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      3 SIGNIFICANT DIGITS
+
+  If the sign parameter is non-zero, the value 11 binary
+  is inserted into the SSM field to specify a signed
+  value.  Otherwise, the value 00 binary is inserted into
+  the SSM field.  No other conversion is made.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBCDMant(msg,0L,5,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBCDMant().
+
+NAME:    PC429_PutBCDSign -- Inserts the sign into a BCD message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBCDSign(msg,sign);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT sign;     Non-zero if to take two's complement.
+ULONG newmsg;    Returns message word with new sign.
+
+DESCRIPTION:
+  The procedure PC429_PutBCDSign() inserts the sign of
+  the specified BCD message word into the SSM field.  The
+  msg parameter contains the 32-bit BCD message word to
+  modify.
+
+  If the sign parameter is non-zero, the value 11 binary
+  is inserted into the SSM field to specify a signed
+  value.  Otherwise, the value 00 binary is inserted into
+  the SSM field.
+
+  The procedure assumes the SSM field is located at bits
+  30 through 31 as shown below:
+
+     31 30                                       11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³               BCD DATA                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the SSM field
+  inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBCDSign(msg,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBCDSign().
+
+NAME:    PC429_PutBCDSSM -- Inserts the SSM field into a BCD message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBCDSSM(msg,value);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT value;    2-bit value of SSM field.
+ULONG newmsg;    Returns message word with new SSM field.
+
+DESCRIPTION:
+  The procedure PC429_PutBCDSSM() inserts the value of
+  the SSM field into the specified BCD message word.  The
+  msg parameter contains the 32-bit BCD message word to
+  modify.
+
+  The msg parameter is returned with the SSM field
+  replaced.  The procedure assumes the SSM field is
+  located at bits 30 through 31 as shown below:
+
+     31 30                                       11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³               BCD DATA                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the SSM field
+  inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBCDSSM(msg,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBCDSSM().
+
+NAME:    PC429_PutBCDVal -- Inserts the value into a BCD message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBCDVal(valuestr,msg,sigdig,resolstr);
+PCHAR valuestr;  Pointer to null-terminated value string.
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT sigdig;   Number of significant digits in BCD field.
+PCHAR resolstr;  Pointer to null-terminated resolution string.
+ULONG newmsg;    Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutBCDVal() inserts the value of
+  the data field into the specified BCD message word.
+
+  The valuestr parameter points to the ASCII string which
+  contains the value to insert.  This string may contain
+  a decimal point and may be signed.
+
+  The msg parameter contains the 32-bit BCD message word
+  to modify.
+
+  The sigdig parameter specifies the number of BCD digits
+  in the data field.
+
+  The resolstr parameter points to the ASCII string
+  specifying the resolution of the BCD data.  This string
+  may contain a decimal point if needed, but should not
+  have a sign.
+
+  The valuestr parameter is converted to BCD and inserted
+  into the data field.  The BCD data field is assumed to
+  be divided into the following fields:
+
+   32 30  29  28   25 24   21 20   17 16    13 12     9 1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³BCD5³ BCD4  ³ BCD3  ³ BCD2  ³  BCD1  ³  BCD0  ³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+                      6 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD4 ³  BCD3  ³  BCD2  ³  BCD1  ³  BCD0  ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      5 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18    15 14    11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD3 ³  BCD2  ³  BCD1  ³  BCD0  ³        ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      4 SIGNIFICANT DIGITS
+
+   32 30 29  27 26    23 22    19 18             11     1   8
+  ÚÄÂÄÄÄÂÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³SSM³ BCD2 ³  BCD1  ³  BCD0  ³                 ³SDI³LABEL³
+  ÀÄÁÄÄÄÁÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+                      3 SIGNIFICANT DIGITS
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBCDVal("1.23",msg,5,"0.001");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBCDVal().
+
+NAME:    PC429_PutBNRData -- Inserts the data value into a BNR message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBNRData(msg,value,msb,lsb,twos);
+ULONG msg;     32-bit ARINC 429 message word.
+ULONG value;   New data value.
+USHORT msb;    Most significant bit number of BNR field.
+USHORT lsb;    Least significant bit number of BNR field.
+USHORT twos;   Non-zero if two's complement conversion is needed.
+ULONG newmsg;  Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutBNRData() inserts the value of
+  the data field into the specified BNR message word.
+  The msg parameter contains the 32-bit BNR message word
+  to modify.
+
+  The msb and lsb parameters specify the most significant
+  and least significant bits of the field respectively.
+
+  The value parameter is inserted into the data field
+  specified by the msb and lsb parameters.  If the twos
+  parameter is non-zero, the two's complement of the
+  value is inserted into the data field.  No other
+  conversion is made.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBNRData(msg,0L,28,11,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBNRData().
+
+NAME:    PC429_PutBNRMant -- Inserts the mantissa value into a BNR message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBNRMant(msg,value,sigbit,twos);
+ULONG msg;       32-bit ARINC 429 message word.
+ULONG value;     New data value.
+USHORT sigbit;   Number of significant bits in BNR field.
+USHORT twos;     Non-zero if two's complement conversion is needed.
+ULONG newmsg;    Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutBNRMant() inserts the value of
+  the data field into the specified BNR message word.
+  The msg parameter contains the 32-bit BNR message word
+  to modify.
+
+  The sigbit parameter specifies the number of
+  significant bits in the BNR field.
+
+  The value parameter is inserted into the data field.
+  The procedure assumes the BNR data field is
+  left-adjusted at bit 28 as shown below.
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  If the twos parameter is non-zero, then the two's
+  complement of the value parameter is inserted into the
+  data field, and bit 29 of the SSM field is set to one.
+  Otherwise, bit 29 of the SSM field is set to zero.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBNRMant(msg,0L,9,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBNRMant().
+
+NAME:    PC429_PutBNRSign -- Inserts the sign into a BNR message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBNRSign(msg,sign);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT sign;     Non-zero if to put negative sign.
+ULONG newmsg;    Returns message word with new sign.
+
+DESCRIPTION:
+  The procedure PC429_PutBNRSign() inserts the signed of
+  the specified BCD message word into the SSM field.  The
+  msg parameter contains the 32-bit BNR message word to
+  modify.
+
+  If the sign parameter is non-zero, then bit 29 of the
+  SSM field is set to one.  Otherwise, bit 29 of the SSM
+  field is set to zero.
+
+  The procedure assumes the SSM field is located at bits
+  29 through 31 as shown below:
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the SSM field
+  inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBNRSign(msg,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBNRSign().
+
+NAME:    PC429_PutBNRSSM -- Inserts the SSM field into a BNR message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBNRSSM(msg,value);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT value;    3-bit value of SSM field.
+ULONG newmsg;    Returns message word with new SSM field.
+
+DESCRIPTION:
+  The procedure PC429_PutBNRSSM() inserts the value of
+  the SSM field into the specified BNR message word.  The
+  msg parameter contains the 32-bit BNR message word to
+  modify.
+
+  The msg parameter is returned with the SSM field
+  replaced.  The procedure assumes the SSM field is
+  located at bits 29 through 31 as shown below:
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the SSM field
+  inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBNRSSM(msg,0);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBNRSSM().
+
+NAME:    PC429_PutBNRVal -- Inserts the value into a BNR message word.
+
+SYNOPSIS:
+newmsg = PC429_PutBNRVal(valuestr,msg,sigbit,resolstr);
+PCHAR valuestr;  Pointer to null-terminated value string.
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT sigbit;   Number of significant bits in BNR field.
+PCHAR resolstr;  Pointer to null-terminated resolution string.
+ULONG newmsg;    Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutBNRVal() inserts the value of
+  the data field into the specified BNR message word.
+
+  The valuestr parameter points to the ASCII string which
+  contains the value to insert.  This string may contain
+  a decimal point and may be signed.
+
+  The msg parameter contains the 32-bit BNR message word
+  to modify.
+
+  The sigbit parameter specifies the number of
+  significant bits in the BNR data field.
+
+  The resolstr parameter points to the ASCII string
+  specifying the resolution of the BNR data.  This string
+  may contain a decimal point if needed, but should not
+  have a sign.
+
+  The valuestr parameter is scaled and inserted into the
+  data field.  The procedure assumes the data field is
+  left-adjusted at bit 28 as shown below:
+
+     31 29 28                                    11   9 1   8
+  ÚÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³ SSM ³ BNR DATA ÄÄÄ>                          ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ msg = PC429_PutBNRVal("1.231",msg,9,".000172");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetBNRVal().
+
+NAME:    PC429_PutFldData -- Inserts the data field into message word.
+
+SYNOPSIS:
+newmsg = PC429_PutFldData(msg,data);
+ULONG msg;       32-bit ARINC 429 message word.
+ULONG data;      New 23-bit data field value.
+ULONG newmsg;    Returns message word with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutFldData() inserts the 23-bit
+  data field value into an ARINC 429 message word.  The
+  new data value is left shifted and packed into the
+  specified message word as shown below:
+
+                   data variable bit number
+  31         22                                             0
+  ÚÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  ³000000000³                   DATA FIELD                   ³
+  ÀÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+             31                                             9
+            /        ARINC 429 bit number                   /
+          /                                               /
+        /                                               /
+      /             msg variable bit number           /
+  31 30                                               8 7   0
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD                   ³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+     31                                               9 1   8
+                     ARINC 429 bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the data
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("TRANSMIT MSG 1",handleval,"TEST.429");
+ msg  = PC429_PutFldData(msg,0x1234L);
+ PC429_WrMsg(addr,msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFldData().
+
+NAME:    PC429_PutFldLabel -- Inserts the label field into a message word.
+
+SYNOPSIS:
+newmsg = PC429_PutFldLabel(msg,label);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT label;    New 8-bit label field value.
+ULONG newmsg;    Returns message word with new label field.
+
+DESCRIPTION:
+  The procedure PC429_PutFldLabel() inserts the 8-bit
+  label field value into an ARINC 429 message word.  The
+  new label value is left shifted and packed into the
+  specified message word as shown below:
+
+                   label variable bit number
+  31                                                  8 7   0
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³  0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   ³LABEL³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+                                                        1   8
+                     ARINC 429 bit number               |   |
+                                                        |   |
+                    msg variable bit number             |   |
+  31 30                                               8 7   0
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD                   ³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÙ
+  32 31                                               9 1   8
+                     ARINC 429 bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the label
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ gap  = 0x00000004L;
+ msg  = PC429_PutFldLabel(0L,0xFF);
+ addr = PC429_InsMsg(0,msg,gap,CH1,handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFldLabel().
+
+NAME:    PC429_PutFldSDI -- Inserts the SDI field into a message word.
+
+SYNOPSIS:
+newmsg = PC429_PutFldSDI(msg,sdi);
+ULONG msg;       32-bit ARINC 429 message word.
+USHORT sdi;      New 2-bit sdi field value.
+ULONG newmsg;    Returns message word with new sdi field.
+
+DESCRIPTION:
+  The procedure PC429_PutFldSDI() inserts the 2-bit sdi
+  field value into an ARINC 429 message word.  The new
+  sdi value is left shifted and packed into the specified
+  message word as shown below:
+
+                     SDI variable bit number
+  31                                                    2 1 0
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄ¿
+  ³ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0³SDI³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÙ
+                                                         10 9
+                     ARINC 429 bit number               /  /
+                                                      /  /
+                    msg variable bit number          / /
+  31 30                                             9 8 7   0
+  ÚÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÂÄÄÄÄÄ¿
+  ³P³                     DATA FIELD               ³SDI³LABEL³
+  ÀÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÁÄÄÄÄÄÙ
+  32 31                                            10 9 1   8
+                     ARINC 429 bit number
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the SDI field
+  inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ gap  = 0x00000004L;
+ msg  = PC429_PutFldLabel(0L,0xFF);
+ msg  = PC429_PutFldSDI(msg,0x00);
+ addr = PC429_InsMsg(0,msg,gap,CH1,handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFldSDI().
+
+NAME:    PC429_PutFldValue -- Inserts the specified field into a message word.
+
+SYNOPSIS:
+newmsg = PC429_PutFldValue(msg,data,startbit,endbit);
+ULONG msg;         32-bit ARINC 429 message word.
+ULONG data;        New 23-bit data field value.
+USHORT startbit;   Starting bit position of field.
+USHORT endbit;     Ending bit position of field.
+ULONG newmsg;      Returns message with new data field.
+
+DESCRIPTION:
+  The procedure PC429_PutFldValue() inserts a field value
+  into an ARINC 429 message word.  The startbit and
+  endbit values specify the low and high bit positions of
+  the field.
+
+  Note that this function is simply a utility that
+  operates on a variable (msg) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  The new 32-bit ARINC 429 message word with the specified
+  field inserted.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("TRANSMIT MSG 1",handleval,"TEST.429");
+ msg  = PC429_PutFldValue(msg,0x1234L,8,30);
+ PC429_WrMsg(addr,msg);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+  PC429_GetFldValue().
+
+NAME:    PC429_RdClk -- Reads the on-board clock.
+
+SYNOPSIS:
+clkval = PC429_RdClk(handleval);
+HCARD handleval; Device handle of PC429 card.
+ULONG clkval;    Returns current clock value.
+
+DESCRIPTION:
+  The procedure PC429_RdClk() reads the value of the
+  on-board clock.  It returns the 32-bit unsigned clock
+  value.
+
+  The units of the return value is determined by the last
+  call to the procedure PC429_SpeedClk().  By default,
+  the clock value is in units of 1 msec.  Calls to the
+  procedure PC429_SpeedClk() can change the resolution to
+  .1 msec or 10 msec.
+
+RETURNS:
+  The 32-bit on-board clock value.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ clk = PC429_RdClk(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_SpeedClk(), PC429_WrClk().
+
+NAME:    PC429_RdGap -- Reads the gap value of a transmitted message.
+
+SYNOPSIS:
+gapval = PC429_RdGap(address);
+ULONG address;   Address of gap to read.
+ULONG gapval;    Returns 32-bit value of gap
+
+DESCRIPTION:
+  The procedure PC429_RdGap() reads the 32-bit gap value
+  from the address on the PC429.  This is used to read
+  the value of transmitted message gaps.  The procedure
+  PC429_GetGap() provides the gap address and the
+  procedure PC429_WrGap() writes the gap value.
+
+  The gap value is defined as follows:
+
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿
+  ³          ZEROS         ³NOWRD³ SYNC³ LOG ³ERWRD³   GAP   ³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÙ
+   31                         15    14    13    12  11      0
+
+  The GAP field is a 12-bit value which determines the
+  gap after the corresponding message is transmitted.
+  The 12-bit value is in units of bit times.  If the
+  message is disabled by the NOWRD bit, then the message
+  is not transmitted and only the gap is implemented.  If
+  this value is below 4, then a gap value of 4 is assumed
+  unless the ERWRD bit is set.
+
+  Four additional options are available.  The user
+  selects these options by ORing to the gap value any
+  combination of the predefined constants GAP_ERWRD,
+  GAP_LOG, GAP_SYNC, and GAP_NOWRD.
+
+  GAP_ERWRD - This predefined constant sets the ERWRD
+  bit, generating an error for the corresponding message.
+  The user must call the procedure PC429_Error() for this
+  bit to be significant.
+
+  Both gap errors and parity errors can be generated.
+  For a gap error to be generated, the GAP field must be
+  set to a value below 4.  For a parity error to be
+  generated, the procedure PC429_Parity() must be called
+  to set the channel parity to even.
+
+  GAP_LOG - This sets the LOG bit which records the
+  corresponding message in the sequential record each
+  time it is transmitted.
+
+  GAP_SYNC - This sets the SYNC bit which pulses the sync
+  output line each time the corresponding message is
+  transmitted.
+
+  GAP_NOWRD - This sets the NOWRD bit .  When set, the
+  message is not transmitted, but the gap is implemented.
+  This extends a message gap over several messages.
+
+RETURNS:
+  The 32-bit value from the specified gap on the PC429
+  card.
+
+CAUTIONS:
+  Only those message addresses provided by the procedure
+  PC429_GetGap() should be used.  The use of other address
+  values will return an undefined value.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_GetGap(1,CH1,handleval);
+ gap = PC429_RdGap(addr);
+     :
+     :
+}
+
+USES:
+  Predefined constants GAP_NOWRD, GAP_SYNC, GAP_LOG and
+  GAP_ERWRD.
+
+SEE ALSO:
+ PC429_GetGap(), PC429_WrGap().
+
+NAME:    PC429_RdMsg -- Reads transmitted or received messages.
+
+SYNOPSIS:
+msg = PC429_RdMsg(address);
+ULONG address;   Address of message to read.
+ULONG msg;       Returns 32-bit value of message.
+
+DESCRIPTION:
+  The procedure PC429_RdMsg() reads the 32-bit message
+  value from the address on the PC429.  This is used to
+  read the value of received ARINC 429 messages or the
+  value of transmitted messages.
+
+  The procedures PC429_GetFilt(), PC429_GetMsg(), and
+  PC429_NameToAddr() provide the message address.
+
+RETURNS:
+  The 32-bit value of the message at the specified address
+  on the PC429 card.
+
+CAUTIONS:
+  Only those message addresses provided by the procedures
+  PC429_GetFilt(), PC429_GetMsg(), PC429_InsFilt(),
+  PC429_InsMsg(), or PC429_NameToAddr() should be used.
+  The use of other address values will return an undefined
+  value.
+
+  Where data integrity is critical, the PC429_PeekMsg()
+  function should be used.  If a message is received while
+  PC429_RdMsg() is accessing the board, the returned value
+  may contain part of the old message and part of the new
+  one.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_RdMsg(addr);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFilt(), PC429_GetMsg(), PC429_NameToAddr().
+
+NAME:    PC429_RdTime -- Reads timestamp of received messages.
+
+SYNOPSIS:
+timeval = PC429_RdTime(address);
+ULONG address;   Address of receive message.
+ULONG timeval;   Returns 32-bit value of timestamp.
+
+DESCRIPTION:
+  The procedure PC429_RdTime() reads the 32-bit value of
+  the timestamp of a received ARINC message and its
+  associated status bits.
+
+  The procedures PC429_GetFilt() and PC429_NameToAddr()
+  provide the message address.
+
+  The 4-byte value returned consists of 2 fields as shown
+  below:
+
+           ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  BYTE 0-2 ³        24-BIT TIMESTAMP         ³
+           ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+
+           ÚÄÄÄÄÄÄÄ¿
+  BYTE 3   ³ FLAGS ³
+           ÀÄÄÄÄÄÄÄÙ
+
+  The timestamp is delineated as follows:
+
+  24-bit   ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+  value    ³ byte 2      byte 1      byte 0  ³
+           ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+            23                              0
+
+  3-byte   ÚÄÄÄÄÄÄÄÄ¿  ÚÄÄÄÄÄÄÄÄ¿  ÚÄÄÄÄÄÄÄÄ¿
+ value in  ³        ³  ³        ³  ³        ³
+  memory   ÀÄÄÄÄÄÄÄÄÙ  ÀÄÄÄÄÄÄÄÄÙ  ÀÄÄÄÄÄÄÄÄÙ
+            7      0    7      0    7      0
+             byte 0      byte 1      byte 2
+
+  The 24-bit value is in units of either .1 msec, 1 msec,
+  or 10 msec as selected by the procedure
+  PC429_SpeedClk().
+
+  The flag byte is divided into the following fields.
+
+  8-bit    ÚÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄÂÄÄÄ¿
+  value    ³   BRD #   ³   CHAN #  ³ERR³OVF³
+           ÀÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÁÄÄÄÙ
+            7                             0
+                         byte 3
+
+  The board number is a 3-bit value which identifies the
+  board.  This is selected within the Copilot Option
+  window.
+
+  The channel number is a 3-bit value identifying the
+  channel which transmitted or received the message.  For
+  the PC429-1, channel 0 is the receive channel, and
+  channel 1 is the transmit channel.
+
+  The error bit is set whenever an error was detected in
+  the received word.  Possible errors include parity, bit
+  encoding, bit count, and insufficient gap.
+
+  The overflow bit indicates that received messages are
+  not being serviced fast enough by the on-board 80188
+  controller.  When overflow occurs, some received
+  messages are being skipped.  This should not normally
+  occur, but when it does, it indicates that the 80188 is
+  either overloaded or not functioning properly.
+
+RETURNS:
+  The 32-bit value of the timestamp of a received ARINC
+  429 message and its associated status bits.
+
+CAUTIONS:
+  Only those receive message addresses provided by the
+  procedures PC429_GetFilt(), PC429_InsFilt(), or
+  PC429_NameToAddr() should be used.  The use of other
+  address values or the address of transmitted messages
+  will return an undefined value.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ timeval = PC429_RdTime(addr);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFilt(), PC429_NameToAddr().
+
+NAME:    PC429_Rearm -- Rearms the PC429 card if in single internal mode.
+
+SYNOPSIS:
+VOID PC429_Rearm(channel,handleval);
+USHORT channel;    Which channel to rearm.
+HCARD handleval;   Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_Rearm() rearms the PC429 card with
+  the specified device handle.
+
+  The channel parameter selects the channel to rearm.
+  One of four predefined constants CH0, CH1, CH2, or CH3
+  must be specified.  Each constant represents a bit in
+  the channel parameter (i.e., CH0=1, CH1=2, CH2=4,
+  CH3=8, etc.).
+
+  This procedure call is valid only if single mode is
+  enabled on the channel using the procedure
+  PC429_Single(), and external trigger is disabled on the
+  channel using the procedure PC429_Extern().
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Extern(CHNONE,handleval);
+ PC429_Single(CH1,handleval);
+ PC429_Start(handleval);
+     :
+ PC429_Rearm(CH1,handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+ PC429_Single(), PC429_Extern().
+
+NAME:    PC429_Reset -- Resets the PC429 hardware.
+
+SYNOPSIS:
+VOID PC429_Reset(handleval);
+HCARD handleval;   Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_Reset() resets the PC429 card with
+  the specified device handle.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Reset(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_SelfTest -- Enables selftest on the PC429 card.
+
+SYNOPSIS:
+oldchannels = PC429_SelfTest(channels,handleval);
+USHORT channels;     Non-zero to enable self-test mode.
+HCARD handleval;    Device handle of PC429 card.
+USHORT oldchannels;  Returns old value of self-test mode.
+
+DESCRIPTION:
+  The procedure PC429_SelfTest() enables self-test mode
+  on the PC429 card with the specified device handle.
+
+  The channels parameter selects which channels on the
+  PC429 card communicate using the internal bus.  Any
+  combination of the predefined constants CH0, CH1, CH2,
+  and CH3 are ORed together for this value.  Each
+  constant represents a bit in the channels parameter
+  (i.e., CH0=1, CH1=2, CH2=4, CH3=8, etc.).  The value
+  CHNONE sets all channels on the PC429 to communicate
+  using the external bus.
+
+  The procedure PC429_Reset() or power-on disables
+  self-test mode.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous value of self-test mode.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_SelfTest(CH0|CH1,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+ PC429_Start().
+
+NAME:    PC429_Single -- Selects single mode for a transmitter channel.
+
+SYNOPSIS:
+oldchannels = PC429_Single(channels,handleval);
+USHORT channels;      Non-zero to enable single mode.
+HCARD handleval;      Device handle of PC429 card.
+USHORT oldchannels;   Returns old value of single mode.
+
+DESCRIPTION:
+  The procedure PC429_Single() enables single mode on
+  transmit channels in the PC429 card with the specified
+  device handle.
+
+  The channels parameter selects which transmit channels
+  on the PC429 card operate using single mode.  Any
+  combination of the predefined constants CH0, CH1, CH2,
+  and CH3 are ORed together for this value.  Each
+  constant represents a bit in the channels parameter
+  (i.e., CH0=1, CH1=2, CH2=4, CH3=8, etc.).  The value
+  CHNONE sets all transmit channels on the PC429 to
+  communicate using repeat mode.
+
+  When single mode is enabled on a transmit channel, the
+  contents of the transmit channel is transmitted only
+  once.  The procedure PC429_Rearm() re-transmits the
+  channel contents, and the procedure PC429_Stop() stops
+  operation.
+
+  When single mode is disabled on a transmit channel, the
+  contents of the transmit channel are repeatedly
+  transmitted until the procedure PC429_Stop() stops
+  operation.
+
+  The procedure PC429_Reset() or power-on disables single
+  mode, causing the PC429 card to operate in repeat mode.
+
+  The user must call the procedure PC429_Start() to
+  implement changes to the PC429 configuration.
+
+RETURNS:
+  The previous value of single mode.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  The procedure PC429_Start() must be called before the
+  PC429 card can implement any changes to the
+  configuration.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Extern(CH1,handleval);
+ PC429_Single(CH1,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants CHNONE, CH0, CH1, CH2, and CH3.
+
+SEE ALSO:
+ PC429_Start().
+
+NAME:    PC429_SpeedClk -- Selects a 10ms, 1ms, or .1ms clock resolution.
+
+SYNOPSIS:
+oldspeed = PC429_SpeedClk(speed,handleval);
+USHORT speed;       Speed of clock.
+HCARD handleval;    Device handle of PC429 card.
+USHORT oldspeed;    Returns old speed of clock.
+
+DESCRIPTION:
+  The procedure PC429_SpeedClk() selects the resolution
+  of the on-board clock for the PC429 card with the
+  specified device handle.
+
+  The speed parameter selects the resolution.  One of
+  three predefined constants SPEED_CLKHIGH, SPEED_CLKMED,
+  or SPEED_CLKLOW are used for this value.
+
+  SPEED_CLKHIGH - This constant sets the on-board clock
+  resolution to .1 msec.
+
+  SPEED_CLKMED - This constant sets the on-board clock
+  resolution to 1 msec.
+
+  SPEED_CLKLOW - This constant sets the on-board clock
+  resolution to 10 msec.
+
+  The procedure PC429_Reset() or power-on sets the clock
+  resolution to 1 msec.
+
+RETURNS:
+  The previous speed of clock.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_SpeedClk(SPEED_CLKMED,handleval);
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+  Predefined constants SPEED_CLKHIGH, SPEED_CLKMED and
+  SPEED_CLKLOW.
+
+SEE ALSO:
+ PC429_Start(), PC429_WrClk(), PC429_RdClk().
+
+NAME:    PC429_Start -- Starts operation of the PC429 card.
+
+SYNOPSIS:
+VOID PC429_Start(handleval);
+HCARD handleval;    Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_Start() starts operation of the
+  PC429 card.  After the Copilot image file is loaded
+  using the PC429_Load() procedure, the card may or may
+  not be running.  A call to PC429_Start() starts the
+  operation.
+
+  If the card is already started, any changes to the
+  PC429 card configuration are implemented.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  Note that the following procedures require a call to
+  PC429_Start() to reconfigure the PC429 card:
+  PC429_Active(), PC429_BrdNum(), PC429_HighSpeed(),
+  PC429_SelfTest(), PC429_Error(), PC429_Parity(),
+  PC429_Extern(), and PC429_Single().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Start(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_Stop().
+
+NAME:    PC429_Stop -- Stops operation of the PC429 card.
+
+SYNOPSIS:
+VOID PC429_Stop(handleval);
+HCARD handleval;    Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_Stop() stops operation of the PC429
+  card.  If the card is already stopped, this command is
+  ignored.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_Stop(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_Start().
+
+NAME:    PC429_ToAscii -- Converts a 32-bit unsigned value to an ASCII string.
+
+SYNOPSIS:
+VOID PC429_ToAscii(value,asciistr,numbits,radix);
+ULONG value;       32-bit bit value to convert.
+PCHAR asciistr;    Pointer to null-terminated resulting string.
+USHORT numbits;    Number of bits in value.
+USHORT radix;      Radix of string.
+
+DESCRIPTION:
+  The procedure PC429_ToAscii() converts an unsigned
+  32-bit value to a null-terminated ASCII string.
+
+  The value parameter is the unsigned value to convert.
+  The asciistr parameter points to the ASCII string which
+  contains the results.
+
+  The numbits parameter specifies the minimum number of
+  significant bits in the value parameter.  This allows
+  an ASCII string to be padded with leading zeros.  For
+  example, if the specified value is 00000001H and the
+  numbits parameter is 16, then the resulting hexadecimal
+  ASCII string is "01".  If there are more significant
+  bits than specified by the numbits parameter, the
+  resulting string is not truncated.
+
+  The radix parameter specifies the radix of the
+  resulting string (2 for binary, 10 for decimal, 16 for
+  hexadecimal, etc).
+
+  Note that this function is simply a utility that
+  operates on a variable (value) and does not access the
+  Copilot image file or the PC429 hardware.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("RECEIVE MSG 1",handleval,"TEST.429");
+ msg  = PC429_RdMsg(addr);
+ PC429_ToAscii(msg,str,32,2);
+ printf("message = %s",str);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_FromAscii().
+
+NAME:    PC429_UserCode -- Installs user code into PC429 hardware.
+
+SYNOPSIS:
+result = PC429_UserCode(usercode,count,handleval);
+PUCHAR usercode;   Pointer to buffer.
+USHORT count;      Number of bytes in buffer.
+HCARD handleval;   Device handle of PC429 card.
+USHORT result;     Returns a non-zero value if an error occurred.
+
+DESCRIPTION:
+  The procedure PC429_UserCode() loads user code into the
+  PC429 card with the specified device handle.
+
+  The usercode parameter points to an array of bytes
+  containing object code.  The count parameter specifies
+  the number of bytes in the array.
+
+  When called, the procedure copies the array of bytes to
+  a free area in on-board RAM.  Then after the firmware
+  services the transmit channels, the receive channels,
+  the on-board communication process, and other
+  functions, it calls the user code with a far call.
+
+  The user code may use any of the registers but must
+  preserve the segment registers, the SP register, and
+  the BP register.  About 128 bytes of stack are
+  available.  The code must end with a far return.
+
+  If the usercode parameter is zero or NULL, then any user
+  code previously installed is deinstalled.  The user
+  code is no longer called by the firmware, but is still
+  resident in RAM.
+
+  A call to the procedure PC429_ClrMsgFilt() must be made
+  before calling this procedure.
+
+RETURNS:
+  A non-zero value if an error occurred.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+  A call to the procedure PC429_ClrMsgFilt() must be made
+  before calling this procedure.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ if (PC429_UserCode(usercode,count,handleval))
+     printf("Could not load user code.");
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_WipeMem -- Clears the RAM of the PC429 hardware.
+
+SYNOPSIS:
+VOID PC429_WipeMem(handleval);
+HCARD handleval;   Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_WipeMem() resets the PC429 card
+  with the specified device handle and clears the
+  on-board RAM.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_WipeMem(handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+
+NAME:    PC429_WrClk -- Sets the on-board clock.
+
+SYNOPSIS:
+VOID PC429_WrClk(clock,handleval);
+ULONG clock;       New clock value.
+HCARD handleval;   Device handle of PC429 card.
+
+DESCRIPTION:
+  The procedure PC429_WrClk() sets the value of the
+  on-board clock.  The clock parameter is the 32-bit
+  unsigned value to write to the clock.
+
+  The units of the clock value is determined by the last
+  call to the procedure PC429_SpeedClk().  By default,
+  the clock value is in units of 1 msec.  Calls to the
+  procedure PC429_SpeedClk() can change the resolution to
+  .1 msec or 10 msec.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  The specified device handle must have been returned by the
+  procedure PC429_Check().
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ PC429_WrClk(0L,handleval);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_Start(), PC429_RdClk().
+
+NAME:    PC429_WrGap -- Writes a message gap value to PC429 memory.
+
+SYNOPSIS:
+VOID PC429_WrGap(address,gap);
+ULONG address;   Address of gap to write.
+ULONG gap;       32-bit value of gap.
+
+DESCRIPTION:
+  The procedure PC429_WrGap() moves the value of the
+  32-bit gap to the address on the PC429 card.  This
+  alters the gap value of a transmit message.  The
+  procedure PC429_GetGap() provides the gap address.
+
+  The gap value is defined as follows:
+
+  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄ¿
+  ³          ZEROS         ³NOWRD³ SYNC³ LOG ³ERWRD³   GAP   ³
+  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÙ
+   31                         15    14    13    12  11      0
+
+  The GAP field is a 12-bit value which determines the
+  gap after the corresponding message is transmitted.
+  The 12-bit value is in units of bit times.  If the
+  message is disabled by the NOWRD bit, then the message
+  is not transmitted and only the gap is implemented.  If
+  this value is below 4, then a gap value of 4 is assumed
+  unless the ERWRD bit is set.
+
+  Four additional options are available.  The user
+  selects these options by ORing to the gap value any
+  combination of the predefined constants GAP_ERWRD,
+  GAP_LOG, GAP_SYNC, and GAP_NOWRD.
+
+  GAP_ERWRD - This predefined constant sets the ERWRD
+  bit, generating an error for the corresponding message.
+  The user must call the procedure PC429_Error() for this
+  bit to be significant.
+
+  Both gap errors and parity errors can be generated.
+  For a gap error to be generated, the GAP field must be
+  set to a value below 4.  For a parity error to be
+  generated, the procedure PC429_Parity() must be called
+  to set the channel parity to even.
+
+  GAP_LOG - This sets the LOG bit which records the
+  corresponding message in the sequential record each
+  time it is transmitted.
+
+  GAP_SYNC - This sets the SYNC bit which pulses the sync
+  output line each time the corresponding message is
+  transmitted.
+
+  GAP_NOWRD - This sets the NOWRD bit .  When set, the
+  message is not transmitted, but the gap is implemented.
+  This extends a message gap over several messages.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  Only those message addresses provided by the procedure
+  PC429_GetGap() should be used.  The use of other address
+  values will return an undefined value.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ gap = 4L;
+ addr = PC429_GetGap(1,CH1,handleval);
+ PC429_WrGap(addr,gap);
+     :
+     :
+}
+
+USES:
+  Predefined constants GAP_NOWRD, GAP_SYNC, GAP_LOG and
+  GAP_ERWRD.
+
+SEE ALSO:
+ PC429_RdGap(), PC429_GetGap().
+
+NAME:    PC429_WrMsg -- Writes a transmit message value to PC429 memory.
+
+SYNOPSIS:
+VOID PC429_WrMsg(address,msg);
+ULONG address;   Address of message to write.
+ULONG msg;       32-bit value of message.
+
+DESCRIPTION:
+  The procedure PC429_WrMsg() moves the value of the
+  32-bit message to the address on the PC429 card.  This
+  is used to alter the value of ARINC 429 words to be
+  transmitted.
+
+  The procedures PC429_GetFilt(), PC429_GetMsg(), and
+  PC429_NameToAddr() provide the message address.
+
+RETURNS:
+  None.
+
+CAUTIONS:
+  Only those transmit message addresses provided by the
+  procedures PC429_GetMsg(), PC429_InsMsg(), or
+  PC429_NameToAddr() should be used.  The use of other
+  address values or addresses of received messages will
+  result in unpredictable behavior.
+
+  Where data integrity is critical, the PC429_PokeMsg()
+  function should be used.  If a message is transmitted
+  while PC429_WrMsg() is accessing the board, the message
+  may contain part of the old message and part of the new
+  one.
+
+EXAMPLE:
+main()
+{
+     :
+     :
+ addr = PC429_NameToAddr("TRANSMIT MSG 1",handleval,"TEST.429");
+ PC429_WrMsg(addr,0x000000FFL);
+     :
+     :
+}
+
+USES:
+
+SEE ALSO:
+ PC429_GetFilt(), PC429_GetMsg(), PC429_NameToAddr().

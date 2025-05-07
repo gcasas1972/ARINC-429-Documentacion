@@ -1,0 +1,41 @@
+'	TimerControl.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This example uses a timer control to trigger an event at a specified interval.
+'
+'	Required objects:
+'	 A TimerCtrl must be inserted in a control view and then that control must
+'	 be inserted into the script view with the name of 'TimerCtrl1'
+'
+'	Notes: The built in script timers: Timer1 & Timer2 are obsolete and should be
+'	 replaced by using a timer control on a Control View.
+'
+'	Databuses:	ALL
+'
+
+Sub ScriptStart
+	View.OutputLine ("Initializing Timer")
+	
+	TimerCtrl1.Interval = 1000	'1000 milliseconds = 1 second
+	TimerCtrl1.Enabled = True
+
+	View.OutputLine ("Timer Started:" & Now())
+End Sub
+
+Sub ScriptStop
+	
+End Sub
+
+'Event Handler
+Sub TimerCtrl1_Timer()
+	View.OutputLine(Now())
+End Sub
+
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

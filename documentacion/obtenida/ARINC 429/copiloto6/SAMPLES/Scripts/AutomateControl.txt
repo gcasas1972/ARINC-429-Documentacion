@@ -1,0 +1,47 @@
+'    AutomateControl.txt : COPILOT SCRIPT EXAMPLE   
+'
+'	 Copyright 2004 Ballard Technology, Inc.
+'
+'    Sample script for automating an LED control 
+'
+'    Databuses:	ALL
+'
+'    Field1   = Any CoPilot field
+'    Mon1     = Any CoPilot monitor
+'    LEDCtrl1 = An LED control on a Control View Form
+'
+
+' Force explicit variable declaration
+Option Explicit
+
+'Globals 
+Const UPPERLIMIT = 5000 
+
+Sub ScriptStart 
+    'Make Sure the monitor is not set to pause 
+    Mon1.Pause = False  
+    LEDCtrl1.Value = 1
+End Sub 
+
+'Event Handler
+Sub Field1_OnValueChange(varValue)
+    If varValue <= UPPERLIMIT Then 
+        Mon1.Pause = False 
+        LEDCtrl1.Value = 1
+    Else 
+        Mon1.Pause = True   
+        LEDCtrl1.Value = 0
+    End If 
+End Sub 
+
+Sub ScriptStop 
+	Mon1.Pause = False 
+    LEDCtrl1.Value = 1
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

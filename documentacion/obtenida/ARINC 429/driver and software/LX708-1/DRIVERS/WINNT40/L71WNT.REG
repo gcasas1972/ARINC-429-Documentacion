@@ -1,0 +1,64 @@
+REGEDIT4
+
+;**
+;
+;  LP708-1 and LC708-1 WIN32 DRIVER  Version 1.2  (01/19/2001)
+;  Copyright (c) 1999-2001
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   L71WNT.REG --  L71 32-bit Driver Registry File.
+;                         This registry file does not override the memory allocations.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the L71 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+;**
+;
+;  The following keys are for the LP708-1 model.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\LP708-1]
+"InterruptName"="LP708Interrupt"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000005
+"SymbolicName"="LP708Card00"
+"DeviceId"=dword:00002074
+"VendorId"=dword:000010b5
+"Parameters"=dword:00000000
+
+;**
+;
+;  The following keys are for the LC708-1 model.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\LC708-1]
+"InterruptName"="LC708Interrupt"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000005
+"SymbolicName"="LC708Card00"
+"DeviceId"=dword:00002075
+"VendorId"=dword:000010b5
+"Parameters"=dword:00000000

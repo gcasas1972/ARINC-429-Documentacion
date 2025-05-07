@@ -1,0 +1,249 @@
+;**
+;*
+;*  BUSBox INF INSTALLATION FILE  Version 2.0.2  (03/22/2013)
+;*  Copyright (c) 2000-2013
+;*  Ballard Technology, Inc.
+;*  www.ballardtech.com
+;*  support@ballardtech.com
+;*  ALL RIGHTS RESERVED
+;*
+;**
+
+[Version]
+Signature="$CHICAGO$"
+Provider=%CompanyName%
+ClassGuid={5971FC40-50C8-11D3-AA35-0040055658FB}
+Class=BTI_AVDBI
+DriverVer=03/22/2013,2.0.2.0
+CatalogFile=BUSBOX.CAT
+
+[DestinationDirs]
+DefaultDestDir=11
+Ballard.CopyDllFiles=11
+Ballard.CopyDll32Files=16425
+Ballard.CopyDll64Files=11
+Ballard.CopyWdmFiles=12
+Ballard.CopyWdm64Files=12
+Ballard.CopyWdmFiles98=10,System32\Drivers
+Ballard.CopyPropFiles=11
+
+[Manufacturer]
+%CompanyName%=Ballard.Mfg,ntia64,ntamd64
+
+[Ballard.Mfg]
+%BUSBOX.DeviceDesc% = BUSBOX,USB\Vid_0525&Pid_a210
+
+[Ballard.Mfg.ntia64]
+%BUSBOX.DeviceDesc% = BUSBOX.ntia64,USB\Vid_0525&Pid_a210
+
+[Ballard.Mfg.ntamd64]
+%BUSBOX.DeviceDesc% = BUSBOX.ntamd64,USB\Vid_0525&Pid_a210
+
+
+
+[ControlFlags]
+ExcludeFromSelect.nt=USB\Vid_0525&Pid_a210
+
+[SourceDisksFiles]
+BTIUSB.SYS=1
+BTIUSB64.SYS=1
+BTIKRNL.DLL=1
+BTIKRNL64.DLL=1
+WDMSTUB.SYS=1
+BTICARD.DLL=1
+BTICARD64.DLL=1
+BTICSDB.DLL=1
+BTICSDB64.DLL=1
+BTIDIO.DLL=1
+BTIDIO64.DLL=1
+BTI1553.DLL=1
+BTI155364.DLL=1
+BTI422.DLL=1
+BTI42264.DLL=1
+BTI429.DLL=1
+BTI42964.DLL=1
+BTI717.DLL=1
+BTI71764.DLL=1
+BTI708.DLL=1
+BTI70864.DLL=1
+BTIRPC.DLL=1
+BTIRPC64.DLL=1
+BTIPROP.DLL=1
+
+[SourceDisksNames]
+1=%BUSBOX.DiskId%,,
+
+[ClassInstall]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdmFiles98
+
+[ClassInstall32]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdmFiles
+
+[ClassInstall32.ntia64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[ClassInstall32.ntamd64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[BallardClass_Reg_Add]
+HKR,,,,%Ballard.ClassDesc%
+HKR,,Icon,,-5
+
+[Ballard.ServiceInstall]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIUSB.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.ServiceInstall64]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIUSB64.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.CopyDllFiles]
+BTIKRNL.DLL
+BTICARD.DLL
+BTICSDB.DLL
+BTIDIO.DLL
+BTI1553.DLL
+BTI422.DLL
+BTI429.DLL
+BTI717.DLL
+BTI708.DLL
+BTIRPC.DLL
+
+[Ballard.CopyDll32Files]
+BTIKRNL.DLL
+BTICARD.DLL
+BTICSDB.DLL
+BTIDIO.DLL
+BTI1553.DLL
+BTI422.DLL
+BTI429.DLL
+BTI717.DLL
+BTI708.DLL
+BTIRPC.DLL
+
+[Ballard.CopyDll64Files]
+BTIKRNL64.DLL
+BTICARD64.DLL
+BTICSDB64.DLL
+BTIDIO64.DLL
+BTI155364.DLL
+BTI42264.DLL
+BTI42964.DLL
+BTI71764.DLL
+BTI70864.DLL
+BTIRPC64.DLL
+
+[Ballard.CopyPropFiles]
+BTIPROP.DLL
+
+[Ballard.CopyWdmFiles]
+BTIUSB.SYS
+
+[Ballard.CopyWdm64Files]
+BTIUSB64.SYS
+
+[Ballard.CopyWdmFiles98]
+BTIUSB.SYS
+WDMSTUB.SYS
+
+;------------------------------------------------------------------------------
+;  BUSBOX - WIN64
+;------------------------------------------------------------------------------
+
+[BUSBOX.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files,Ballard.CopyDll64Files
+AddReg=BUSBOXAddReg
+
+[BUSBOX.ntia64.Services]
+AddService=BallardUSB64,2,Ballard.ServiceInstall64
+
+[BUSBOX.ntia64.HW]
+AddReg=BUSBOXHwAddReg
+
+[BUSBOX.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files,Ballard.CopyDll64Files
+AddReg=BUSBOXAddReg
+
+[BUSBOX.ntamd64.Services]
+AddService=BallardUSB64,2,Ballard.ServiceInstall64
+
+[BUSBOX.ntamd64.HW]
+AddReg=BUSBOXHwAddReg
+
+;------------------------------------------------------------------------------
+;  BUSBOX - WIN2K
+;------------------------------------------------------------------------------
+
+[BUSBOX.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles,Ballard.CopyPropFiles
+AddReg=BUSBOXAddReg,BUSBOXPropAddReg
+
+[BUSBOX.nt.Services]
+AddService=BallardUSB,2,Ballard.ServiceInstall
+
+[BUSBOX.nt.HW]
+AddReg=BUSBOXHwAddReg
+
+[BUSBOXHwAddReg]
+HKR,,FriendlyName,,%BUSBOX.DeviceDesc%
+
+[BUSBOXAddReg]
+HKR,,Option_SymbolicName,,BUSBox
+HKR,,Option_InterruptEventName,,BUSBoxInterrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,0
+HKR,,Option_IsUSB,0x00010001,1
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,1
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,1
+
+[BUSBOXPropAddReg]
+HKR,,EnumPropPages32,,BTIProp.dll
+
+;------------------------------------------------------------------------------
+;  BUSBOX - WIN98
+;------------------------------------------------------------------------------
+
+[BUSBOX]
+CopyFiles=Ballard.CopyWdmFiles98,Ballard.CopyDllFiles
+AddReg=Ballard.HwAddReg,BUSBOXAddReg
+
+[BUSBOX.HW]
+AddReg=BUSBOXHwAddReg
+
+;------------------------------------------------------------------------------
+;  WIN98
+;------------------------------------------------------------------------------
+
+[Ballard.HwAddReg]
+HKR,,DevLoader,0,*NTKERN
+HKR,,NTMPDriver,0,"WDMSTUB.SYS,BTIUSB.SYS"
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings]
+CompanyName           = "Ballard Technology, Inc."
+Ballard.ServiceName   = "Ballard Technology USB Driver"
+Ballard.ServiceDesc   = "Ballard Technology USB Driver"
+Ballard.ClassDesc     = "Avionics Databus Interface"
+BUSBOX.DiskId         = "BUSBox Driver Software for Windows"
+BUSBOX.DeviceDesc     = "Ballard Technology BUSBox"

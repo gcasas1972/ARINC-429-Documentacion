@@ -1,0 +1,75 @@
+'	WebPageOutput.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Creates a report in HTML format and displays it in a browser when CoPilot is stopped
+'
+'	Notes:		This example creates an HTML file on script start.
+'			Add event handlers or use the timers to test your project and write to the HTML file.
+'			When the simulation stops, object (ie) is released and the file is displayed in a browser.
+'
+'	Databuses:	All
+'
+
+Dim ie						'Internet Explorer Object
+Dim strOutputFileName
+strOutputFileName = "c:\copilot projects\CoPilotScriptReport.html"
+
+'Define File Constants
+Const ForReading = 1, ForWriting = 2, ForAppending = 8 
+'Appending->Open a file and write to the end of the file.
+Const TristateUseDefault = -2, TristateTrue = -1, TristateFalse = 0
+
+Sub ScriptStart
+	'Create the Internet Explorer object
+	Set ie = CreateObject("InternetExplorer.application")
+	
+	'Open file for writing
+   	Dim fso, f, ts
+   	Set fso = CreateObject("Scripting.FileSystemObject")
+   	fso.CreateTextFile strOutputFileName   'Create a file.
+   	Set f = fso.GetFile(strOutputFileName)
+   	Set ts = f.OpenAsTextStream(ForWriting, TristateUseDefault)
+
+   	'Write HTML markup to a file
+   	ts.Write "<HTML>"
+	ts.Write " <HEAD>"
+	ts.Write " <TITLE>CoPilot Scripting with I. E.</TITLE>"
+	ts.Write " </HEAD>"
+	ts.Write "<BODY>"
+	ts.Write "<H1>ScriptStart Text and Markup</H1>"
+   	ts.WriteBlankLines(1)
+   	ts.Close
+End Sub
+
+Sub ScriptStop
+	'Open file for appending
+	Dim fso, f, ts
+   	Set fso = CreateObject("Scripting.FileSystemObject")
+   	Set f = fso.GetFile(strOutputFileName)
+   	Set ts = f.OpenAsTextStream(ForAppending, TristateUseDefault)
+
+   	'Write HTML markup to a file
+   	ts.Write "<P>ScriptStop Text and Markup</P>"
+	ts.WriteBlankLines(1)
+	ts.Write "<P>Cool Link   "
+	ts.Write "<A href=""http:\\www.ballardtech.com"">Ballard Technology</A>"
+	ts.Write "</P>"
+	ts.Write "</BODY>"
+	ts.Write "</HTML>"
+	ts.Close
+
+	'Display new web page
+	ie.Navigate(strOutputFileName)
+	ie.Visible = True
+
+	'Release handle to Internet Explorer
+	Set ie = Nothing
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

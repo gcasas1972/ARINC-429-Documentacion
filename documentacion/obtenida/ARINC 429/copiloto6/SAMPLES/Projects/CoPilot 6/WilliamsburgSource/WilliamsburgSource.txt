@@ -1,0 +1,365 @@
+'	WilliamsburgSource : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002
+'       
+'	Ballard Technology, Inc.
+'	3229A Pine Street
+'	Everett WA 98201
+'	USA
+'	(800) 829-1553
+'	(425) 339-0281
+'	(425) 339-0915 FAX
+'	www.ballardtech.com
+'	support@ballardtech.com
+'
+'	Databuses:	ARINC 429
+'	Description:	Transmits a binary file using the Williamsburg File
+'					transfer protocol. Sends one file each run. Uses a
+'					script timer spread out the transmitting messages.
+'					Adjust the timer for your application.
+'	Notes:			
+'	1) Set the SAL equal To the Label of the Receiving message
+'	2) Set FILENAME equal to the path (with name) of the file to be transmitted			
+'	3) Drag & Drop Then Rename the following fileds/Channels/Messages
+'		a) SourceChanTx - An available transmit channel with at least one
+'						  message scheduled to go out
+'		b) SourceMsgRx  - A message on a receive channel with the same label
+'						  as SAL
+'		c) WordType     - Field bits 29-31 on SinkMsgRx
+'		d) CtrlID       - Field bits 25-28 on SinkMsgRx (a.k.a. n5)
+'		e) Status		- Field bits  9-16 on SinkMsgRx
+'
+ 
+'''''''''''''''''''''         
+' Constants  
+''''''''''''''''''''' 
+
+'System Address Label
+Const SAL = 193 	'Oct(301) 
+
+'FINAL LDU BIT
+Const NOT_FINAL_LDU = 0
+Const FINAL_LDU     = 1 
+
+'Status Codes
+Const STAT_CRCERR = &h85
+Const STAT_WRDCNT = &h88
+Const STAT_NOSOT  = &h80 
+
+'Word Types 
+Const FULLDW = 0 	' "000"
+Const PARTDW = 1 	' "001"
+Const CNTRL  = 4 	' "100"
+Const SOLO   = 5 	' "101"  
+Const SOT    = 6 	' "110"
+Const EOT    = 7 	' "111"   
+
+'Control Word IDs And GFI Value        
+Const RTS  = 1 		' "0001"
+Const CTS  = 2 		' "0010" 
+Const NCTS = 3 		' "0011"  
+Const BUSY = 4 		' "0100"
+Const NAK  = 5 		' "0101"
+Const ACK  = 6 		' "0110"  
+Const GFI  = 3 		' "0011"   General Purpose Bit-Oriented
+             
+'''''''''''''''''''''
+' Global Variables
+'''''''''''''''''''''
+
+Dim WrdCnt, StatCode, wrdSent 
+Dim bGo, bTx, bDone 
+Dim LoNib, HiNib 
+Dim bytFile, bytsRead
+Dim nibArray(), dataCount
+
+Dim FILENAME
+FILENAME = "testfile.txt" 
+ 
+''''''''''''''''''''''''      
+' Subroutines     
+''''''''''''''''''''''''  
+
+Sub ScriptStart
+	View.OutputLine ("BEGIN") 
+	'Init variables
+	DestCode = 0
+	StatCode = 0
+	'Init file for Tx
+	bytFile   = GetFile(FILENAME)
+	dataCount = 2 * LenB(bytFile) 'data segment = 4-bits (1 nibble)
+	'Calc Word Count
+	WrdCnt = Fix(dataCount / 5)
+	If (dataCount Mod 5) Then
+		bPartial = True
+		WrdCnt = WrdCnt + 1 
+	Else
+		bPartial = False
+	End If 
+	'View.Output "WordCount = " & WrdCnt & " "
+	'Init timers
+	bGo = True 
+	bTx = False
+	View.EnableTimer1(True)
+	View.SetTimerInterval1(2000) ' seconds  
+	View.EnableTimer2(True)
+	View.SetTimerInterval2(1000) ' seconds
+End Sub
+
+Sub OnScriptTimer1
+	If (bGo) Then
+		SendRTS
+	Else
+		View.EnableTimer1(False)
+	End If
+End Sub 
+
+Sub OnScriptTimer2
+	If (bTx) Then
+		Dim DataMsg, bytVal   
+		
+		'Test for over-run
+		If (bytsRead > LenB(bytFile)) Then
+			View.OutputLine "Err: fileSize=" & LenB(bytFile) & "  read=" & bytsRead
+			'Stop Transmitting
+			bDone = True
+			bTx   = False
+			Exit Sub
+		End If 
+		
+		'Test for bDone
+		If (False = bDone) Then
+			'Test for more data to send
+			If (wrdSent < WrdCnt) Then 
+				'Test for last Data Word
+				If (wrdSent = wrdCnt-1) Then
+					'Last Word
+					DataMsg  = CLng(0) 				
+					dataLeft = dataCount - (wrdSent*5) 
+					If (dataLeft < 5) Then
+						DataMsg = DataMsg Or (PARTDW * 2^28)
+						DataMsg = DataMsg Or ((7+dataLeft) * 2^24)
+					End If
+					If (wrdSent Mod 2)=0 Then
+						bytsRead = bytsRead + 1
+						bytVal = AscB(MidB(bytFile,bytsRead,1))
+						LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4	
+						DataMsg = DataMsg Or (LoNib*2^8) Or (HiNib*2^12)
+						If dataLeft > 2 Then
+							bytsRead = bytsRead + 1
+							bytVal = AscB(MidB(bytFile,bytsRead,1))
+							LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4 
+							DataMsg = DataMsg Or (LoNib*2^16) Or (HiNib*2^20)
+						End If
+						If dataLeft > 4 Then
+							'should never enter here
+							View.OutputLine "Err: Last Word" & "dataLeft=" & dataLeft
+							bTx = False
+							bGo = False
+						End If
+					Else  'Assume HiNib is already set
+						DataMsg = DataMsg Or (HiNib * 2^8)
+						If dataLeft > 1 Then
+							bytsRead = bytsRead + 1
+							bytVal   = AscB(MidB(bytFile,bytsRead,1)) 
+							LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+							DataMsg = DataMsg Or (LoNib*2^12) Or (HiNib*2^16)
+						End If
+						If dataLeft > 3 Then 
+							bytsRead = bytsRead + 1
+							bytVal   = AscB(MidB(bytFile,bytsRead,1)) 
+							LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+							DataMsg = DataMsg Or (LoNib*2^20)
+							If dataLeft = 5 Then
+								DataMsg = DataMsg Or (HiNib*2^24)
+						    Else
+								'should never enter here
+								View.OutputLine "Err: Last Word " & "dataLeft=" & dataLeft
+								bTx = False
+								bGo = False  
+							End If
+						End If
+					End If
+					DataMsg = DataMsg Or (SAL)    			'Mask the SAL
+					View.OutputLine "SendDATA " & wrdSent+1 & " Final: " & CStr(Hex(DataMsg))
+					Call SourceChanTx.TransmitRawValue(DataMsg)
+					wrdSent = wrdSent + 1
+				Else
+					'Full Word
+					DataMsg = CLng(0) 						'Clear the value
+					DataMsg = DataMsg Or (FULLDW * 2^28)	'Mask the Word Type 
+					If (wrdSent Mod 2)=0 Then 'Leave HiNib set when done
+						'Process first byte
+						bytVal = AscB(MidB(bytFile,bytsRead+1,1))
+						LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+						DataMsg = DataMsg Or (LoNib*2^8) Or (HiNib*2^12) 
+						'Process Second byte
+						bytVal = AscB(MidB(bytFile,bytsRead+2,1)) 
+						LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+						DataMsg = DataMsg Or (LoNib*2^16) Or (HiNib*2^20) 
+						'Process Third byte
+						bytVal = AscB(MidB(bytFile,bytsRead+3,1))
+						LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+					    DataMsg = DataMsg Or (LoNib*2^24)
+	                    'Inc counter
+					    bytsRead = bytsRead + 3
+					Else  'Assume HiNib is already set
+						'Process HiNib from previous byte read
+						DataMsg  = DataMsg Or (HiNib*2^8)
+						'Process First Byte
+						bytVal = AscB(MidB(bytFile,bytsRead+1,1))
+						LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+						DataMsg = DataMsg Or (LoNib*2^12) Or (HiNib*2^16) 
+						'Process Second Byte
+						bytVal = AscB(MidB(bytFile,bytsRead+2,1))
+						LoNib = bytVal And &hF: HiNib = (bytVal And &hF0)/2^4
+						DataMsg = DataMsg Or (LoNib*2^20) Or (HiNib*2^24)
+					    'Inc counter
+					    bytsRead = bytsRead + 2
+					End If
+					DataMsg = DataMsg Or (SAL)    			'Mask the SAL
+					View.OutputLine "SendDATA " & wrdSent+1 & ": " & Hex(DataMsg)
+					Call SourceChanTx.TransmitRawValue(DataMsg)
+					wrdSent = wrdSent + 1
+				End If
+			Else
+				'Send EOT and stop Transmitting
+				SendEOT
+				bDone = True
+				bTx   = False
+			End If
+		Else
+			'Stop Transmitting
+			bTx = False
+		End If
+			
+	End If
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")
+End Sub
+ 
+Sub SourceMsgRx_TimeTag   	
+End Sub  
+
+'Listen to SourceMsgRx for CTS, ACK, etc...
+Sub SourceMsgRx_OnMsgUpdate(ValueRaw, Activity, TimeTag, timetagh, MinTime, MaxTime)
+	If (0 <> CLng(TimeTag)) Then     
+		If (CNTRL = CInt(WordType.ValueRaw)) Then 	 
+		 	If (CTS = CInt(CtrlID.ValueRaw)) Then 
+		 		If bGo Then
+		 			'Start to Send LDU
+		 			bytsRead = 0
+		 			wrdSent  = 0
+		 			SendSOT
+		 			bTx = True
+		 			bGo = False
+		 		End If
+		 	ElseIf (NCTS = CInt(CtrlID.ValueRaw)) Then
+		 		View.OutputLine "NCTS Received"
+		 		bTx = False
+		 	ElseIf (BUSY = CInt(CtrlID.ValueRaw)) Then
+		 		View.OutputLine "BUSY Received"
+		 		bTx = False
+		 	ElseIf (NAK = CInt(CtrlID.ValueRaw)) Then
+		 	    View.OutputLine "NAK Received"   
+		 	    bGo = False
+		 	    bTx = False 
+		 	ElseIf (ACK = CInt(CtrlID.ValueRaw)) Then
+		 	 	View.OutputLine "ACK Received"
+		 	 	bGo = False
+		 	 	bTx = False 
+		 	ElseIf (RTS = CInt(CtrlID.ValueRaw)) Then
+		 		View.OutputLine "Error: Source received RTS" 
+		 		bGo = False
+		 		bTx = False
+		 	Else
+		 		View.Output "Unexpected Control ID: Hex("
+		 		View.Output Hex(CInt(CtrlID.ValueRaw))
+		 		View.OutputLine ")" 
+		 		bGo = False
+		 		bTx = False
+		 	End If 
+		End If 
+	End If
+End Sub
+
+
+'''''''''''''''''''''
+' Functions        
+'''''''''''''''''''''
+
+Function GetFile(FileName)
+	'I use the ADODB object because we loaded it on your computer as
+	'part of the CoPilot installation 
+    Dim Stream: Set Stream = CreateObject("ADODB.Stream")
+    Stream.Type = 1 ' Binary 
+    Stream.Open
+    Stream.LoadFromFile FileName
+    GetFile = Stream.Read
+    Stream.Close
+    Stream = Nuthing
+End Function 
+
+Function ByteFile2NibbleArray()
+	ReDim nibArray(dataCount-1)
+	Dim count, bytVal
+	count = 0
+	For i=1 To LenB(bytFile)
+		bytVal = AscB(MidB(bytFile,i,1))
+		'Load LoNibble
+		nibArray(count) = CInt(bytVal And &hF)
+		'Load HiNibble
+		nibArray(count+1) = CInt((bytVal And &hF0)/2^4)
+		'Inc Counter
+		count = count + 2
+	Next
+End Function
+
+Function SendRTS   
+	Dim RTSmsg, DestCode
+	DestCode = 0
+	RTSMsg   = CLng(0)	
+	'Format the RTS Message
+	RTSMsg = RTSMsg Or (CNTRL    * 2^28)
+	RTSMsg = RTSMsg Or (RTS      * 2^24)
+	RTSMsg = RTSMsg Or (DestCode * 2^16)
+	RTSMsg = RTSMsg Or (WrdCnt   * 2^8)
+	RTSMsg = RTSMsg Or (SAL)
+	'Transmit the RTS
+	View.OutputLine "SendRTS: " & CStr(Hex(RTSMsg))
+	Call SourceChanTx.TransmitRawValue(RTSMsg)		
+End Function 
+   
+Function SendSOT 
+	Dim SOTMsg, FileNo, LDUSeqNo   
+	FileNo   = 1   'only 1 file sent per run   
+	LDUSeqNo = 0   'only 1 LDU sent per run  
+	SOTMsg   = CLng(0)
+	'Format the SOT Message 
+	SOTMsg = SOTMsg Or (SOT      * 2^28)
+	SOTMsg = SOTMsg Or (GFI      * 2^24)
+	SOTMsg = SOTMsg Or (FileNo   * 2^16)
+	SOTMsg = SOTMsg Or (LDUSeqNo * 2^8)
+	SOTMsg = SOTMsg Or (SAL)
+	'Transmit the SOT
+	View.OutputLine "SendSOT: " & CStr(Hex(SOTMsg))
+	Call SourceChanTx.TransmitRawValue(SOTMsg) 	
+End Function
+
+Function SendEOT 
+	Dim EOTMsg, crc
+	'Calculate the CRC value to Transmit
+	crc = CLng(View.Will_CalcCRC(LenB(bytFile),bytFile))  
+	View.Output "CRC: " & Hex(CLng(crc))
+	EOTMsg = CLng(0)
+	'Format the RTS Message
+	EOTMsg = EOTMsg Or (EOT       * 2^28)
+	EOTMsg = EOTMsg Or (FINAL_LDU * 2^24)
+	EOTMsg = EOTMsg Or (crc       * 2^8)
+	EOTMsg = EOTMsg Or (SAL)
+	'Transmit the EOT
+	View.OutputLine "   SendEOT: " & CStr(Hex(EOTMsg))
+	Call SourceChanTx.TransmitRawValue(EOTMsg)  
+End Function 

@@ -1,0 +1,140 @@
+'	SignBitInterp.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'
+'	ARINC 429 BNR interpreter that uses bits 30/31 (SSM) to indicate the sign
+'
+'	Notes:		When the time-tag of Msg1 changes, this interpreter script is run.
+'			
+'			Bit31   Bit32      Meaning
+'      			------------------------------
+'        		0       0     Positive Value
+'        		0       1       UNDEFINED
+'        		1       0       UNDEFINED
+'        		1       1     Negative Value
+'
+'	Databuses:	ARINC-429
+'
+
+'Globals
+Const RESOLUTION = 1
+Const STARTBIT = 1
+Const ENDBIT=20
+
+Sub ScriptStart
+End Sub
+
+Sub ScriptStop
+End Sub
+
+Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+	TestVal = RawToMyEngr(ValueRaw, ENDBIT, STARTBIT, RESOLUTION)
+
+	'ToDo: Do something with TestVal such as setting a dummy (inactive) label value
+	'Example: Msg2.ValueEngr = TestVal
+End Sub
+
+Function RawToMyEngr(RawValue,StartBit,EndBit,Resolution)
+	'Initialization
+	Dim bError	'Boolean
+	Dim bNegFlag
+
+	Error = False
+	bNegFlag = False
+
+	'Input Error Checking
+	If StartBit < 9 Then
+		Error = True
+	End If
+
+	If EndBit >31 Then
+		Error = True
+	End If
+
+	'Resolution must be a power of 2 times a power of 10!
+	If IsPowerOf2And10(value) <> True Then
+		Error = True	'Resolution Error
+	End If
+	
+	'Calculate Negative flag
+	If (RawValue And &h60000000) = &60000000 Then
+		bNegFlag = True
+	End If
+
+	'Check for Errors
+	If (RawValue And &h60000000) <> 0 Then
+		Error = True	'SSM value of 10 or 01 are undefined
+	End If
+
+	If Error = True Then
+		'Un-comment the following line(s) if you want to exit on errors
+		'RawToMyEngr = [return value for Errors]
+		'Exit Function
+	End If
+
+	'Extract Data Portion
+	'Mask Off upper bits
+	Mask = &hFFFFFFFF/(2^(32-EndBit))
+	RawValue = RawValue And Mask
+
+	'Shift value over to starting bit
+	RawValue = RawValue/(2^(StartBit-1))
+
+	'Multuply the data portion by the resolution
+	If bNegFlag Then
+		RawToMyEngr = RawValue * Resolution
+	Else
+		RawToMyEngr = -1 * RawValue * Resolution
+	End If
+End Function
+
+'Extra error checking
+Function IsPowerOf2And10(value)
+	IsPowerOf2And10 = False
+
+	'Test if directly a power of 2 or 10
+	If IsPowerOf2(value) <> 0 Then
+		IsPowerOf2And10 = True
+		Exit Function
+	ElseIf IsPowerOf10(value) <> 0 Then
+		IsPowerOf2And10 = True
+		Exit Function
+	End If
+
+	Dim exp
+	exp = 0
+	While exp<=PWR_MAX
+		If value>=1 Then
+			If IsPowerOf2(value / PowerOf10(exp)) <> 0 Then
+				IsPowerOf2And10 = True
+				Exit Function
+			End If
+		Else
+			If IsPowerOf2(value * PowerOf10(exp)) <> 0 Then
+				IsPowerOf2And10 = True
+				Exit Function
+			End If
+		End If
+
+		exp = exp + 1
+	Wend
+
+End Function
+
+Function PowerOf2(exp)
+'''''''''''ToDo: Enter your own Code Here to do this test!!!'''''''''''''
+	PowerOf2 = True
+End Function
+
+Function PowerOf10(exp)
+'''''''''''ToDo: Enter your own Code Here to do this test!!!'''''''''''''
+	PowerOf10 = True
+End Function
+
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

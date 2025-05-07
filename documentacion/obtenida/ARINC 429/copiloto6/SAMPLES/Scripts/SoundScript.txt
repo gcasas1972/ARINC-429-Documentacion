@@ -1,0 +1,43 @@
+'	SoundScript.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Creates an audible sound when a data value has an operating limit error.
+'
+'	Notes:		Operating limit errors are exposed on 429 messages, 429 fields, and 1553 fields.
+'			Navigate Internet Explorer to any .WAV file to set your alert sound.
+'
+'	Databuses:	ALL
+'
+
+'Globals
+Dim dCount
+Dim ie
+
+Sub ScriptStart
+	dCount = 0
+
+	'Create the Internet Explorer object
+	Set ie = CreateObject("InternetExplorer.application")
+	ie.visible = false
+End Sub
+
+Sub ScriptStop
+	View.OutputLine "Event Count = " & dCount
+
+	Set ie = Nothing
+End Sub
+
+Sub Msg1_OnLimitError(bHigh)
+	dCount = dCount + 1
+
+	'Use Internet Explorer to make the alert sound
+	ie.Navigate("C:\Temp\SOUND49D.wav")
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

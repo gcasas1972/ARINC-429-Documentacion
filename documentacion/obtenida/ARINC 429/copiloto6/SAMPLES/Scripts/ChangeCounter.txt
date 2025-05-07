@@ -1,0 +1,50 @@
+'	ChangeCounter.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Increments a counter each time a field value changes
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+'Globals
+Dim bInitialized					'bool Initialized flag
+Dim dOldValEngr						'double Previous Data Value
+Dim lChangeCounter					'long Change Counter counts the # of times the value changes
+
+
+Sub ScriptStart
+   'Initialization of Constants
+   bInitialized = 0
+   dOldValEngr = 0
+   lChangeCounter = 0
+End Sub
+
+
+Sub ScriptStop
+End Sub
+
+
+'Event Handler for Engineering Value of Field1
+Sub Field1_OnValueChange(varValue)
+	If bInitialized = 0 Then
+		bInitialized = 1
+	End If
+
+	If dOldValEngr <> varValue Then
+		lChangeCounter = lChangeCounter + 1
+
+		'Store new value
+		dOldValEngr = varValue
+
+		'Output New Count
+		View.OutputLine "lChangeCounter= " & lChangeCounter
+	End If
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

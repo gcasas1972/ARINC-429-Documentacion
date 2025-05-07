@@ -1,0 +1,80 @@
+'	SamplLabelColl_TimerCtrl.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This example samples data from a Collection of labels (from an ARINC 429
+'	channel). The data values from each of the labels is written to the 
+'	output window. The sampling rate is controlled by the timer control.
+'	The timer control is an ActiveX timer control placed on a Control View.
+'
+'	To speed up processing the collection of Labels existing on the
+'	receive channel of interest is cached in the variable 'LabelColl'
+'	and the label numbers are cached in the array 'LabelNums'. Note, 
+'	doing this pre-initialization of the collection will only use the 
+'	labels that exist when the simulation is started (unless re-initialized). 
+'
+'	Required objects:
+'	 RcvCh0     - An ARINC 429 receive channel (which should have several labels)
+'	 TimerCtrl1 - A Timer Control from a Control View
+'
+'	Databuses:	ALL
+'
+'	Topics Covered:
+'	 Using collections
+'	 Scripting controls on a Control View
+'	 Use of timer/event trigger
+'	 Use of global variables for caching
+'
+
+'Global Variable declarations
+Dim Loops
+Dim LabelColl
+Dim LabelNums(256)
+
+'Global Variable initializations
+Loops = 1
+Set LabelColl = RcvCh0.Labels
+
+Sub ScriptStart
+	View.Output ("Initializing data...")
+	'Initialize LabelNums array from collection
+	Dim i
+	i=1
+	
+	For Each label In LabelColl
+		LabelNums(i) = label.LabelNum
+		i = i+1
+
+		View.Output (".")
+	Next
+
+	View.OutputLine (" Initalization Complete.")
+End Sub
+
+Sub ScriptStop
+	'TODO: Enter Exit code here
+End Sub
+
+'Event Handler: Loops through all labels in the collection
+Sub TimerCtrl1_Timer()
+	View.Output("Loop#=" & Loops & ": ")
+
+	Dim i
+	i=1
+
+	For Each label In LabelColl											'Alternate method to using the current collection->    For Each label In RcvCh0.Labels
+		View.Output(LabelNums(i) & " val=" & label.valueengr & " ")		'Alternate method to using the LabelName array-> replace 'LabelNums(i)' with label.LabelName
+ 		i = i+1
+	Next
+
+	View.OutputLine(" " & now)
+
+	Loops = Loops + 1
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

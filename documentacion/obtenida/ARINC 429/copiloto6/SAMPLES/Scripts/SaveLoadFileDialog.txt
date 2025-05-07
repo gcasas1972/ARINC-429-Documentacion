@@ -1,0 +1,44 @@
+'	SaveLoadFileDialog.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Open a File Common Dialog
+'	This common dialog can be used for browsing when loading or saving files
+'	For saving a file, replace the ".showopen" with ".showsave"
+'
+'	Databuses:	N.A.
+'
+
+Sub ScriptStart
+     set oCmnCtrl = createobject("MSComDlg.CommonDialog")
+     with oCmnCtrl
+      .Filter = "All Files (*.*)|*.*|Text Files (*.txt)|*.txt "		'sets the filter to "*.*" and "*.txt"
+      .FilterIndex = 2							'filter is initialized to item 2 - "*.txt"
+      .MaxFileSize = 260
+      .flags = cdlOFNHideReadOnly + cdlOFNFileMustExist			'file must NOT be read only and must exist to show up
+      ' .DialogTitle = "Custom Title Goes Here"
+      .showopen()							'Show the "OPEN" dialog... or use .showsave for saving
+     end with
+     openedFile = oCmnCtrl.Filename					'This is the filename of the file selected
+
+     set oCmnCtrl = nothing						'Free oCmnCtrl object
+
+     If openedFile <> NULL Then
+         View.OutputLine openedFile & " file was selected for opening."
+         'ToDo: Now open the file name specified by openedFile
+         View.OutputLine "Add code to do something with this file!"
+     Else
+         View.OutputLine "No File was selected!"
+     End If
+
+End Sub
+
+Sub ScriptStop
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

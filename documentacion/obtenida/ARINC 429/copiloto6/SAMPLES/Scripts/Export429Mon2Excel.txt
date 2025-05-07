@@ -1,0 +1,83 @@
+'	Export429Mon2Excel.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	This example launches Microsoft Excel and initializes some column information.
+' 	Then when the time-tag from Msg1 (an ARINC 429 Label) changes -- thus indicating
+' 	the data was sent across the bus -- the information is written to the Excel file.
+' 	When the simulation is stopped, Excel prompts the user to save and closes.
+'	Data output is similar to a sequential monitor. Additional information/calculation
+' 	can be added to new columns.
+'
+'	Databuses:	ARINC 429
+'
+
+'Globals
+Dim objExcel
+Dim ExcelSheet
+Dim iRowCount
+
+Sub ScriptStart
+	Mon1.Pause = True
+	Msg1.ValueEngr = 0
+
+	'Open Excel and make it visible
+	Set objExcel = CreateObject("Excel.Application")
+	objExcel.Visible = True
+	objExcel.UserControl = True
+    
+	'Create new workbook
+	objExcel.Workbooks.Add
+	Set ExcelSheet = objExcel.ActiveSheet
+
+	'Delete the worksheets not being used
+	objExcel.DisplayAlerts = False
+	objExcel.Worksheets("Sheet2").Delete
+	objExcel.Worksheets("Sheet3").Delete
+	objExcel.DisplayAlerts = True
+    
+	'Rename the worksheet
+	ExcelSheet.Name = "Data1"
+
+	'Write Column Names
+	iRowCount = 1
+	ExcelSheet.Cells(iRowCount, 1).Value = "TimeTag"
+	ExcelSheet.Cells(iRowCount, 2).Value = "Data"
+	ExcelSheet.Cells(iRowCount, 3).Value = "Delta Time (ms)"
+	ExcelSheet.Cells(iRowCount, 4).Value = "Delta Value"
+End Sub
+
+
+Sub ScriptStop
+	'Use the following line the close Excel ... it will prompt for save!
+	ExcelSheet.Application.Quit
+
+	Set objExcel = Nothing
+	Set ExcelSheet = Nothing
+End Sub
+
+
+Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+	iRowCount = iRowCount+1
+	ExportData(iRowCount)
+End Sub
+
+
+Sub ExportData(iRow)
+	ExcelSheet.Cells(iRow, 1).Value = Msg1.TimeTag
+	ExcelSheet.Cells(iRow, 2).Value = Msg1.ValueEngr
+
+	If (iRow > 2) Then
+		'Time
+		ExcelSheet.Cells(iRow, 3).Value = CStr( "=(a" & iRow & " - a" & (iRow-1) & ")/1000" )
+		'Data
+		ExcelSheet.Cells(iRow, 4).Value = CStr( "=b" & iRow & " - b" & (iRow-1) )
+	End If
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

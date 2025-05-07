@@ -1,0 +1,47 @@
+'	MonitorControl.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	This Monitor Control sample script controls the pause state of a
+' 	sequential record object (Mon1). The monitor object in the hardware
+' 	tree must be active and configured to monitor data (i.e. "All").
+'
+'	The recording state of the monitor is in turn controlled by Field1.
+' 	When the data value of Field1 is Below the UPPERLIMIT the monitor
+' 	is un-paused. When above UPPERLIMIT, recording is paused. Changing
+' 	data values in Field1 trigger a change in the recording state of
+' 	the monitor.
+'
+'	Application:	Record all bus traffic on takeoff and landing -- while 
+' 			the Altitude is less than UPPERLIMIT.
+'
+'	Notes:		ARINC 429 Labels can also be used in place of the "Field1" object.
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+'Globals
+Const UPPERLIMIT = 5000
+
+Sub ScriptStart
+	'Make Sure the monitor is not set to pause
+	Mon1.Pause = False
+End Sub
+
+Sub ScriptStop
+End Sub
+
+Sub Field1_OnValueChange(varValue)
+	If varValue <= UPPERLIMIT Then
+		Mon1.Pause = False
+	Else
+		Mon1.Pause = True
+	End If
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

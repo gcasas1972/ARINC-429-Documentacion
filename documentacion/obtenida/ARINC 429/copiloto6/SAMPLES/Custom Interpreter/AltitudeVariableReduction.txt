@@ -1,0 +1,102 @@
+'	AltitudeVariableReduction.txt : COPILOT CUSTOM INTERPRETER SCRIPT SAMPLE
+'
+'	Copyright 2002
+'       
+'	Ballard Technology, Inc.
+'	(800) 829-1553
+'	www.ballardtech.com
+'	support@ballardtech.com
+'
+'	NOTES:
+'		Each script block below is labeled with the intended Custom 
+'		Interpreter script tab. Overwrite the text in the script tab 
+'		with the appropriate script block from the text below.
+
+'		Global variables and helper functions may be defined on any 
+'		of the Custom Interpreter script tabs. All functions and 
+'		global variables can be called/used from any of the Custom 
+'		Interpreter script tabs.
+'
+'	DESCRIPTION:
+'		ARINC 429 VARIABLE ALTITUDE REDUCTION: Label 206 (example from ARINC 429 part 1, release 15, page 65).
+'                *This sample only implements decoding (receiving) of ARINC bits into engineering values.
+'                *The encoding of engineering values to the ARINC bits (for transmission) is not done
+'                 because of the ambiguity of the the scale values and number of bits that may be used.
+'
+'               This is how the ARINC 429 message is defined:
+'
+'                ---------------------------------------------------------
+'               | P | SSM |  |     Data (Altitude)  | Scale | SDI | Label |
+'               | 32|31 30|29|         28 - 14      | 13-11 | 10 9| 8 - 1 |
+'                ---------------------------------------------------------
+'
+'                     Where the Scale is:
+'                                          --------------------------------------------
+'                                         | 13| 12| 11| Range | Bits used | Resolution |
+'                                          --------------------------------------------
+'                                         | 0   0   0   65536      15           4      |
+'                                         | 0   0   1   65536      14           8      |
+'                                         | 0   1   0   65536      13           16     |
+'                                         | 0   1   1   51200      12           25     |
+'                                         | 1   0   0   81920      14           10     |
+'                                         | 1   0   1   51200      10          100     |
+'                                          --------------------------------------------
+ 
+'********************************
+'*	Value --> Double        *
+'********************************
+Function ValueToDouble( inValue )
+   Scale = Fix((inValue And &h1C) / (2^2))      'Mask all but bits 13-11 for resolution for the scale
+   inData = Fix(CLng(inValue) / (2^5))          'Shift out Range and SDI
+   
+   inData = CLng(inData) And &HFFFF             'Mask off SSM and parity... only left with altitude data (bits 29-14)
+
+   Res = 1                                      'Initialize Resolution
+   If Scale = 0 Then
+   	  Res = 4
+   ElseIf Scale = 1 Then
+   	  Res = 8
+	   inData = Fix(inData / (2^1))
+   ElseIf Scale = 2 Then
+   	  Res = 16
+	  inData = Fix(inData / (2^2))
+   ElseIf Scale = 3 Then
+   	  Res = 25
+      inData = Fix(inData / (2^3))
+   ElseIf Scale = 4 Then
+   	  Res = 10
+      inData = Fix(inData / (2^1))
+   ElseIf Scale = 5 Then
+   	  Res = 100
+      inData = Fix(inData / (2^5))
+    End If
+
+   ValueToDouble = CDbl(Res * CLng(inData))
+End Function
+
+'********************************
+'*	Double --> Value        *
+'********************************
+
+Function DoubleToValue( inDouble )
+'  This example does not do anything to encode value... see descrition.
+
+   DoubleToValue = CLng(inDouble)
+End Function
+
+'********************************
+'*	Value --> String        *
+'********************************
+Function ValueToString( inValue )
+   'Type cast the input value using the Value-To-Double Conversion
+   ValueToString = CStr(ValueToDouble( inValue ) )
+End Function
+
+'********************************
+'*	String --> Value        *
+'********************************
+
+Function StringToValue( inString)
+   'Type cast the input value using the Double-To-Value Conversion
+   StringToValue = DoubleToValue( CDbl(inString) )
+End Function

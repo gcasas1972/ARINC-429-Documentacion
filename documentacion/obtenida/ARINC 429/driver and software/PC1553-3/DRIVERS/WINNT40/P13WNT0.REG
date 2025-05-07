@@ -1,0 +1,47 @@
+REGEDIT4
+
+;**
+;
+;  PC1553-3 WIN32 DRIVER  Version 1.4  (02/20/1998)
+;  Copyright (c) 1998
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   P13WNT0.REG -- PC1553-3 32-bit Driver Registry File.
+;                         This registry file does not call out an interrupt.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the PC1553-3 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\PC1553-3]
+"SymbolicName"="PC1553Card00"
+"MemoryBase"=dword:000cc000
+"MemorySize"=dword:00001000
+"IoBase"=dword:000002c0
+"IoSize"=dword:00000008
+"BusNumber"=dword:00000000
+"IoType"=dword:00000001
+"InterruptName"="PC1553Interrupt"
+@="PC1553-3"
+"InterfaceType"=dword:00000001
+"ResourceTypeMask"=dword:00000003

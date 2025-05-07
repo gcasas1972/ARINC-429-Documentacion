@@ -1,0 +1,55 @@
+REGEDIT4
+
+;**
+;
+;  CM1553-1 WIN32 DRIVER  Version 1.2  (04/09/1999)
+;  Copyright (c) 1997,1999
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   C11WNT3.REG -- CM1553-1 32-bit Driver Registry File.
+;                         This registry file calls out an interrupt,
+;                         but does not open an attribute window for accessing
+;                         the CoPilot key.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the CM1553-1 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM1553-1]
+"InterruptName"="CM1553Interrupt"
+"PCMCIAResources"="CM1553Rsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM1553Card0"
+"Parameters"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM1553Rsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+"PCCARDAttributeMemorySize"=dword:00000000
+"PCCARDAttributeMemoryAddress"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM1553-1]
+"Driver"="CM1553Rsrc"

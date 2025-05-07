@@ -1,0 +1,6 @@
+[HKEY_LOCAL_MACHINE\Drivers\BuiltIn\BTIISA]
+    "Dll" = "BTIISA.Dll"
+    "Prefix" = "BTI"
+    "Order" = dword:0
+    "FriendlyName" = "BTIISA Driver"
+    "Ioctl" = dword:0

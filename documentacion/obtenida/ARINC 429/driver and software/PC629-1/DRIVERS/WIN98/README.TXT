@@ -1,0 +1,198 @@
+
+
+                INSTALLING THE PC629-1 DRIVER UNDER WINDOWS 98
+
+                                July 5, 2002
+
+                Copyright 1999-2002 by Ballard Technology, Inc.
+
+                                Version 1.1
+
+
+                                ------------
+
+
+          This folder contains the following files:
+
+           File Name                Description
+
+          BTIUNIV.VXD  Ballard Technology's Universal Device Driver
+          BTIKRNL.DLL  Ballard Technology's Kernel Driver
+          P61W98.INF   Plug-and-play INF file
+          P61W32.DLL   PC629-1 WIN32 dynamic link library
+
+          README.TXT   This document
+
+          Refer to the end of this document for corrections,
+          warnings, and additional information.
+
+
+
+     INTRODUCTION
+
+          The file P61W32.DLL is a dynamic-link library
+          containing the PC629-1 API Driver functions
+          callable from WIN32 applications.  It has been
+          tested using the Microsoft Visual C++ Compiler
+          Version 4.0, Microsoft Visual C++ Compiler Version
+          5.0, and Microsoft Visual C++ Compiler Version 6.0.
+
+
+
+     MANUAL INSTALLATION
+
+          The PC629-1 is not a Plug-and-Play device.  The
+          drivers must be manually installed before any
+          software can access the card.  The following steps
+          must be performed for each PC629-1 card installed
+          in the computer.
+
+          To manually install the drivers:
+
+          1.  Install the PC629-1 card as directed by the
+              PC629-1 User's Manual.
+
+          2.  Click the 'Start' button, point to 'Settings'
+              and click 'Control Panel'.
+
+          3.  Double-click the 'Add New Hardware' icon.
+
+          4.  Click 'Next' to start the 'Add New Hardware
+              Wizard'.
+
+          5.  Click 'Next' again to start the search of Plug
+              and Play devices.
+
+          6.  If a list of devices is presented, select the
+              'No, the device isn't in the list' option and
+              click 'Next'.
+
+          7.  Select the 'No, I want to select the hardware
+              from a list' option and click 'Next'.
+
+          8.  Select 'Other devices' from the 'Hardware
+              types' list and click 'Next'.
+
+          9.  Click the 'Have Disk' button in the 'Add New
+              Hardware Wizard' dialog box.
+
+          10. Insert the media containing the PC629-1
+              installation files into the floppy or CD-ROM
+              drive.
+
+          11. In the 'Copy manufacturer's files from' field,
+              type the path containing the driver files for
+              the PC629-1 (A:\DRIVERS\WIN98 for floppy disk
+              installation).  Click 'OK'.
+
+          12. Select PC629-1 from the 'Models' list and
+              click 'Next'.
+
+          13. Note the resources assigned to the card.  If
+              there are any conflicts, then the resources
+              must be modifed as described in the warning
+              message.  Click 'Next'.
+
+          15. Click the 'Finish' button to complete the
+              installation.
+
+          16. Shut down the computer and verify the DIP
+              switch and jumper settings match the manual
+              resource assignments.
+
+
+
+     DEBUGGING GUIDELINES
+
+          To verify that the PC629-1 drivers are properly
+          installed:
+
+          1.  Click the 'Start' button, point to 'Settings'
+              and click 'Control Panel'.
+
+          2.  Double-click the 'System' icon.
+
+          3.  Select the 'Hardware' tab.
+
+          4.  Click the 'Device Manager' button.
+
+          5.  Verify the 'Avionics Databus Interface' group
+              is visible.
+
+          6.  Expand the 'Avionics Databus Interface' group
+              and verify the PC629-1 device is visible.
+
+          7.  Double-click on the PC629-1 device to see the
+              PC629-1 property page.
+
+
+
+     CHANGING THE RESOURCE ASSIGNMENTS
+
+          To change the resources assigned to the PC629-1:
+
+          1.  Click the 'Start' button, point to 'Settings'
+              and click 'Control Panel'.
+
+          2.  Double-click the 'System' icon.
+
+          3.  Select the 'Hardware' tab.
+
+          4.  Click the 'Device Manager' button.
+
+          5.  Verify the 'Avionics Databus Interface' group
+              is visible.
+
+          6.  Expand the 'Avionics Databus Interface' group
+              and verify the PC629-1 device is visible.
+
+          7.  Double-click on the PC629-1 device to see the
+              PC629-1 property page.
+
+          8.  Select the 'Resources' tab.
+
+          9.  Double click the resource type to change.  If a
+              resource assignment is locked, change the
+              'Setting based on' configuration to a
+              configuration that allows the resources to be
+              edited.
+
+          10. Verify the DIP switch settings match the
+              resource assignments.
+
+
+
+     CORRECTIONS, WARNINGS, AND ADDITIONAL INFORMATION
+
+          There is no additional information.
+
+
+                                ------------
+
+
+          SAFETY WARNING:  Ballard products are of commercial
+          grade and therefore are neither designed,
+          manufactured, nor tested to standards required for
+          use in critical applications where a failure or
+          deficiency of the product may lead to injury,
+          death, or damage to property.  Without prior
+          specific approval in writing by the president of
+          Ballard Technology, Inc., Ballard products are not
+          authorized for use in such critical applications.
+
+          This software is provided as a laboratory tool.
+          For any application it is the responsibility of the
+          user to verify the suitability, correctness, and
+          safety of using this software or data derived
+          therefrom.
+
+
+                                ------------
+
+
+     Ballard Technology would appreciate hearing your questions,
+     comments, and suggestions concerning this product.
+
+     Ballard Technology, Inc.
+     www.ballardtech.com
+     support@ballardtech.com

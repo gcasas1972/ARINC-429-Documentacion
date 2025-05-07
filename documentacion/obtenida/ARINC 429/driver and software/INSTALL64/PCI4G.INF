@@ -1,0 +1,254 @@
+;**
+;*
+;*  OmniBus PCI INF INSTALLATION FILE  Version 1.8.0  (03/22/2013)
+;*  Copyright (c) 2003-2013
+;*  Ballard Technology, Inc.
+;*  www.ballardtech.com
+;*  support@ballardtech.com
+;*  ALL RIGHTS RESERVED
+;*
+;**
+
+[Version]
+Signature="$CHICAGO$"
+Provider=%CompanyName%
+ClassGuid={5971FC40-50C8-11D3-AA35-0040055658FB}
+Class=BTI_AVDBI
+DriverVer=03/22/2013,1.8.0.0
+CatalogFile=PCI4G.CAT
+
+[DestinationDirs]
+DefaultDestDir=11
+Ballard.CopyDllFiles=11
+Ballard.CopyDll32Files=16425
+Ballard.CopyDll64Files=11
+Ballard.CopyWdmFiles=12
+Ballard.CopyWdm64Files=12
+Ballard.CopyVxdFiles=11
+Ballard.CopyPropFiles=11
+
+[Manufacturer]
+%CompanyName%=Ballard.Mfg,ntia64,ntamd64
+
+[Ballard.Mfg]
+%PCI4G.DeviceDesc% = PCI4G,PCI\VEN_1014&DEV_0156&SUBSYS_00000000&REV_01
+
+[Ballard.Mfg.ntia64]
+%PCI4G.DeviceDesc% = PCI4G.ntia64,PCI\VEN_1014&DEV_0156&SUBSYS_00000000&REV_01
+
+[Ballard.Mfg.ntamd64]
+%PCI4G.DeviceDesc% = PCI4G.ntamd64,PCI\VEN_1014&DEV_0156&SUBSYS_00000000&REV_01
+
+
+[ControlFlags]
+ExcludeFromSelect.nt=PCI\VEN_1014&DEV_0156&SUBSYS_00000000&REV_01
+
+[SourceDisksFiles]
+BTIWDM.SYS=1
+BTIWDM64.SYS=1
+BTIKRNL.DLL=1
+BTIKRNL64.DLL=1
+BTICARD.DLL=1
+BTICARD64.DLL=1
+BTICSDB.DLL=1
+BTICSDB64.DLL=1
+BTIDIO.DLL=1
+BTIDIO64.DLL=1
+BTI1553.DLL=1
+BTI155364.DLL=1
+BTI422.DLL=1
+BTI42264.DLL=1
+BTI429.DLL=1
+BTI42964.DLL=1
+BTI717.DLL=1
+BTI71764.DLL=1
+BTI708.DLL=1
+BTI70864.DLL=1
+BTIRPC.DLL=1
+BTIRPC64.DLL=1
+BTIPROP.DLL=1
+BTIUNIV.VXD=1
+
+[SourceDisksNames]
+1=%PCI4G.DiskId%,,
+
+[ClassInstall]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyVxdFiles
+
+[ClassInstall32]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdmFiles
+
+[ClassInstall32.ntia64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[ClassInstall32.ntamd64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[BallardClass_Reg_Add]
+HKR,,,,%Ballard.ClassDesc%
+HKR,,Icon,,-5
+
+[Ballard.ServiceInstall]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.ServiceInstall64]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM64.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.CopyDllFiles]
+BTIKRNL.DLL
+BTICARD.DLL
+BTICSDB.DLL
+BTIDIO.DLL
+BTI1553.DLL
+BTI422.DLL
+BTI429.DLL
+BTI717.DLL
+BTI708.DLL
+BTIRPC.DLL
+
+[Ballard.CopyDll32Files]
+BTIKRNL.DLL
+BTICARD.DLL
+BTICSDB.DLL
+BTIDIO.DLL
+BTI1553.DLL
+BTI422.DLL
+BTI429.DLL
+BTI717.DLL
+BTI708.DLL
+BTIRPC.DLL
+
+[Ballard.CopyDll64Files]
+BTIKRNL64.DLL
+BTICARD64.DLL
+BTICSDB64.DLL
+BTIDIO64.DLL
+BTI155364.DLL
+BTI42264.DLL
+BTI42964.DLL
+BTI71764.DLL
+BTI70864.DLL
+BTIRPC64.DLL
+
+[Ballard.CopyPropFiles]
+BTIPROP.DLL
+
+[Ballard.CopyVxdFiles]
+BTIUNIV.VXD
+
+[Ballard.CopyWdmFiles]
+BTIWDM.SYS
+
+[Ballard.CopyWdm64Files]
+BTIWDM64.SYS
+
+;------------------------------------------------------------------------------
+;  PCI4G - WIN64
+;------------------------------------------------------------------------------
+
+[PCI4G.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files,Ballard.CopyDll64Files
+AddReg=PCI4GAddReg
+
+[PCI4G.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[PCI4G.ntia64.HW]
+AddReg=PCI4GHwAddReg
+
+[PCI4G.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files,Ballard.CopyDll64Files
+AddReg=PCI4GAddReg
+
+[PCI4G.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[PCI4G.ntamd64.HW]
+AddReg=PCI4GHwAddReg
+
+;------------------------------------------------------------------------------
+;  PCI4G - WIN2K
+;------------------------------------------------------------------------------
+
+[PCI4G.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles,Ballard.CopyPropFiles
+AddReg=PCI4GAddReg,PCI4GPropAddReg
+
+[PCI4G.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[PCI4G.nt.HW]
+AddReg=PCI4GHwAddReg
+
+[PCI4GHwAddReg]
+HKR,,FriendlyName,,%PCI4G.DeviceDesc%
+
+[PCI4GAddReg]
+HKR,,Option_SymbolicName,,PCI4GCard
+HKR,,Option_InterruptEventName,,PCI4GInterrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,1
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,1
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,2
+HKR,,Option_MultiInterrupt,0x00010001,1
+
+[PCI4GPropAddReg]
+HKR,,EnumPropPages32,,BTIProp.dll
+
+;------------------------------------------------------------------------------
+;  PCI4G - WIN98
+;------------------------------------------------------------------------------
+
+[PCI4G]
+CopyFiles=Ballard.CopyVxdFiles,Ballard.CopyDllFiles
+AddReg=Ballard.HwAddReg,PCI4GVxdAddReg
+
+[PCI4G.HW]
+AddReg=PCI4GHwAddReg
+
+[PCI4GVxdAddReg]
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,1
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,2
+
+;------------------------------------------------------------------------------
+;  WIN98
+;------------------------------------------------------------------------------
+
+[Ballard.HwAddReg]
+HKR,,DevLoader,0,*CONFIGMG
+HKR,,DeviceDriver,0,BTIUNIV.VXD
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings]
+CompanyName           = "Ballard Technology, Inc."
+Ballard.ServiceName   = "Ballard Technology Universal Driver"
+Ballard.ServiceDesc   = "Ballard Technology Universal Driver"
+Ballard.ClassDesc     = "Avionics Databus Interface"
+PCI4G.DiskId          = "OmniBus PCI Driver Software for Windows"
+PCI4G.DeviceDesc      = "OmniBus PCI (Multi Protocol PCI Interface Card)"

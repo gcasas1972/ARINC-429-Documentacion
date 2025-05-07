@@ -1,0 +1,42 @@
+'	BinaryTextOut.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'
+'	Converts the decimal value 27 to a binary string
+'
+'	Databuses:	All
+'
+
+'Global Variable
+Const MyVal = 27			'Sample Value
+
+Sub ScriptStart
+	Dim MyBinaryString
+	MyBinaryString = BinStr(MyVal)
+
+	'Output results to a message box
+	View.OutputLine "Binary Output=" & MyBinaryString
+End Sub
+
+Sub ScriptStop
+End Sub
+
+Function BinStr(InNumber)
+	While InNumber
+		If InNumber AND 1 Then
+			BinStr = "1" & BinStr
+		Else
+			BinStr = "0" & BinStr
+		End IF
+
+		'Left Shift by 1... or Divide by 2
+		InNumber = CLng(InNumber / 2)
+	WEnd
+End Function
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

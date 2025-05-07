@@ -1,0 +1,43 @@
+WINCEREL=1
+RELEASETYPE=LOCAL
+_ISVINCPATH=$(_WINCEROOT)\public\common\sdk\inc;
+_OEMINCPATH=$(_WINCEROOT)\public\common\oak\inc;$(_WINCEROOT)\public\common\sdk\inc;
+TARGETNAME=BTIISA
+FILE_VIEW_ROOT_FOLDER= \
+  ReadMe.txt \
+  StdAfx.cpp \
+  prelink.bat \
+  postlink.bat \
+
+FILE_VIEW_RESOURCE_FOLDER= \
+
+FILE_VIEW_INCLUDES_FOLDER= \
+  StdAfx.h \
+
+SOURCES= \
+  BTIISA.cpp \
+
+TARGETTYPE=DYNLINK
+PRECOMPILED_CXX=1
+PRECOMPILED_PCH=StdAfx.pch
+TARGETLIBS= \
+  $(_PROJECTROOT)\cesysgen\sdk\lib\$(_CPUINDPATH)\coredll.lib \
+  $(_WINCEROOT)\public\common\sdk\lib\$(_TGTCPU)\$(WINCEDEBUG)\ceddk.lib \
+
+PRECOMPILED_OBJ=StdAfx.obj
+PRECOMPILED_INCLUDE=StdAfx.h
+CDEFINES=$(CDEFINES) -DBTIISA_EXPORTS
+POSTLINK_PASS_CMD=postlink.bat
+PRELINK_PASS_CMD=prelink.bat
+FILE_VIEW_PARAMETER_FOLDER= \
+  BTIISA.bib \
+  BTIISA.reg \
+  BTIISA.dat \
+  BTIISA.db \
+  BTIISA.def \
+  ProjSysgen.bat \
+
+INCLUDES= \
+  $(_WINCEROOT)\public\common\ddk\inc \
+
+WINCEOEM=1

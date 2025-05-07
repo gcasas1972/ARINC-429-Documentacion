@@ -1,0 +1,50 @@
+REGEDIT4
+
+;**
+;
+;  PC-MDM-1 WIN32 DRIVER  Version 1.0  (09/20/1997)
+;  Copyright (c) 1997
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   MDMWNT1.REG -- PC-MDM-1 32-bit Driver Registry File.
+;                         This registry file calls out an interrupt.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the PC-MDM-1 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\PC-MDM-1]
+"SymbolicName"="PCMDMCard00"
+"MemoryBase"=dword:000cc000
+"MemorySize"=dword:00001000
+"IoBase"=dword:000002c0
+"IoSize"=dword:00000008
+"IrqNumber"=dword:0000000f
+"BusNumber"=dword:00000000
+"IrqAffinity"=dword:ffffffff
+"IrqType"=dword:00000001
+"IoType"=dword:00000001
+"InterruptName"="PCMDMInterrupt"
+@="PC-MDM-1"
+"InterfaceType"=dword:00000001
+"ResourceTypeMask"=dword:00000007

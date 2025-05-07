@@ -1,0 +1,140 @@
+'	ErrLog1553.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'
+'	Monitors a single BC-Msg and counts errors and
+'	totals. When project is stopped a report is sent
+'	to the output pane of Script View. 
+'	Notes:		Errors can be missed if the error frequency is 
+'			very large. 
+'
+'	Databuses:	MIL-STD-1553
+' 
+                      
+'Define error values (found in header file)                      
+Const MSGERR_NORESP    = 32768 '0x8000 
+Const MSGERR_ANY       = 16384 '0x4000
+Const MSGERR_PROTOCOL  = 8192  '0x2000 
+Const MSGERR_SYNC      = 4096  '0x1000
+Const MSGERR_DATACOUNT = 2048  '0x0800
+Const MSGERR_MANCH     = 32    '0x0020
+Const MSGERR_PARITY    = 16    '0x0010
+Const MSGERR_RETRY     = 4     '0x0004
+Const MSGERR_SYSTEM    = 2     '0x0002  
+
+'Define counters
+Dim totalSent, totalErr
+Dim norespCount, protocolCount, syncCount, dataCount
+Dim manchCount, parityCount, retryCount, systemCount
+     
+Sub ScriptStart    
+	'Init all counters
+	totalSent     = 0
+	totalErr      = 0
+	norespCount   = 0
+	protocolCount = 0
+	syncCount     = 0
+	dataCount     = 0
+	manchCount    = 0
+	parityCount   = 0
+	retryCount    = 0
+	systemCount   = 0  
+	
+	View.OutputLine ("BEGIN")
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")    
+	View.OutputLine ("")    
+	'Print results  
+	View.OutputLine "Results" 
+	View.OutputLine "********************************"       
+	View.OutputLine "Total Sent   = " & totalSent
+	View.OutputLine "Total Errors = " & totalErr 
+	View.OutputLine "No Response  = " & norespCount  
+	View.OutputLine "Protocol     = " & protocolCount 
+	View.OutputLine "Sync         = " & syncCount     
+	View.OutputLine "Data Count   = " & dataCount     
+	View.OutputLine "Manchester   = " & manchCount    
+	View.OutputLine "Parity       = " & parityCount  
+	View.OutputLine "Retry        = " & retryCount    
+	View.OutputLine "System       = " & systemCount   
+
+End Sub 
+
+'Event Handler for Time Tag in BCMsg   
+Sub BCMsg_MsgTimeTag
+	'The time tag will change for each transmission
+	totalSent = totalSent + 1	
+End Sub
+   
+'Event Handler for Message Error in BCMsg   
+Sub Msg1_OnMsgError(MsgError)
+	Dim errVal
+	errVal = CLng(MsgError)    
+
+	'MSGERR_NORESP is a special case
+	If MSGERR_NORESP And errVal Then 
+		totalErr = totalErr + 1
+		View.Output "Errors: "
+
+		norespCount = norespCount + 1
+		View.Output "NoResp "
+
+		View.OutputLine ""
+		
+		Exit Sub
+	End If
+	
+	If MSGERR_ANY And errVal Then  
+		
+		totalErr = totalErr + 1
+		View.Output "Errors: "
+		
+		If MSGERR_PROTOCOL And errVal Then
+			 protocolCount = protocolCount + 1
+			 View.Output "Protocol "
+		End If
+
+		If MSGERR_SYNC And errVal Then
+			 syncCount = syncCount + 1
+			 View.Output "Sync "
+		End If       
+		
+		If MSGERR_DATACOUNT And errVal Then
+			 dataCount = dataCount + 1
+			 View.Output "DataCount "
+		End If  
+		
+		If MSGERR_MANCH And errVal Then
+			 manchCount = manchCount + 1
+			 View.Output "Manchester "
+		End If 
+		
+		If MSGERR_PARITY And errVal Then
+			 parityCount = parityCount + 1
+			 View.Output "Parity "
+		End If  
+		
+		If MSGERR_RETRY And errVal Then
+			 retryCount = retryCount + 1
+			 View.Output "Retry "
+		End If  
+		
+		If MSGERR_SYSTEM And errVal Then
+			 systemCount = systemCount + 1
+			 View.Output "System "
+		End If
+		
+		View.OutputLine ""
+		
+	End If  
+	
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

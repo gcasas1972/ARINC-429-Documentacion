@@ -1,0 +1,288 @@
+'	WilliamsburgSink : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002
+'       
+'	Ballard Technology, Inc.
+'	(800) 829-1553
+'	www.ballardtech.com
+'	support@ballardtech.com
+'
+'	Databuses:	ARINC 429
+'	Description:	Receives a binary file using the Williamsburg File
+'					transfer protocol. Saves one file each run.
+'	Notes:			
+'	1) Set the SAL equal To the Label of the receiving message
+'	2) Set FILENAME equal to the path (with name) where file is to be saved				
+'	3) Drag & Drop Then Rename the following fileds/Channels/Messages
+'		a) SinkchanTx - An available transmit channel with at least one
+'						message scheduled to go out
+'		b) SinkMsgRx  - A message on a receive channel with the same label
+'						as SAL
+'		c) DstCodFileNo - Field bits 17-24 on SinkMsgRx
+'		d) WrdCntStatus - Field bits  9-16 on SinkMsgRx
+'		e) WordType     - Field bits 29-31 on SinkMsgRx
+'		f) CRC          - Field bits  9-24 on SinkMsgRx
+'		g) CtrlID       - Field bits 25-28 on SinkMsgRx (a.k.a. n5)
+'		h) n4			- Field bits 21-24 on SinkMsgRx
+'		i) n3           - Field bits 17-20 on SinkMsgRx
+'		j) n2           - Field bits 13-16 on SinkMsgRx
+'       k) n1           - Field bits  9-12 on SinkMsgRx
+' 
+  
+''''''''''''''''''''          
+'Constants         
+''''''''''''''''''''
+
+'System Address Label
+Const SAL = 193 	' Oct(301) 
+
+'FINAL LDU BIT
+Const NOT_FINAL_LDU = 0
+Const FINAL_LDU     = 1  
+
+'Status Codes
+Const STAT_CRCERR = &h85
+Const STAT_WRDCNT = &h88
+Const STAT_NOSOT  = &h80
+
+'Word Types 
+Const FULLDW = 0 	' "000"
+Const PARTDW = 1 	' "001"
+Const CNTRL  = 4 	' "100"
+Const SOLO   = 5 	' "101"  
+Const SOT    = 6 	' "110"
+Const EOT    = 7 	' "111"   
+
+'Control Word IDs And GFI Value        
+Const RTS  = 1 		' "0001"
+Const CTS  = 2 		' "0010" 
+Const NCTS = 3 		' "0011"  
+Const BUSY = 4 		' "0100"
+Const NAK  = 5 		' "0101"
+Const ACK  = 6 		' "0110"  
+Const GFI  = 3 		' "0011"  General Purpose Bit-Oriented
+             
+'''''''''''''''''''''
+' Global Variables
+'''''''''''''''''''''  
+
+Dim WrdCnt, DestCode, StatCode, FileNo, LDUSeqNo 
+Dim bReceiving, WrdsRcvd
+Dim nibArray(), nibTotal, bytArray(), bytTotal 
+
+Dim FILENAME
+FILENAME = "c:\testfile.txt"  
+
+'''''''''''''''''''''
+' Functions        
+''''''''''''''''''''' 
+
+Function WriteFullDW
+	View.OutputLine "Recieved Full Data Word: " & Hex(CLng(SinkMsgRx.ValueRaw)) 
+	If bReceiving Then
+		'Write data to nibArray
+		nibArray(nibTotal+0) = CByte(n1.ValueRaw)
+		nibArray(nibTotal+1) = CByte(n2.ValueRaw)
+		nibArray(nibTotal+2) = CByte(n3.ValueRaw)
+		nibArray(nibTotal+3) = CByte(n4.ValueRaw)
+		nibArray(nibTotal+4) = CByte(CtrlID.ValueRaw)
+	    nibTotal = nibTotal + 5 
+	Else
+	    StatCode = STAT_NOSOT
+	    SendNAK
+	End If
+End Function
+
+Function WritePartDW
+	View.OutputLine "Recieved Part Data Word: " & Hex(CLng(SinkMsgRx.ValueRaw)) 
+	If bReceiving Then
+		Dim goodByts
+		goodByts = CLng(CtrlID.ValueRaw) - 7
+		'Write good bytes to stream
+		nibArray(nibTotal+0) = CByte(n1.ValueRaw)
+		If (goodByts>=2) Then
+			nibArray(nibTotal+1) = CByte(n2.ValueRaw)
+		Else 
+			nibArray(nibTotal+1) = 0
+		End If
+	    If (goodByts>=3) Then
+			nibArray(nibTotal+2) = CByte(n3.ValueRaw)
+		Else 
+			nibArray(nibTotal+2) = 0
+		End If
+		If (goodByts=4) Then
+			nibArray(nibTotal+3) = CByte(n4.ValueRaw)
+		Else 
+			nibArray(nibTotal+3) = 0
+		End If
+		nibArray(nibTotal+4) = 0    'Always in Part DW 
+		nibTotal = nibTotal + goodByts 
+		'View.OutputLine "GoodNibbles = " & goodByts
+		'View.OutputLine "nibTotal    = " & nibTotal
+	Else
+		StatCode = STAT_NOSOT
+		SendNAK
+	End If
+End Function
+
+Function SendCTS 
+	Dim CTSMsg
+	CTSMsg = 0
+	'Format the CTS Message
+	CTSMsg = CTSMsg Or (CNTRL    * 2^28)
+	CTSMsg = CTSMsg Or (CTS      * 2^24)
+	CTSMsg = CTSMsg Or (DestCode * 2^16)
+	CTSMsg = CTSMsg Or (WrdCnt   * 2^8)
+	CTSMsg = CTSMsg Or (SAL)    			
+	'Transmit the CTS
+	View.OutputLine "SendCTS"
+	Call SinkChanTx.TransmitRawValue(CTSMsg)
+End Function 
+
+Function SendACK
+	Dim ACKMsg
+	ACKMsg = CLng(0)
+	'Format the ACK Message
+	ACKMsg = ACKMsg Or (CNTRL    * 2^28)
+	ACKMsg = ACKMsg Or (ACK      * 2^24)
+	ACKMsg = ACKMsg Or (FileNo   * 2^16)
+	ACKMsg = ACKMsg Or (LDUSeqNo * 2^8)
+	ACKMsg = ACKMsg Or (SAL)
+	'Transmit the ACK
+	View.OutputLine "SendACK"
+	Call SinkChanTx.TransmitRawValue(ACKMsg)
+End Function
+
+Function SendNAK
+	Dim NAKMsg
+	NAKMsg = CLng(0)
+	'Format the NAK Message
+	NAKMsg = NAKMsg Or (CNTRL    * 2^28)
+	NAKMsg = NAKMsg Or (NAK      * 2^24)
+	NAKMsg = NAKMsg Or (FileNo   * 2^16)
+	NAKMsg = NAKMsg Or (StatCode * 2^8)
+	NAKMsg = NAKMsg Or (SAL)
+	'Transmit the NAK
+	View.OutputLine "SendNAK -- StatCode = " & Hex(StatCode)
+	Call SinkChanTx.TransmitRawValue(NAKMsg)
+End Function 
+
+Function OnSOT
+	FileNo   = CLng(DstCodFileNo.ValueRaw)
+	LDUSeqNo = CLng(WrdCntStatus.ValueRaw)
+	'Init the nibArray
+	ReDim nibArray(WrdCnt*5)
+	nibTotal = 0
+	View.OutputLine "Recieved SOT"	
+	bReceiving = True
+End Function
+
+Function OnEOT 
+	View.OutputLine "Recieved EOT"
+	If bReceiving Then  
+		'Format a BYTE Array from the Nibble Array 
+		NibbleArray2ByteArray()
+		'Validate the file with the crc value 
+		If View.Will_ValidateCRC(CLng(CRC.ValueRaw), bytTotal, bytArray) Then
+			SendACK
+			
+			'Save the file at FILENAME
+			Call View.WriteToFile(bytTotal, bytArray, FILENAME)
+			View.OutputLine "File saved at: " & FILENAME
+		Else       
+			StatCode = STAT_CRCERR
+		    SendNAK
+		End If 
+		'Clear the bReceiving flag
+		bReceiving = False
+	Else
+	    StatCode = STAT_NOSOT
+	    SendNAK
+	End If
+End Function
+
+Function NibbleArray2ByteArray()
+	'Convert the nibble array to a byte array for saving
+	'nibArray() and nibTotal must be preinitialized and be global
+	'bytArray() must exist globally
+	Dim size, bytVal
+	size = nibTotal/2 
+	If (nibTotal Mod 2)<>0 Then
+		size = Fix(size + 1)
+	End If
+	ReDim bytArray(size-1)
+	'View.OutputLine "BytArrSize = 0 to " & (size-1)
+	bytTotal = 0
+	For i = 0 To (nibTotal-1)
+		If (i Mod 2)=0 Then
+			bytVal = nibArray(i)
+			If (i = (nibTotal-1)) Then
+				bytArray(bytTotal) = bytVal And &h00FF
+				bytTotal = bytTotal + 1
+				Exit Function
+			End If
+		Else
+		    bytVal = bytVal Or (nibArray(i)*2^4)
+		    bytArray(bytTotal) = bytVal And &h00FF
+		    bytTotal = bytTotal + 1
+		End If
+	Next
+End Function
+
+'''''''''''''''''''''
+' Subroutines       
+'''''''''''''''''''''
+
+Sub ScriptStart
+	'Init variables
+	WrdCnt     = 0 
+	DestCode   = 0
+	StatCode   = 0
+	FileNo     = 0
+	LDUSeqNo   = 0
+	WrdsRcvd   = 0
+	nibTotal   = 0 
+	bReceiving = False
+	View.OutputLine ("BEGIN") 
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")
+End Sub
+ 
+'Listen to SinkMsgRx for RTS
+Sub SinkMsgRx_TimeTag 
+	If (0 <> CLng(SinkMsgRx.TimeTag)) Then
+		Dim wrdType 
+		wrdType = CInt(WordType.ValueRaw)
+		'Test for Control Word 
+		If (CNTRL = wrdType) Then 
+		    'Test for Control IDs
+		 	If (RTS = CLng(CtrlID.ValueRaw)) Then 
+		 		WrdCnt = CLng(WrdCntStatus.ValueRaw)
+		 		DestCode = CLng(DstCodFileNo.ValueRaw)
+		 		SendCTS
+		 	Else
+		 		View.Output "Unexpected Control ID: Hex("
+		 		View.Output Hex(CLng(CtrlID.ValueRaw))
+		 		View.OutputLine ")" 
+		 	End If
+		 'Test for SOT 
+		 ElseIf (SOT = wrdType) Then
+		 	OnSOT
+		 'Test for EOT
+		 ElseIf (EOT = wrdType) Then 
+		 	OnEOT 
+		 'Test for Full Data Words
+		 ElseIf (FULLDW = wrdType) Then 
+		 	WriteFullDW
+		 'Test for Part Data Words
+		 ElseIf (PARTDW = wrdType) Then
+		 	WritePartDW
+		 Else
+		 	View.Output "Unexpected Word Type: Hex("
+		 	View.Output Hex(wrdType)
+		 	View.OutputLine ")"
+		 End If 
+	End If
+End Sub 

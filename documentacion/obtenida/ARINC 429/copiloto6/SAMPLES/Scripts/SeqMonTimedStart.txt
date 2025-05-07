@@ -1,0 +1,65 @@
+'	SeqMonTimedStart.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'
+'	Starts the Sequential Monitor 
+'	based On simulation run time.
+'
+'	Notes:		Assumes Sequential Monitor is set to run time mode.
+'			May be used without run time mode.
+'			SeqMon is any Sequential Monitor dropped into Script View.
+'
+'	Databuses:	MIL-STD-1553, ARINC 429, ARINC 708
+'
+   
+'Constants
+Const FIVESECS =   5000
+Const TENSECS  =  10000
+Const HALFMIN  =  30000
+Const ONEMIN   =  60000
+
+Const MODE_NORMAL  = 0
+Const MODE_RUNTIME = 2
+
+Sub ScriptStart   
+	'Initialize the Sequential Monitor
+	SeqMon.Pause   = True
+	SeqMon.RunTime = ONEMIN 
+	'Initialize the timer event
+	If MODE_RUNTIME = CLng(SeqMon.Mode) Then
+		View.EnableTimer1(True)
+		View.SetTimerInterval1(FIVESECS)  
+	Else
+		View.OutputLine "Sequential Monitor is not set to run time mode."
+		View.OutputLine "DONE"
+	End If
+	'Signal start
+	View.OutputLine ("BEGIN")
+End Sub
+
+Sub OnScriptTimer1
+	Dim rt
+	rt = CLng(CopShell.RunTime)
+	If SeqMon.Pause Then
+		If (rt>HALFMIN) And (rt<ONEMIN) Then 	
+			'Start monitoring
+		    SeqMon.Pause = False 
+		    View.OutputLine "Starting Mon"  
+		ElseIf (rt>ONEMIN) Then
+			'Stop timers
+			View.EnableTimer1(False)
+			View.OutputLine "Stopping Mon"
+		End If
+	End If
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

@@ -1,0 +1,81 @@
+           License Agreement for CoPilot Software
+                IMPORTANT (READ CAREFULLY)
+
+This document is a legal agreement between you, the end user 
+(LICENSEE), and Ballard Technology, Inc. (BALLARD) for the 
+BALLARD software product identified above (SOFTWARE), which 
+includes associated media, printed materials, and any online 
+or electronic documentation. By installing, copying, or 
+otherwise using the SOFTWARE you are agreeing to become 
+bound by the terms of this agreement, which includes the 
+software license, the Safety Warning, and the version of 
+BALLARD?s Limited Warranty (AD195, unless otherwise 
+mutually agreed by written contract) effective when the 
+product was obtained from BALLARD (e.g., at the time of 
+purchase).
+
+If you do not agree to the terms of this agreement, promptly
+return the product to Ballard Technology. The amount you 
+paid for an unused product will be refunded.
+
+GRANT OF LICENSE: Regardless of how the SOFTWARE was 
+obtained, whether without charge or through a purchase, the 
+SOFTWARE may only be used either in conjunction with a 
+specific BALLARD hardware product or for a brief period of 
+time for evaluation prior to purchase. The software may only 
+be used to control or operate the specific BALLARD hardware 
+product (LICENSED HARDWARE), identified by part number and 
+serial number, specified in the agreement (purchase or other 
+contract) between BALLARD and LICENSEE. Additional copies may 
+be made and may reside on other computers as long as they are 
+used in connection with the LICENSED HARDWARE (e.g., to 
+prepare or analyze data). You may not modify, adapt, 
+translate, reverse engineer, decompile, or disassemble the 
+SOFTWARE.
+
+OWNERSHIP OF SOFTWARE: As the LICENSEE you may own the 
+magnetic or other physical media on which the SOFTWARE is 
+originally or subsequently recorded or fixed; but BALLARD 
+retains title and ownership of the SOFTWARE recorded on the 
+original and all subsequent copies of the SOFTWARE, 
+regardless of the form or media on which it may exist. This 
+license is not a sale of the original SOFTWARE or any copy.
+
+UPGRADES: If the SOFTWARE is an upgrade, then it is 
+considered a part of the original SOFTWARE package and may 
+be used only in connection with the LICENSED HARDWARE.
+
+COPY RESTRICTIONS: The SOFTWARE and accompanying written 
+materials are copyrighted. You may make copies of the 
+SOFTWARE for backup, for use with the LICENSED HARDWARE, or 
+for evaluation as stated in this agreement. Copies may not 
+be sold. Evaluation copies may be freely distributed. You must 
+reproduce and include the copyright notice on all copies, and 
+the full text of this agreement must be readily accessible 
+within all copies.
+
+TERMINATION: This license is effective until terminated. 
+Without prejudice to any other rights, BALLARD may terminate 
+this license if you fail to comply with the terms and  
+conditions of this agreement.
+
+MISCELLANEOUS: This agreement is governed by the laws of the 
+State of Washington.
+
+SAFETY WARNING
+
+Ballard products are of commercial grade and therefore are 
+neither designed, manufactured, nor tested to standards 
+required for use in critical applications where a failure or 
+deficiency of the product may lead to injury, death, or damage 
+to property. Without prior specific approval in writing by the 
+president of Ballard Technology, Inc., Ballard products are 
+not authorized for use in such critical applications.
+
+
+Ballard Technology, Inc.
+www.ballardtech.com
+support@ballardtech.com
+
+Ref: AD202-20100224
+Date: February 24, 2010

@@ -1,0 +1,47 @@
+REGEDIT4
+
+;**
+;
+;  PC429-1/2 WIN32 DRIVER  Version 1.0  (03/31/1999)
+;  Copyright (c) 1997-1999
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   P42WNT.REG -- PC429-1/2 32-bit Driver Registry File.
+;                        This registry file does not call out an interrupt.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the PC429-1/2 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\PC429-1/2]
+"SymbolicName"="PC429Card00"
+"MemoryBase"=dword:000ce000
+"MemorySize"=dword:00001000
+"IoBase"=dword:00000250
+"IoSize"=dword:00000008
+"BusNumber"=dword:00000000
+"IoType"=dword:00000001
+"InterruptName"="PC429Interrupt"
+@="PC429-1/2"
+"InterfaceType"=dword:00000001
+"ResourceTypeMask"=dword:00000003

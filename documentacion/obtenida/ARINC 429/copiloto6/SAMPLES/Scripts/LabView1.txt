@@ -1,0 +1,86 @@
+'	LabView1.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Opens a sample LabView Virtual Instrument (scripttest.vi) and sets
+'	input parameters. The vi is run and the return value is retrieved.
+'	The input values are constants; an alternative method is to use the
+'	returned output to set the value of an object such as a field or message.
+'
+'	Notes:		LabView 5 or higher must be installed and the sample vi (scripttest.vi)
+'			must be located in the directory specified by viPath.	
+'
+'	Databuses:	All			
+'
+
+'Global LabView objects: initialized in ScriptStart, cleared in ScriptStop
+Dim lvapp
+Dim vi
+
+Sub ScriptStart
+	Dim paramNames(2), paramVals(2)
+	
+	Set lvapp = CreateObject("LabVIEW.Application")
+	viPath = "C:\Program Files\Ballard\CoPilot\Scripts\ScriptTest.vi"
+	
+	Set vi = lvapp.GetVIReference(viPath)   'Load the vi into memory
+	vi.FPWinOpen = True                     'Open front panel
+	vi.CloseFPAfterCall = True              'Close front panel after Call statement
+	                                        'if vi.CloseFPAfterCall=false, then vi.Run(1)
+	                                        'only needs to be called one time
+	
+	'Initialize input parameters
+	paramNames(0)="In"
+	paramNames(1)="Scale"
+	paramNames(2)="Out"
+	paramVals(0)=1
+	paramVals(1)=2
+	'paramVals(2) is set after the following call returns
+	Call vi.Call(paramNames,paramVals)
+	
+	'''''''''''''
+	'--Alternative method--
+	'   instead of using the multiple parameters passed by using the Call statement,
+	'   the following lines can be used:
+	'        Dim InValue
+	'        Dim ScaleValue
+	'        InValue    = 1.1
+	'        ScaleValue = 2.2
+	'        vi.SetControlValue "In", InValue         'Sets 'In' equal to a InValue
+	'        vi.SetControlValue "Scale", ScaleValue   'Sets 'Scale' equal to a ScaleValue
+	'        vi.Run(1)                                'Run vi before/after values are set
+	'        Dim returnValue
+	'        returnValue = vi.GetControlValue("Out")  'Gets the value of 'Out'
+	'----------------------
+	'''''''''''''
+
+	View.Output "Output: "
+	View.OutputLine paramVals(2)                      'Out = In * Scale
+	'optionally set another variable, field, msg, etc. equal to paramVals(2) -- the output. 
+	
+	'''''''''''''
+	'	The following would run the vi again with the In and Scale Parameters changed
+	'
+	'paramVals(0)=2.2
+	'paramVals(0)=2
+	'Call vi.Call(paramNames,paramVals)               'Out = In * Scale
+	'''''''''''''
+End Sub
+
+Sub ScriptStop
+        'Get the current value from LabView (assumes LabView is running)
+	Dim returnValue
+	returnValue = vi.GetControlValue("Out")           'Gets the value of 'Out'
+
+	'Unitialize LabView objects
+	Set vi = Nothing
+	Set lvapp = Nothing
+
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

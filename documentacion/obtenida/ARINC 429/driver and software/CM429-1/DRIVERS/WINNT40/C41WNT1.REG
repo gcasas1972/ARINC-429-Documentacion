@@ -1,0 +1,97 @@
+REGEDIT4
+
+;**
+;
+;  CM429-1 WIN32 DRIVER  Version 1.0  (05/26/1999)
+;  Copyright (c) 1999
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   C41WNT1.REG -- CM429-1 32-bit Driver Registry File.
+;                         This registry file calls out an interrupt,
+;                         and opens an attribute window for accessing
+;                         the CoPilot key.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the CM429-1 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM429-1/2R1T]
+"InterruptName"="CM429Interrupt"
+"PCMCIAResources"="CM4292R1TRsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM4292R1TCard00"
+"Parameters"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM429-1/2R1T/717]
+"InterruptName"="CM429Interrupt"
+"PCMCIAResources"="CM4292R1T717Rsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM4292R1T717Card00"
+"Parameters"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM429-1/4R2T]
+"InterruptName"="CM429Interrupt"
+"PCMCIAResources"="CM4294R2TRsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM4294R2TCard00"
+"Parameters"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM4292R1TRsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+"PCCARDAttributeMemorySize"=dword:00010000
+"PCCARDAttributeMemoryAddress"=dword:000d0000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM4292R1T717Rsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+"PCCARDAttributeMemorySize"=dword:00010000
+"PCCARDAttributeMemoryAddress"=dword:000d0000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM4294R2TRsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+"PCCARDAttributeMemorySize"=dword:00010000
+"PCCARDAttributeMemoryAddress"=dword:000d0000
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM429-1/2R1T]
+"Driver"="CM4292R1TRsrc"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM429-1/2R1T/717]
+"Driver"="CM4292R1T717Rsrc"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM429-1/4R2T]
+"Driver"="CM4294R2TRsrc"

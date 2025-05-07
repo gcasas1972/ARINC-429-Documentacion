@@ -1,0 +1,48 @@
+REGEDIT4
+
+;**
+;
+;  OmniBus PCI/cPCI/PMC WINNT DRIVER  Version 1.0  (11/04/2009)
+;  Copyright (c) 2009
+;  Ballard Technology, Inc.
+;  ALL RIGHTS RESERVED
+;  www.ballardtech.com
+;  support@ballardtech.com
+;
+;  NAME:   PCI4GWNT.REG -- OmniBus PCI/cPCI/PMC WINNT Driver Registry File.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the OmniBus PCI/cPCI/PMC WINNT Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows NT will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+;**
+;
+;  The following keys are for the OmniBus PCI/cPCI/PMC.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\PCI4GCard]
+"InterruptName"="OmniBus PCIInterrupt"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000005
+"SymbolicName"="PCI4GCard00"
+"DeviceId"=dword:00000156
+"VendorId"=dword:00001014
+"Parameters"=dword:00000000

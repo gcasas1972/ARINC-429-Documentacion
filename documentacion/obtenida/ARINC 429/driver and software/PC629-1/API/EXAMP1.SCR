@@ -1,0 +1,39 @@
+;******************************************************
+;
+;     SCRIPT FOR TESTER/COCKPIT CONSOLE FOR EXAMPLE 1
+;
+;       Compile to file EXAMP1.ROM
+;
+;******************************************************
+
+SYSTEM
+    TI      = 50            ;Transmit interval value
+    TG      = 9             ;Terminal gap value
+    SG      = 0             ;Sync gap value
+    CID     = 0             ;Channel ID value
+    FORMAT  = BLOCK         ;Select block mode
+    START   = TRUE          ;Start card when loaded
+    MPPEN   = TRUE          ;Enable the MPP
+END
+
+XPPCELL
+    NAME  = xmitlever       ;Name of cell
+    LBL   = 134H            ;Label value
+    AD    = 0444H           ;Address of data word
+    WC    = 1               ;# of data words
+END
+
+XPPSCHEDULE
+    ROW  =  0, xmitlever
+END
+
+RPPCELL
+    NAME  = rcvgear         ;Name of cell
+    LBL   = 064H            ;Label value
+    AD    = 0100H           ;Address to write to
+    WC    = 1               ;# of data words
+END
+
+MPPOFFSET OFFSET=0000H EXT=1 END     ;Left landing gear
+MPPOFFSET OFFSET=0010H EXT=2 END     ;Right landing gear
+MPPOFFSET OFFSET=0020H EXT=4 END     ;Nose landing gear

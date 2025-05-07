@@ -1,0 +1,88 @@
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'	TimeToMessage.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'
+'	Description: 
+'		Script takes the PC System Time and converts it to two different label formats. 
+'		This example uses ARINC labels 125 and 150 with fields are described below (from EqID 002 FMC or EqID 031 chronometer).
+'		Although, this example uses ARINC labels, with slight modifications the time can be written to MIL-STD-1553 Messages.
+'		The data of both messages are updated to the same time after the second message is transmitted(Label 150).
+'
+'	Objects that must be present:
+'			Script Object Name	-	Description
+'			L125_Hr			-	Label 125 Hour Field (add this BCD bits 23-29 [range:0-23])
+'			L125_Min		-	Label 125 Minute Field (add this BCD bits 11-22 [range:0-59.9])
+'			Lbl150			-	Label 150
+'			L150_Hr			-	Label 150 Hour Field
+'			L150_Min		-	Label 150 Minute Field
+'			L150_Sec		-	Label 150 Second Field
+'		Note: These labels are defined in the default database for Eq.Id 002 and Eq.Id 031.
+'
+'	Databuses:	ARINC 429 (can be modified for MIL-STD-1553 by replacing the labels with BC/SA Messages)
+'
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+
+Sub ScriptStart
+	'Initialize label data on start
+	View.OutputLine("Initializing Data")
+	
+	'Call Event handler function
+	Lbl150_TimeTag
+End Sub
+
+Sub ScriptStop
+	'TODO: Enter Exit code here
+End Sub
+
+
+'Event Handler: Every time the second item goes out on the bus,
+'               both labels are updated with the PC system time
+Sub Lbl150_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+	'Get current time
+	CurTime = Now
+	hr = Hour(CurTime)
+	min = Minute(CurTime)
+	sec = Second(CurTime)
+	
+	'Set Label 150 fields
+	L150_Hr.Value = hr
+	L150_Min.Value = min
+	L150_Sec.Value = sec
+	
+	'Set Label 125 fields
+	L125_Hr.Value = hr
+	L125_Min.Value = min + (sec/60*100)/100
+	
+	'Optional - output Label 125 data for debugging
+	View.OutputLine("Label 125: " + Cstr(L125_Hr.Value) + ":" + MyFormat(L125_Min.Value,True,1))
+
+	'Optional - output Label 150 data for debugging
+	View.OutputLine("Label 150: " + MyFormat(L150_Hr.Value,True,0) + ":" + MyFormat(L150_Min.Value,True,0) + ":" + MyFormat(L150_Sec.Value,True,0) )
+End Sub
+
+
+' Custom text formatting function
+'
+'  Variables:
+'   dblData          - double data value
+'   bTwoLeadingZeros - bool String should zero fill 2 values on left of decimal place (integer portion)
+'   iDecimals        - int trailing decimal places filling
+Function MyFormat(dblData,bTwoLeadingZeros,iDecimals)
+	If(dblData<10) Then
+		MyFormat = "0" + CStr( Int(dblData*(10^iDecimals))/(10^iDecimals) )
+	Else
+		MyFormat = CStr( Int(dblData*(10^iDecimals))/(10^iDecimals) )
+	End If
+End Function
+		
+	
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

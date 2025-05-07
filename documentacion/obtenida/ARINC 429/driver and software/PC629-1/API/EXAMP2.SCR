@@ -1,0 +1,58 @@
+;******************************************************
+;
+;     SCRIPT FOR SIMULATOR/LANDING GEAR LRU FOR EXAMPLE 2
+;
+;        Compile to file EXAMP2.ROM
+;
+;******************************************************
+
+SYSTEM
+    TI      = 50            ;Transmit interval value
+    TG      = 8             ;Terminal gap value
+    SG      = 0             ;Sync gap value
+    AXTEN   = TRUE          ;Enable alternate label extension
+                            ;to emulate CID (transmit only)
+    CID     = 8             ;Channel ID value (receive only)
+    FORMAT  = BLOCK         ;Select block mode
+    START   = TRUE          ;Start card when loaded
+    MPPEN   = FALSE         ;Offsets in RPP not MPP
+END
+
+XPPCELL
+    NAME  = xmitgearleft    ;Name of cell
+    AXT   = 1               ;Alternate label extension
+    LBL   = 064H            ;Label value
+    AD    = 0060H           ;Address of data word
+    WC    = 1               ;# of data words
+END
+
+XPPCELL
+    NAME  = xmitgearright   ;Name of cell
+    AXT   = 2               ;Alternate label extension
+    LBL   = 064H            ;Label value
+    AD    = 0061H           ;Address of data word
+    WC    = 1               ;# of data words
+END
+
+XPPCELL
+    NAME  = xmitgearnose    ;Name of cell
+    AXT   = 4               ;Alternate label extension
+    LBL   = 064H            ;Label value
+    AD    = 0062H           ;Address of data word
+    WC    = 1               ;# of data words
+END
+
+XPPSCHEDULE
+    ROW  =  0, xmitgearleft, xmitgearright
+    ROW  =  1, xmitgearnose
+END
+
+RPPCELL
+    NAME  = rcvlever        ;Name of cell
+    LBL   = 134H            ;Label value
+    AD    = 0040H           ;Address to write to
+    WC    = 1               ;# of data words
+    MPP   = FALSE           ;Offset located in RPP
+    IV    = 134H            ;Interrupt vector
+    TINT  = TRUE            ;Enable trailing interrupts
+END

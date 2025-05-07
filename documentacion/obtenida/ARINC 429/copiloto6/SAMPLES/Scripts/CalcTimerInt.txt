@@ -1,0 +1,87 @@
+'	CalcTimerInt.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Calculates the minimal acceptable timer interval 
+'  	NOTE: BCMsg1 is scheduled to transmit every 1ms	
+'
+'	Databuses:	MIL-STD-1553
+'
+
+'Globals
+Dim prevTime1
+
+'Set initial gap intervals (ms)
+Dim interval1
+interval1 = 1000	'One Second
+
+'Set acceptable Delta-Error (ms)
+Dim deltaError
+deltaError = 250
+
+'Set the step size to be subtracted from the interval
+Dim stepDownSize
+stepDownSize = 20
+
+Sub ScriptStart    
+	'Initialize Timer
+	View.EnableTimer1(True)  
+	View.SetTimerInterval1(interval1)
+	
+	'Initialize other global variables
+	prevTime1 = 0
+	
+	'Signal beginning
+	View.OutputLine ("")
+	View.Output "Interval1=" & CStr(interval1) & "ms" 
+	View.OutputLine " DeltaError=" & CStr(deltaError) & "ms" 
+	View.OutputLine ("")
+	View.OutputLine ("Begin") 
+	
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("End")
+	If interval1 > 0 Then
+		View.OutputLine " * Smallest interval = " & interval1 & "ms"
+	Else
+	    View.OutputLine " * No Threshold reached"
+	End If 
+End Sub  
+
+Sub OnScriptTimer1
+	Dim curTime, deltaTime
+	curTime = CLng(BCMsg1.MsgTimeTag)
+	If prevTime1 Then
+		deltaTime = (curTime - prevTime1) / 1000
+	Else
+		deltaTime = 0
+	End If
+	prevTime1 = curTime   
+	
+	'View.OutputLine " Error=" & deltaTime
+	
+	If deltaTime > (interval1 + deltaError) Then
+		View.OutputLine ""
+		View.OutputLine "Threshold reached at " & interval1 & "ms"
+		View.EnableTimer1(False)
+	Else 
+		View.Output "."
+		interval1 = interval1 - stepDownSize
+		View.SetTimerInterval1(interval1) 
+		
+		If 0 > interval1 Then
+			View.OutputLine ""
+			View.OutputLine "Done"
+		End If 
+		
+	End If
+	
+End Sub  
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

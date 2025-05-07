@@ -1,0 +1,74 @@
+'	SamplSAColl.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This example samples a Collection SA (from a MIL-STD-1553 RT).
+'	The data values from each of the SA is written to the 
+'	output window. The sampling rate is controlled by the timer control.
+'	The timer control is an ActiveX timer control placed on a Control View.
+'
+'	Required objects:
+'	 RT1     - A RT (which should have several subaddresses)
+'	 TimerCtrl1 - A Timer Control from a Control View
+'
+'	Databuses:	ALL
+'
+'	Topics Covered:
+'	 Using collections
+'	 Scripting controls on a Control View
+'	 Use of timer/event trigger
+'	 Use of global variables to cache data
+'
+
+'Global Variable declarations
+Dim Loops
+Dim SAColl
+Dim SANums(128)
+Dim SARcv(128)
+
+'Global Variable initializations
+Loops = 1
+Set SAColl = RT1.SAs
+
+Sub ScriptStart
+	View.Output ("Initializing data... ")
+
+	'Initialize Timer
+	TimerCtrl1.Enabled = True
+	TimerCtrl1.Interval = 500	'500 milliseconds
+	
+	'Initialize SANums and SANames arrays from collection
+	'(this is done to show how data can be cached into global variables and can speed up processing)
+	Dim i
+	i=1
+	
+	For Each SA In SAColl
+		'Store SA numbers into an array for later use
+		SANums(i) = SA.SANum
+		'Store receive flag into an array for later use
+		SARcv(i) = SA.Rcv
+		i = i+1
+
+		View.Output(".")
+	Next
+	
+	View.OutputLine ("Initialization Complete.")
+End Sub
+
+Sub ScriptStop
+	'TODO: Enter Exit code here
+End Sub
+
+'Event Handler: Loops through all labels in the collection
+Sub TimerCtrl1_Timer()
+	View.OutputLine("Loop#=" & Loops & ": ")
+
+	Dim i
+	i=1
+	For Each SA In SAColl
+		View.OutputLine("   SA#=" & SANums(i) & " Rcv=" & SARcv(i) & " SWD1=" & CStr(SA.MsgSwd1) & " TimeTag=" & CStr(SA.MsgTimeTag) )
+ 		i = i+1
+	Next
+
+	Loops = Loops + 1
+End Sub

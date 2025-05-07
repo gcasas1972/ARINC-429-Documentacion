@@ -1,0 +1,74 @@
+'	ISOAlphaRx.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Receives an ISO Alpha No. 5 encoded message 
+'
+'	Notes:
+' 	1. Requires:
+'		a. ISOMsg    - ARINC 429 Label 356 (ISO Alphabet No. 5)
+'		b. WordCount - Field (ISO#5 Char, bits  9-16)
+'		c. Spares    - Field (ISO#5 Char, bits 17-22)
+'		d. CH1       - Field (ISO#5 Char, bits  9-15)
+'		e. CH2       - Field (ISO#5 Char, bits 16-22)
+'		f. CH3       - Field (ISO#5 Char, bits 23-29)
+'  		g. SSM	     - Field (ISO#5 Char, bits 30-31)		
+' 	2. Each data word can hold up to 3 characters from the string 
+' 	3. Convert sample to use Label 357 by:
+'		a. Change Spares to UnitAddress
+'		b. Set UnitAddress in SetStandBy function	
+'
+'	Databuses:	ARINC 429
+'
+
+'Constants
+Const SSM_INTERMEDIATE = 0   	'SSM for all data words except last
+Const SSM_STX = 1               'SSM for initial word   (Start Text)
+Const SSM_ETX = 2               'SSM for final word     (End Text)
+
+'Globals
+Dim MyString
+ 
+'Sub-Routines           
+Sub ScriptStart 
+	View.OutputLine ("BEGIN - script") 
+End Sub 
+
+Sub ScriptStop
+	View.OutputLine ("END - script")
+End Sub 
+ 
+Sub ISOMsg_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+	If (0 <> CLng(timetag)) Then 
+	    
+	    If (SSM_STX = CLng(SSM.ValueEngr)) Then            
+	    	MyString = CStr("")
+	    Else
+	        'Read data from msg to string
+	        If (0 <> CLng(CH1.ValueEngr)) Then
+	        	MyString = MyString & Chr(CH1.ValueEngr)
+	        End If 
+	        
+	        If (0 <> CLng(CH2.ValueEngr)) Then
+	        	MyString = MyString & Chr(CH2.ValueEngr)
+	        End If
+	        
+	        If (0 <> CLng(CH3.ValueEngr)) Then
+	        	MyString = MyString & Chr(CH3.ValueEngr)
+	        End If 
+	        
+	        If (SSM_ETX = CLng(SSM.ValueEngr)) Then
+	        	View.OutputLine "String = """ & MyString & """"
+	        End If
+	        
+	    End If
+			
+	End If  '0 <> TimeTag
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

@@ -1,0 +1,31 @@
+'	ChangingDataWord.TXT : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	After each transmission of BCMsg1 the first data word is incremented.
+'
+'   Notes:      The same result could be achieved by assigning a field to 
+'               the first data word and incrementing it's value property 
+'               after each transmission.
+'
+'	Databuses:	MIL-STD-1553
+'Option ExplicitDim count
+
+Sub ScriptStart 	
+'Initialize count and write to BCMsg
+  	count = 0
+  	BCMsg1.PutDataWord 1,count
+ 	View.OutputLine ("Begin")
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("End")
+End Sub
+
+'Event Handler
+Sub BCMsg1_OnMsgUpdate(datawords, cwd1, cwd2, swd1, swd2, errors, activity, timetag, timetagh, MsgRespTime1, MsgRespTime2)
+'Increment count and write to BCMsg
+	count = count + 1
+	BCMsg1.PutDataWord 1,count
+  	View.OutputLine (count)
+End Sub

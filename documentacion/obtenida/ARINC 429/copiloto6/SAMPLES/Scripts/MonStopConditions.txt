@@ -1,0 +1,55 @@
+'	MonStopConditions.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'
+'	Ddemonstrates how the Sequential Monitor Count
+'	may be used to control the Sequential Monitor
+'
+'	Note - additional conditions may be used, including the following:
+'	1)	Time
+'			a) Run Time
+'			b) System Time
+'			c) Timer Event
+'			d) Message Time Tag
+'	2)	Data
+'			a) Value
+'			b) Parity
+'			c) Timeout
+'			d) Operating Limit
+'			e) SDI
+'	3)	Activity
+'			a) Count
+'			b) Error detected
+'
+'	Databuses:	MIL-STD-1553, ARINC 429, ARINC 708
+' 
+Sub ScriptStart   
+	'Initialize the timer event
+	View.EnableTimer1(True)
+	View.SetTimerInterval1(1000)  
+	'Signal start
+	View.OutputLine ("BEGIN")
+End Sub
+
+Sub OnScriptTimer1
+	SeqMon.Pause = Not SeqMon.Pause
+End Sub 
+
+Sub SeqMon_OnCountChange(Count)
+	If CLng(Count) > 100 Then
+		View.EnableTimer1(False)
+		SeqMon.Pause = True
+		View.OutputLine "Done"
+	End If
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

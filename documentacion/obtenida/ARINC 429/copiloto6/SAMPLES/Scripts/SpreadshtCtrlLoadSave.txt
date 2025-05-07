@@ -1,0 +1,85 @@
+'   SpredshtCtrlLoadSave.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'
+'   Save/Load data using a Spreadsheet on the control form
+'   Spreadsheet1 : Microsoft Office Spreadsheet 9.0 Control (Excel web component)
+'
+'   Databuses: All
+'
+
+' Force explicit declaration of all variables
+Option Explicit   
+
+Sub ScriptStart 
+	Dim fileName , filterStr        
+	' Get a file to open (optionaly use static fileName string)
+	filterStr = "HTML Files (.htm;.html)|*.htm;*.html|All Files (*.*)|*.*"
+	fileName = GetFileName(True, filterStr)
+	' Initialize the Spreadsheet
+	If Len(fileName) Then   
+		Spreadsheet1.Refresh
+		Spreadsheet1.DataType = "HTMLURL"
+		Spreadsheet1.HTMLURL = fileName   
+		Spreadsheet1.TitleBar.Caption = "My Sample Spreadsheet" 
+	Else 
+	    Spreadsheet1.TitleBar.Caption = "Uninitialized Spreadsheet"
+	End If
+End Sub
+
+Sub ScriptStop
+	Dim fileName 
+	Dim HTMLDataStr ,filterStr 
+	' Read the data
+	Spreadsheet1.DataType = "HTMLData"
+    HTMLDataStr = Spreadsheet1.HTMLData    
+    ' Get a file to save to (optionaly use static fileName string)
+    filterStr = "HTML Files (.htm;.html)|*.htm;*.html|All Files (*.*)|*.*"
+	fileName = GetFileName(False, filterStr)
+	' Save the the data 
+	If Len(HTMLDataStr) And Len(fileName) Then
+		Call SaveStringToFile (HTMLDataStr, fileName)
+	End If
+End Sub    
+                                        
+' Select Open/Save As filename                             
+Function GetFileName (bOpen, filterStr) 
+	Dim oCmnCtrl				'Object - Common Dialog 
+	Set oCmnCtrl = createobject("MSComDlg.CommonDialog")
+	With oCmnCtrl
+		.Filter = filterStr		'set the filter
+		.FilterIndex = 1		'filter is initialized to first item 
+		.MaxFileSize = 260  
+		If bOpen Then			'Show the "OPEN" dialog
+			.flags = 4 Or 4096	'file must NOT be read only and must exist to show up
+			.DialogTitle = "Open File" 
+			.showopen()							  
+		Else     			'Show the "SAVE AS" dialog 
+			.flags = 4		'file must NOT be read only
+			.DialogTitle = "Save As"  
+			.showsave()                   		
+		End If
+	End With
+	GetFileName = oCmnCtrl.Filename	'This is the filename
+	Set oCmnCtrl = Nothing			'Free oCmnCtrl object
+End Function
+           
+' Save a formated string to a file           
+Function SaveStringToFile (dataStr, fileName)
+	Dim fso, ts
+	Set fso = CreateObject("Scripting.FileSystemObject")
+	Set ts = fso.CreateTextFile(fileName)  
+	ts.WriteLine (dataStr)
+	ts.Close    
+	Set ts = Nothing
+	Set fso = Nothing 
+	SaveStringToFile = True
+End Function
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''
+

@@ -1,0 +1,47 @@
+'	StopBCOnErr.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Monitors a single BC-Message and stops/pauses the
+'	BC when an error is detected.
+'
+'	Databuses:	MIL-STD-1553
+' 
+
+'Define error values (found in header file)                      
+Const MSGERR_NORESP    = 32768 '0x8000 
+Const MSGERR_ANY       = 16384 '0x4000
+Const MSGERR_PROTOCOL  = 8192  '0x2000 
+Const MSGERR_SYNC      = 4096  '0x1000
+Const MSGERR_DATACOUNT = 2048  '0x0800
+Const MSGERR_MANCH     = 32    '0x0020
+Const MSGERR_PARITY    = 16    '0x0010 
+Const MSGERR_WORD      = 8     '0x0008
+Const MSGERR_RETRY     = 4     '0x0004
+Const MSGERR_SYSTEM    = 2     '0x0002  
+
+Sub ScriptStart
+	View.OutputLine ("Begin")
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("End")
+End Sub  
+
+Sub BCMsg_OnMsgError(MsgError)
+	Dim errVal
+	errVal = CLng(MsgError)
+		
+	If (MSGERR_ANY And errVal) Or (MSGERR_NORESP And errVal) Then 
+		View.OutputLine "Stopped/Paused on Error"
+		MyBC.Pause = True 
+	End If
+	
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

@@ -1,0 +1,30 @@
+'	ChangingDataFromMonCount.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Sets a data value equal to the count in the monitor each time 
+'	the monitor count changes	
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+Sub ScriptStart
+End Sub
+
+'Event handler for the count of Mon1
+Sub Mon1_OnCountChange(Count)
+   'Set the data value of Field1
+   Field1.ValueEngr = Count
+End Sub
+
+
+Sub ScriptStop
+   View.OutputLine "There were " & CStr(Mon1.Count) & " items recorded."
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

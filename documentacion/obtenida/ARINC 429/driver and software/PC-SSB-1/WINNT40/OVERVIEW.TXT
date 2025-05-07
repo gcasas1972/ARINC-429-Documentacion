@@ -1,0 +1,210 @@
+NAME:    SSBT_CardClose -- Disables access to a PC-SSB-1 card.
+
+SYNOPSIS:
+ERRVAL SSBT_CardClose(handleval);
+HCARD handleval;         Handle of a PC-SSB-1 card.
+
+DESCRIPTION:
+This function MUST be called before a program terminates
+to revent the associated hardware resource from being
+lost.
+
+RETURNS:
+A non-zero value if an error occurs, or zero if successful.
+
+NAME:    SSBT_CardOpen -- Enables access to a PC-SSB-1 card.
+
+SYNOPSIS:
+handleval = SSBT_CardOpen(memval,ioval,irqval);
+INT memval;              Memory segment address of card.
+INT ioval;               I/O port address of card.
+INT irqval;              IRQ setting of card.
+HCARD handleval;         Returns a card handle to the specified card if sucessful,
+                         otherwise a negative value to indicate an error.
+DESCRIPTION:
+Checks for the presence of a PC-SSB-1 that has been
+assigned the specified memory, I/O and IRQ settings.  If
+the card is found, a quick hardware self-test of the card
+is performed.  Since this function returns the card handle
+parameter required by all other functions, this function
+is always the first PC-SSB-1 API function called by the
+user's application.
+
+RETURNS:
+A card handle to the specified card if successful,
+otherwise a negative value to indicate an error.
+
+CAUTIONS:
+SSBT_CardClose must be called to release the hardware
+resources before the user's application terminates.
+NAME:    SSBT_Check -- Checks if board exists.
+
+SYNOPSIS:
+result = SSBT_Check(handleval);
+HCARD handleval;             Handle of card.
+ERRVAL result;               Returns non-zero value if card is not present.
+
+DESCRIPTION:
+  The procedure SSBT_Check() verifies that the card
+  exists.
+
+RETURNS:
+  Returns a non-zero value if the card is not present.  The exact return
+  value can be one of the following:
+
+  ERR_CHKREG3   (-2)  - Did not find zeros in bits 2-7 of Status Register 3.
+  ERR_CHKREG5   (-3)  - Did not find zeros in bits 2-7 of Status Register 5.
+  ERR_CHKREG01  (-4)  - While toggling MMEM bit in Status Register 0, read 1, expected 0.
+  ERR_CHKREG02  (-5)  - While toggling MMEM bit in Status Register 0, read 0, expected 1.
+  ERR_CHKREG03  (-6)  - While toggling MMEM bit in Status Register 0, read 1, expected 0.
+  ERR_CHKTERM   (-7)  - Terminal memory contains unstable data.
+  ERR_CHKMON    (-8)  - Monitor memory contains unstable data.
+  ERR_CHKMEMWR  (-9)  - Cannot write to the terminal memory.
+  ERR_CHKTERMWR (-10) - Trial value written to terminal memory disappeared.
+  ERR_CHKMONWR  (-11) - Trial value written to monitor memory disappeared.
+
+CAUTIONS:
+  A non-zero value is returned if the card is not
+  present. 
+
+
+NAME:    SSBT_Config -- Configure board.
+
+SYNOPSIS:
+status = SSBT_Config(regval,handleval);
+BYTE regval;             Value of Control Register 0.
+HCARD handleval;         Handle of card.
+BYTE status;             Returns value of Status Register 0.
+
+DESCRIPTION:
+  The procedure SSBT_Config() initializes Control Register 0.
+
+RETURNS:
+  Returns the value of Status Register 0.
+
+CAUTIONS:
+
+NAME:    SSBT_ConfigInt -- Configure board with interrupt handler.
+
+SYNOPSIS:
+errval = SSBT_ConfigInt(regval,hEvent,handleval);
+BYTE regval;                 Value of Control Regster 0.
+LPVOID hEvent;               Handle of a WIN32 event object.
+HCARD handleval;             Handle of card.
+ERRVAL errval;               A non-zero value if an error occurs, or zero if successful.
+
+DESCRIPTION:
+  The procedure SSBT_ConfigInt() initializes Control
+  Register 0, associates the WIN32 event object with
+  interrupts from the card, and enables interrupts from
+  the card.  Calling SSBT_ConfigInt() with a NULL
+  parameter for hEvent disconnects the WIN32 event object
+  from the card.
+
+  If the function is successful, any interrupt issued from
+  the PC-SSB-1 card causes the event object specified by
+  hEvent to be set to the signaled state.
+
+  The user's application must ensure that the event object
+  is set to the unsignaled state before the PC-SSB-1
+  issues the first interrupt.  This can be done when
+  creating the event object with the WIN32 API function
+  CreateEvent().
+
+  Note that event objects are never polled.  Create a
+  worker thread which immediately goes to sleep by calling
+  a WIN32 API wait function like WaitForSingleObject(). 
+  When the PC-SSB-1 issues an interrupt, the event object
+  is signaled, and the worker thread wakes up to respond
+  to the interrupt.
+
+  It is the user's responsibility to clear the interrupt
+  from the PC-SSB-1 by calling SSBT_ClrInt().  The user
+  must also set the event object to the unsignaled state.
+
+RETURNS:
+  A non-zero value if an error occurs, or zero if successful.
+
+CAUTIONS:
+  It is the user's responsiblity to eventually destroy the
+  WIN32 event object before the application terminates.
+
+NAME:    SSBT_MonMsg -- Retrieve monitor messages.
+
+SYNOPSIS:
+wordcount = SSBT_MonMsg(dwdptr,handleval);
+LPULONG dwdptr;              Pointer to buffer to store values.
+HCARD handleval;             Handle of card.
+USHORT wordcount;            Returns number of long words read from monitor.
+
+DESCRIPTION:
+  The procedure SSBT_MonMsg() reads the long words
+  stored in the monitor memory.  The dwdptr parameter
+  points to the buffer to store the long words to.  The
+  number of long words read is returned.
+
+RETURNS:
+  Returns the number of long words read from the
+  monitor.
+
+CAUTIONS:
+  It is the user's responsibility to verify the size of
+  the specified buffer.
+
+NAME:    SSBT_TxMsg -- Transmit message.
+
+SYNOPSIS:
+status = SSBT_TxMsg(cmdval,dwdptr,wcval,blkval,handleval);
+ULONG cmdval;                Command word value.
+LPULONG wdptr;               Pointer to data words to transmit.
+USHORT wcval;                Number of long words to transmit.
+USHORT blkval;               Block number to use.
+HCARD handleval;             Handle of card.
+BYTE status;                 Returns value of Status Register 0.
+
+DESCRIPTION:
+  The procedure SSBT_TxMsg() configures the card to
+  transmit, triggers the card, and returns the value of
+  Status Register 0.  The cmdval parameter specifies
+  the command word to write.  The dwdptr parameter
+  points to the buffer containing the data words to
+  transmit.  The wcval parameter specifies the number of
+  words to transmit.  The blkval parameter specifies the
+  block number to use.
+
+RETURNS:
+  Returns the value of Status Register 0.
+
+CAUTIONS:
+  It is the user's responsibility to verify the size of
+  the specified buffer.
+
+NAME:    SSBT_RcMsg -- Receive message.
+
+SYNOPSIS:
+status = SSBT_RcMsg(cmdval,dwdptr,wcval,blkval,handleval);
+ULONG cmdval;                Value of command word.
+LPULONG dwdptr;              Pointer to buffer to store data words.
+USHORT wcval;                Number of long words to receive.
+USHORT blkval;               Block number to use.
+HCARD handleval;             Handle of card.
+BYTE status;                 Returns value of Status Register 0.
+
+DESCRIPTION:
+  The procedure SSBT_RcMsg() configures the card to
+  receive, triggers the card, and returns the value of
+  Status Register 0.  The cmdval parameter specifies the
+  command word to write.  The dwdptr parameter points to
+  the buffer to store the data words.  The wcval
+  parameter specifies the number of words to receive.
+  The blkval parameter specifies the block number to
+  use.
+
+RETURNS:
+  Returns the value of Status Register 0.
+
+CAUTIONS:
+  It is the user's responsibility to verify the size of
+  the specified buffer.
+
+

@@ -1,0 +1,53 @@
+'	InputOutputControl.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This example shows an input box to get user input and then shows a 
+'	message box displaying the text that was entered.
+'
+'	Required objects:
+'	 A InOutCtrl must be inserted in a control view and then that control must
+'	 be inserted into the script view with the name of 'InOutCtrl1'
+'
+'	Notes: The MsgBox and InputBox built into scripting should NOT be used. 
+'	 MsgBox and InputBox stop the script processing (and slows or stops other 
+'	 user interface) until the dialog is finished. This control can be used to 
+'	 circumvent this problem.
+'
+'	Databuses:	ALL
+'
+
+Dim MyInput
+
+Sub ScriptStart
+	View.OutputLine ("Hello World")
+	
+	Call InOutCtrl1.ShowInputBox("Type some text:","Input Box Title")
+End Sub
+
+Sub ScriptStop
+End Sub
+
+'Event Handler for Ok button of the InOut Control
+Sub InOutCtrl1_Ok()
+	'TODO: Enter code here
+	
+	MyInput = InOutCtrl1.InputText
+
+	'Since the OK event handeler is calling a method that will fire the OK event,
+	'the string is being checked for input... to avoid an infinite loop
+	If Len(MyInput) Then
+		MessageString = "The text that was entered: " + vbNewLine + MyInput
+		Call InOutCtrl1.ShowMessageBox(MessageString,"Message Box Title",0)
+		
+		'Must clear the value here or infinite loop will result!
+		InOutCtrl1.InputText = ""
+	end if
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

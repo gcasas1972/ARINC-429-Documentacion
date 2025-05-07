@@ -1,0 +1,57 @@
+'	FileReadWrite.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Sample file reading and writing
+'	All file access is within the TextStreamTest subroutine.
+'	To be able to access the file system object from multiple locations
+' 	the "Dim..." line can be moved outside of all Subs to make the variables global.
+' 	In that case, the TextStreamTest close line "ts.Close" should be moved to the 
+'	ScriptStop subroutine.
+'
+'	Databuses:	All
+'
+
+Sub ScriptStart
+   'Display the return value of the TextStreamTest subroutine in the output window
+   View.Output TextStreamTest("test1.txt")		'filename
+End Sub
+
+
+Sub ScriptStop
+End Sub
+
+
+Function TextStreamTest(filename)
+   Const ForReading = 1, ForWriting = 2, ForAppending = 8 
+      'Appending->Open a file and write to the end of the file.
+   Const TristateUseDefault = -2, TristateTrue = -1, TristateFalse = 0
+   Dim fso, f, ts
+   Set fso = CreateObject("Scripting.FileSystemObject")
+   fso.CreateTextFile filename   ' Create a file.
+   Set f = fso.GetFile(filename)
+   Set ts = f.OpenAsTextStream(ForWriting, TristateUseDefault)
+
+   'Output text to a file
+   ts.Write "CoPilot Script"
+   ts.Write " Output File"
+   ts.WriteBlankLines(1)		'Writes "1" carriage return at the end of the line
+
+   ts.WriteLine Date & " " & Time	'Writes the specified text with a carriage return
+   ts.Write "Hello World"
+   ts.Close
+
+   'Now read the file back
+   Set ts = f.OpenAsTextStream(ForReading, TristateUseDefault)
+   
+   'Set the function return value to the file contents
+   TextStreamTest = ts.ReadAll
+   ts.Close
+End Function
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

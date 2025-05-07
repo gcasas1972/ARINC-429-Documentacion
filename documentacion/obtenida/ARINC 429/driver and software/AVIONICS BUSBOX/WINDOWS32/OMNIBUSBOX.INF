@@ -1,0 +1,209 @@
+;**
+;*
+;*  OmniBusBox INF INSTALLATION FILE  Version 1.4.0  (03/22/2013)
+;*  Copyright (c) 2004-2013
+;*  Ballard Technology, Inc.
+;*  www.ballardtech.com
+;*  support@ballardtech.com
+;*  ALL RIGHTS RESERVED
+;*
+;**
+
+[Version]
+Signature="$Windows NT$"
+Provider=%CompanyName%
+ClassGUID={4D36E972-E325-11CE-BFC1-08002BE10318}
+Class=Net
+DriverVer=03/22/2013,1.4.0.0
+CatalogFile=OMNIBUSBOX.CAT
+
+[DestinationDirs]
+DefaultDestDir=11
+RNDIS_CopyFiles_NT=12
+Ballard.CopyDllFiles=11
+Ballard.CopyDll32Files=16425
+Ballard.CopyDll64Files=11
+
+[Manufacturer]
+%CompanyName%=BallardDevices,nt.5.1,ntia64,ntamd64
+
+; NetChip IDs, used by both firmware modes
+
+[BallardDevices]
+%BallardDevice% = rndis,USB\VID_0525&PID_A211
+
+[BallardDevices.nt.5.1]
+%BallardDevice% = rndis.nt.5.1,USB\VID_0525&PID_A211
+
+[BallardDevices.ntia64]
+%BallardDevice% = rndis.ntia64,USB\VID_0525&PID_A211
+
+[BallardDevices.ntamd64]
+%BallardDevice% = rndis.ntamd64,USB\VID_0525&PID_A211
+
+[ControlFlags]
+ExcludeFromSelect = *
+
+[SourceDisksFiles]
+USB8023Y.SYS=1
+RNDISMPY.SYS=1
+BTIKRNL.DLL=1
+BTIKRNL64.DLL=1
+BTICARD.DLL=1
+BTICARD64.DLL=1
+BTICSDB.DLL=1
+BTICSDB64.DLL=1
+BTIDIO.DLL=1
+BTIDIO64.DLL=1
+BTI1553.DLL=1
+BTI155364.DLL=1
+BTI422.DLL=1
+BTI42264.DLL=1
+BTI429.DLL=1
+BTI42964.DLL=1
+BTI717.DLL=1
+BTI71764.DLL=1
+BTI708.DLL=1
+BTI70864.DLL=1
+BTIRPC.DLL=1
+BTIRPC64.DLL=1
+
+[Ballard.CopyDllFiles]
+BTIKRNL.DLL
+BTICARD.DLL
+BTICSDB.DLL
+BTIDIO.DLL
+BTI1553.DLL
+BTI422.DLL
+BTI429.DLL
+BTI717.DLL
+BTI708.DLL
+BTIRPC.DLL
+
+[Ballard.CopyDll32Files]
+BTIKRNL.DLL
+BTICARD.DLL
+BTICSDB.DLL
+BTIDIO.DLL
+BTI1553.DLL
+BTI422.DLL
+BTI429.DLL
+BTI717.DLL
+BTI708.DLL
+BTIRPC.DLL
+
+[Ballard.CopyDll64Files]
+BTIKRNL64.DLL
+BTICARD64.DLL
+BTICSDB64.DLL
+BTIDIO64.DLL
+BTI155364.DLL
+BTI42264.DLL
+BTI42964.DLL
+BTI71764.DLL
+BTI70864.DLL
+BTIRPC64.DLL
+
+; Windows X64 specific sections ---------------------------------
+
+[rndis.ntia64]
+Characteristics = 0x84   ; NCF_PHYSICAL + NCF_HAS_UI
+BusType         = 15
+DriverVer       = 03/22/2013,1.4.0.0
+include         = netrndis.inf
+needs           = Usb_Rndis.ndi
+CopyFiles       = Ballard.CopyDll32Files,Ballard.CopyDll64Files
+
+[rndis.ntia64.Services]
+include         = netrndis.inf
+needs           = Usb_Rndis.ndi.Services
+
+; Windows AMD64 specific sections ---------------------------------
+
+[rndis.ntamd64]
+Characteristics = 0x84   ; NCF_PHYSICAL + NCF_HAS_UI
+BusType         = 15
+DriverVer       = 03/22/2013,1.4.0.0
+include         = netrndis.inf
+needs           = Usb_Rndis.ndi
+CopyFiles       = Ballard.CopyDll32Files,Ballard.CopyDll64Files
+
+[rndis.ntamd64.Services]
+include         = netrndis.inf
+needs           = Usb_Rndis.ndi.Services
+
+; Windows 2000 specific sections ---------------------------------
+
+[rndis.nt]
+Characteristics = 0x84   ; NCF_PHYSICAL + NCF_HAS_UI
+BusType         = 15
+DriverVer       = 03/22/2013,1.4.0.0
+AddReg          = RNDIS_AddReg_NT, RNDIS_AddReg_WIN2K
+CopyFiles       = RNDIS_CopyFiles_NT,Ballard.CopyDllFiles
+
+[rndis.nt.Services]
+AddService = USB_RNDISY, 2, RNDIS_ServiceInst_NT, RNDIS_EventLog
+
+[RNDIS_CopyFiles_NT]
+; no rename of files on Windows 2000, use the 'y' names as is
+usb8023y.sys, , , 0 
+rndismpy.sys, , , 0 
+
+[RNDIS_ServiceInst_NT]
+DisplayName     = %ServiceDisplayName%
+ServiceType     = 1 
+StartType       = 3 
+ErrorControl    = 1 
+ServiceBinary   = %12%\usb8023y.sys    
+LoadOrderGroup  = NDIS
+AddReg          = RNDIS_WMI_AddReg_NT
+
+[RNDIS_WMI_AddReg_NT]
+HKR, , MofImagePath, 0x00020000, "System32\drivers\rndismpy.sys"
+
+; Windows XP specific sections -----------------------------------
+
+[rndis.nt.5.1]
+Characteristics = 0x84   ; NCF_PHYSICAL + NCF_HAS_UI
+BusType         = 15
+DriverVer       = 03/22/2013,1.4.0.0
+include         = netrndis.inf
+needs           = Usb_Rndis.ndi
+CopyFiles       = Ballard.CopyDllFiles
+
+[rndis.nt.5.1.Services]
+include     = netrndis.inf
+needs       = Usb_Rndis.ndi.Services
+
+; Windows 2000 specific sections --------------------
+
+[RNDIS_AddReg_NT]
+HKR, Ndi,               Service,        0, "USB_RNDISY"
+HKR, Ndi\Interfaces,    UpperRange,     0, "ndis5" 
+HKR, Ndi\Interfaces,    LowerRange,     0, "ethernet"
+
+[RNDIS_AddReg_WIN2K]
+HKR, ,                  ReclaimRecv,    0x00010001, 1
+HKR, NDI\params\NetworkAddress, ParamDesc,  0, %NetworkAddress%
+HKR, NDI\params\NetworkAddress, type,       0, "edit"
+HKR, NDI\params\NetworkAddress, LimitText,  0, "12"
+HKR, NDI\params\NetworkAddress, UpperCase,  0, "1"
+HKR, NDI\params\NetworkAddress, default,    0, " "
+HKR, NDI\params\NetworkAddress, optional,   0, "1"
+
+[RNDIS_EventLog]
+AddReg = RNDIS_EventLog_AddReg
+
+[RNDIS_EventLog_AddReg]
+HKR, , EventMessageFile, 0x00020000, "%%SystemRoot%%\System32\netevent.dll"
+HKR, , TypesSupported,   0x00010001, 7
+
+[SourceDisksNames]
+1=%SourceDisk%,,1
+
+[Strings]
+ServiceDisplayName    = "Ballard Technology OmniBusBox"
+NetworkAddress        = "Network Address"
+CompanyName           = "Ballard Technology, Inc."
+BallardDevice         = "Ballard Technology OmniBusBox"
+SourceDisk            = "OmniBusBox Driver Software for Windows"

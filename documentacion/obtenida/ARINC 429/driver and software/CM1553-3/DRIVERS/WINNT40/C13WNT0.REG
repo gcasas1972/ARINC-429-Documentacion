@@ -1,0 +1,118 @@
+REGEDIT4
+
+;**
+;
+;  CM1553-3 WIN32 DRIVER  Version 1.0  (09/08/2000)
+;  Copyright (c) 1999-2000
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   C13WNT0.REG -- CM1553-3 32-bit Driver Registry File.
+;                         This registry file does not call out an interrupt.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the CM1553-3 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM1553-3A]
+"InterruptName"="CM15533Interrupt"
+"PCMCIAResources"="CM15533ARsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM15533ACard00"
+"Parameters"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM1553-3B4]
+"InterruptName"="CM15533Interrupt"
+"PCMCIAResources"="CM15533B4Rsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM15533B4Card00"
+"Parameters"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM1553-3B32]
+"InterruptName"="CM15533Interrupt"
+"PCMCIAResources"="CM15533B32Rsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM15533B32Card00"
+"Parameters"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\CM1553-3C]
+"InterruptName"="CM15533Interrupt"
+"PCMCIAResources"="CM15533CRsrc"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000008
+"SymbolicName"="CM15533CCard00"
+"Parameters"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533ARsrc1]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533ARsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533B4Rsrc1]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533B4Rsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533B32Rsrc1]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533B32Rsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533CRsrc1]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CM15533CRsrc1\Parameters]
+"IoLength"=dword:00000010
+"MemoryMappedBaseAddress"=dword:000cd000
+"MemoryMappedSize"=dword:00001001
+"Pcmcia"=dword:00000001
+"InterruptNumber"=dword:00000005
+"IoBaseAddress"=dword:000002d0
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM1553-3A]
+"Driver"="CM15533ARsrc"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM1553-3B4]
+"Driver"="CM15533B4Rsrc"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM1553-3B32]
+"Driver"="CM15533B32Rsrc"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Pcmcia\DataBase\BALLARD TECHNOLOGY, INC.\CM1553-3C]
+"Driver"="CM15533CRsrc"

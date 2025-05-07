@@ -1,0 +1,86 @@
+'	ScalarWithOffset.txt: COPILOT CUSTOM SCALAR INTERPRETER SCRIPT W/OFFSET SAMPLE
+'
+'	Copyright 2003
+'       
+'	Ballard Technology, Inc.
+'	(800) 829-1553
+'	www.ballardtech.com
+'	support@ballardtech.com
+'
+'	NOTES:  Using this script in CoPilot -- 
+'		Each script block below is labeled with the intended Custom 
+'		Interpreter script tab. Overwrite the text in the script tab 
+'		with the appropriate script block from the text below.
+
+'		Global variables and helper functions may be defined on any 
+'		of the Custom Interpreter script tabs. All functions and 
+'		global variables can be called/used from any of the Custom 
+'		Interpreter script tabs.
+'
+'	DESCRIPTION:
+'		CoPilot scalar interpreter script sample with an offset. 
+'               Note, this sample is not protocol specific.
+'
+
+
+'*******************************
+
+'The following is a GLOBAL constant and can be placed on the tab with any of
+'    the functions below (may still be accessed by all functions).
+offset = 0
+scale = 1	
+
+'********************************
+'*	Value --> Double        *
+'********************************
+
+'Conversion of Long Value to a Double
+Function ValueToDouble( inValue )
+	ValueToDouble = CDbl(inValue)*scale + offset
+ 
+	'Check if above max
+	If ValueToDouble > Script.RangeMax Then
+		ValueToDouble = Script.RangeMax
+	End If
+ 
+	'Check if below min
+	If ValueToDouble < Script.RangeMin Then
+		ValueToDouble = Script.RangeMin
+	End If
+End Function
+
+'********************************
+'*	Double --> Value        *
+'********************************
+
+Function DoubleToValue( inDouble )
+	'Check if above max
+	If inDouble > Script.RangeMax Then
+		inDouble = Script.RangeMax
+	End If
+ 
+	'Check if below min
+	If inDouble < Script.RangeMin Then
+		inDouble = Script.RangeMin
+	End If
+ 
+	DoubleToValue = CLng( (inDouble-offset) / scale)
+End Function
+
+'********************************
+'*	Value --> String        *
+'********************************
+
+Function ValueToString( inValue )
+	'Type cast the input value using the Value-To-Double Conversion
+	ValueToString = CStr(ValueToDouble( inValue ) )
+End Function
+
+'********************************
+'*	String --> Value        *
+'********************************
+
+Function StringToValue( inString)
+	'Type cast the input value using the Double-To-Value Conversion
+	StringToValue = DoubleToValue( CDbl(inString) )
+End Function

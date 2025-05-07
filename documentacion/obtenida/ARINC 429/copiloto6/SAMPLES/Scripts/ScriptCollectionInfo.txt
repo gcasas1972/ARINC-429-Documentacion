@@ -1,0 +1,60 @@
+'	ScriptCollectionInfo.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This is an example of using collections. This particular example
+'	starts with the CoPilot Shell and outputs limited information about
+'	all cards in the current project (hardware tree).
+'
+'	Databuses:	All
+'
+
+Sub ScriptStart
+	View.OutputLine ("Hello World")
+	
+	'Output the configuration info
+	DiscoverCards()
+End Sub
+
+Sub ScriptStop
+	'TODO: Enter Exit code here
+End Sub
+
+Sub DiscoverCards()
+	'Walk through all Cards
+	For Each Card In CopShell.Cards
+		View.OutputLine("Card=" & Card.Description)
+		
+		For Each Chan In Card.Chan1553s
+			View.OutputLine("MIL-STD-1553 CoreNum=" & Chan.CoreNum & " ChanNum=" & Chan.ChanNum )
+			For Each BCMsg In Chan.BC.BCMsgs
+				View.OutputLine("Name" & BCMsg.Name)
+				
+				'Add Field Processing...
+			Next
+			
+			'Add RT Processing...
+			'Add ErrorInjection Processing...
+		Next
+	
+		For Each Chan In Card.Chan429s
+			View.OutputLine("ARINC 429 ChanNum=" & Chan.ChannelNum )
+			For Each Label In Chan.Labels
+				View.OutputLine("Label=" & Label.LabelName)
+			Next
+		Next
+	
+		For Each Chan In Card.Chan708s
+			View.OutputLine("ARINC 708 CoreNum=" & Chan.CoreNum & " ChanNum=" & Chan.ChanNum )
+		Next
+		
+		'Add Monitor Processing...
+	Next
+End Sub
+	
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

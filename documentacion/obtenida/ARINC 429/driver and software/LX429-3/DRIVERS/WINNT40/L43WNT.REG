@@ -1,0 +1,64 @@
+REGEDIT4
+
+;**
+;
+;  LP429-3 and LC429-3 WIN32 DRIVER  Version 1.7  (07/07/2000)
+;  Copyright (c) 1998-2000
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   L43WNT.REG --  L43 32-bit Driver Registry File.
+;                         This registry file does not override the memory allocations.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the L43 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+;**
+;
+;  The following keys are for the LP429-3 model.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\LP429-3]
+"InterruptName"="LP429Interrupt"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000005
+"SymbolicName"="LP429Card00"
+"DeviceId"=dword:00001098
+"VendorId"=dword:000010b5
+"Parameters"=dword:00000000
+
+;**
+;
+;  The following keys are for the LC429-3 model.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\LC429-3]
+"InterruptName"="LC429Interrupt"
+"BusNumber"=dword:00000000
+"InterfaceType"=dword:00000005
+"SymbolicName"="LC429Card00"
+"DeviceId"=dword:00002024
+"VendorId"=dword:000010b5
+"Parameters"=dword:00000000

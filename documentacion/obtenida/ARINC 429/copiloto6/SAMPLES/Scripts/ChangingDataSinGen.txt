@@ -1,0 +1,61 @@
+'	ChangingDataSinGen.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Sets a data value to a sinusoidal value (between MINAMP and MAXAMP), with 
+'	adjustable period, for each transmission. 
+'	Notes:		The period is assigned by the PERIOD constant in milliseconds (10000ms = 10s).
+' 			
+'			In this example Msg1 is a ARINC 429 Message (label).
+' 			This can be modified for MIL-STD-1553 by making the
+' 			following changes:
+'   			1. Rename your 1553 BCMsg object to Msg1 in the Script View object pane
+'   			2. Change the Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+'			to Sub Msg1_OnMsgUpdate(datawords, cwd1, cwd2, swd1, swd2, errors, activity, timetag, timetagh, MsgRespTime1, MsgRespTime2)
+'   			3. Change the "Msg1.ValueEngr = Value" line to work with a field...
+'            			such as "Field1.ValueEngr = Value"
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+
+'Globals
+Const MAXAMP = 100									'Max Amplitude
+Const MINAMP = -100									'Min Amplitude
+Const PERIOD = 10000									'Period in milliseconds
+Const PI     = 3.14159
+Dim MyStartTime
+
+
+Sub ScriptStart
+   'Initialization of Constants
+   MyStartTime = 0
+End Sub
+
+
+Sub ScriptStop
+End Sub
+
+
+'Event Handler for update of Msg1 changes the data
+Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+   If MyStartTime = 0 Then
+	MyStartTime = CLng(timetag)
+	Angle = 0.0
+   Else
+	deltaMiliSec = (CLng(timetag) - CLng(MyStartTime)) / 1000
+	deltaMiliSec = deltaMiliSec MOD PERIOD
+	Angle = CDbl( (deltaMiliSec/PERIOD) * 2.0 * PI)				'The angle increases linearly over the PERIOD
+										'Like a Saw-tooth wave
+    End If
+
+   Value = (MINAMP+MAXAMP) + (MAXAMP-MINAMP)/2.0 * Sin(Angle)
+   Msg1.ValueEngr = Value
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

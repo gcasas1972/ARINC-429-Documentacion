@@ -1,0 +1,267 @@
+;**
+;*
+;*  LP708-1 and LC708-1 INF INSTALLATION FILE  Version 1.2.3  (07/30/2012)
+;*  Copyright (c) 2000-2012
+;*  Ballard Technology, Inc.
+;*  www.ballardtech.com
+;*  support@ballardtech.com
+;*  ALL RIGHTS RESERVED
+;*
+;**
+
+[Version]
+Signature="$CHICAGO$"
+Provider=%CompanyName%
+ClassGuid={5971FC40-50C8-11D3-AA35-0040055658FB}
+Class=BTI_AVDBI
+DriverVer=07/30/2012,1.2.3.1
+CatalogFile=L71W32.CAT
+
+[DestinationDirs]
+DefaultDestDir=11
+Ballard.CopyDllFiles=11
+Ballard.CopyDll32Files=16425
+Ballard.CopyDll64Files=11
+Ballard.CopyWdmFiles=12
+Ballard.CopyWdm64Files=12
+Ballard.CopyVxdFiles=11
+
+[Manufacturer]
+%CompanyName%=Ballard.Mfg,ntia64,ntamd64
+
+[Ballard.Mfg]
+%LP71.DeviceDesc% = LP71,PCI\VEN_10B5&DEV_2074&SUBSYS_207410B5&REV_01
+%LC71.DeviceDesc% = LC71,PCI\VEN_10B5&DEV_2075&SUBSYS_207510B5&REV_01
+
+[Ballard.Mfg.ntia64]
+%LP71.DeviceDesc% = LP71.ntia64,PCI\VEN_10B5&DEV_2074&SUBSYS_207410B5&REV_01
+%LC71.DeviceDesc% = LC71.ntia64,PCI\VEN_10B5&DEV_2075&SUBSYS_207510B5&REV_01
+
+[Ballard.Mfg.ntamd64]
+%LP71.DeviceDesc% = LP71.ntamd64,PCI\VEN_10B5&DEV_2074&SUBSYS_207410B5&REV_01
+%LC71.DeviceDesc% = LC71.ntamd64,PCI\VEN_10B5&DEV_2075&SUBSYS_207510B5&REV_01
+
+
+
+[ControlFlags]
+ExcludeFromSelect.nt=PCI\VEN_10B5&DEV_2074&SUBSYS_207410B5&REV_01,PCI\VEN_10B5&DEV_2075&SUBSYS_207510B5&REV_01
+
+[SourceDisksFiles]
+L71W32.DLL=1
+BTIWDM.SYS=1
+BTIWDM64.SYS=1
+BTIKRNL.DLL=1
+BTIUNIV.VXD=1
+
+[SourceDisksNames]
+1=%L71.DiskId%,,
+
+[ClassInstall]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyVxdFiles
+
+[ClassInstall32]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdmFiles
+
+[ClassInstall32.ntia64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[ClassInstall32.ntamd64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[BallardClass_Reg_Add]
+HKR,,,,%Ballard.ClassDesc%
+HKR,,Icon,,-5
+
+[Ballard.ServiceInstall]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.ServiceInstall64]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM64.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.CopyDllFiles]
+BTIKRNL.DLL
+L71W32.DLL
+
+[Ballard.CopyDll32Files]
+BTIKRNL.DLL
+L71W32.DLL
+
+[Ballard.CopyDll64Files]
+BTIKRNL.DLL
+L71W32.DLL
+
+[Ballard.CopyVxdFiles]
+BTIUNIV.VXD
+
+[Ballard.CopyWdmFiles]
+BTIWDM.SYS
+
+[Ballard.CopyWdm64Files]
+BTIWDM64.SYS
+
+;------------------------------------------------------------------------------
+;  LP71 - WIN64
+;------------------------------------------------------------------------------
+
+[LP71.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=LP71AddReg
+
+[LP71.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[LP71.ntia64.HW]
+AddReg=LP71HwAddReg
+
+[LP71.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=LP71AddReg
+
+[LP71.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[LP71.ntamd64.HW]
+AddReg=LP71HwAddReg
+
+;------------------------------------------------------------------------------
+;  LC71 - WIN64
+;------------------------------------------------------------------------------
+
+[LC71.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=LC71AddReg
+
+[LC71.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[LC71.ntia64.HW]
+AddReg=LC71HwAddReg
+
+[LC71.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=LC71AddReg
+
+[LC71.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[LC71.ntamd64.HW]
+AddReg=LC71HwAddReg
+
+;------------------------------------------------------------------------------
+;  LP71 - WIN2K
+;------------------------------------------------------------------------------
+
+[LP71.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=LP71AddReg
+
+[LP71.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[LP71.nt.HW]
+AddReg=LP71HwAddReg
+
+[LP71HwAddReg]
+HKR,,FriendlyName,,%LP71.DeviceDesc%
+
+[LP71AddReg]
+HKR,,Option_SymbolicName,,LP708Card
+HKR,,Option_InterruptEventName,,LP708Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,1
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  LC71 - WIN2K
+;------------------------------------------------------------------------------
+
+[LC71.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=LC71AddReg
+
+[LC71.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[LC71.nt.HW]
+AddReg=LC71HwAddReg
+
+[LC71HwAddReg]
+HKR,,FriendlyName,,%LC71.DeviceDesc%
+
+[LC71AddReg]
+HKR,,Option_SymbolicName,,LC708Card
+HKR,,Option_InterruptEventName,,LC708Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,1
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  LP71 - WIN98
+;------------------------------------------------------------------------------
+
+[LP71]
+CopyFiles=Ballard.CopyVxdFiles,Ballard.CopyDllFiles
+AddReg=Ballard.HwAddReg
+
+[LP71.HW]
+AddReg=LP71HwAddReg
+
+;------------------------------------------------------------------------------
+;  LP71 - WIN98
+;------------------------------------------------------------------------------
+
+[LC71]
+CopyFiles=Ballard.CopyVxdFiles,Ballard.CopyDllFiles
+AddReg=Ballard.HwAddReg
+
+[LC71.HW]
+AddReg=LC71HwAddReg
+
+;------------------------------------------------------------------------------
+;  WIN98
+;------------------------------------------------------------------------------
+
+[Ballard.HwAddReg]
+HKR,,DevLoader,0,*CONFIGMG
+HKR,,DeviceDriver,0,BTIUNIV.VXD
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings]
+CompanyName           = "Ballard Technology, Inc."
+Ballard.ServiceName   = "Ballard Technology Universal Driver"
+Ballard.ServiceDesc   = "Ballard Technology Universal Driver"
+Ballard.ClassDesc     = "Avionics Databus Interface"
+L71.DiskId            = "Lx708-1 Driver Software for Windows"
+LP71.DeviceDesc       = "LP708-1 (PCI ARINC 708 Interface Card)"
+LC71.DeviceDesc       = "LC708-1 (cPCI ARINC 708 Interface Card)"

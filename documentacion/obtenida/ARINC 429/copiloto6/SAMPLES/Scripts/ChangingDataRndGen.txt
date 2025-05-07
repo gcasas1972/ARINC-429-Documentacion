@@ -1,0 +1,44 @@
+'	ChangingDataRndGen.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Sets a data value to a random value (between MINVAL and MAXVAL) 
+'	for each transmission
+'	Notes:		In this example Msg1 is a ARINC 429 Message (label).
+' 			This can be modified for MIL-STD-1553 by making the
+' 			following changes:
+'   			1. Rename your 1553 BCMsg object to Msg1 in the Script View object pane
+'   			2. Change the Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+'			to Sub Msg1_OnMsgUpdate(datawords, cwd1, cwd2, swd1, swd2, errors, activity, timetag, timetagh, MsgRespTime1, MsgRespTime2)
+'   			3. Change the "Msg1.ValueEngr = Value" line to work with a field...
+'            						such as "Field1.ValueEngr = Value"	
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+'Globals
+Const MAXVAL = 200
+Const MINVAL = -200
+
+
+Sub ScriptStart
+	Randomize
+End Sub
+
+
+Sub ScriptStop
+End Sub
+
+
+'Event Handler for update of Msg1 changes the data
+Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+   Value = MINVAL + ( (MAXVAL-MINVAL) * Rnd)			'Random Number between MINVAL and MAXVAL
+   Msg1.ValueEngr = Value
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

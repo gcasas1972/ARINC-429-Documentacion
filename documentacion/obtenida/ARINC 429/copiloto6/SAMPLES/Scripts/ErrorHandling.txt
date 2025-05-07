@@ -1,0 +1,115 @@
+'	Errorhandling.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This example uses "On Error Resume Next" in subroutines to check for errors and
+'	continue processing after an error occurs. Errors are checked either inline or 
+'	using the ErrorCheck sub below. Error checking can be done at the end of a 
+'	subroutine to know there was an error somewhere in the subroutine or the error
+'	checking can be done after each statement (as shown in ScriptStart).
+'
+'	Databuses:	ALL
+'
+
+' Force explicit declaration of all variables
+'  We recomend using this whenever possible to elimininate script errors with undefined variables
+Option Explicit
+
+'This is the basic ScriptStart with error handling
+Sub ScriptStart
+	'The following statement allows execution to continue by resuming execution after the problem statement
+	On Error Resume Next	'Place this at the beginning of sections of code that should resume if there are errors
+ 
+	View.OutputLine ("Hello World")
+
+	'Optional Error Checking - The ErrorCheck can be called after each statement to determine if a particular statement caused an error
+	ErrorCheck("ScriptStart - 'View.OutputLine'")
+ 
+	'The following line will cause an error
+	MyUndefinedObject.UndefinedMethod()
+	
+	'Optional Error Checking - does the error checking inline rather than using
+	If Err Then 
+		View.OutputLine("Inline Error Checking: Error # " & CStr(Err.Number) & " " & Err.Description)
+		'if Err.Clear is cleared here, then Err will be cleared when ErrorCheck below is called and nothing will be done
+	End If
+ 
+	'The following line will cause an error
+	Dim AnotherObject
+	AnotherObject.UndefinedMethod()
+
+	'Optional Error Checking - The ErrorCheck can be called after each statement to determine if a particular statement caused an error
+	ErrorCheck("ScriptStart")
+	
+	'Call the test subroutine and handle its errors accordingly
+	Test()
+
+	'Tests if the Test() procedure had any errors. The error checking for Test() can not be done in the Test Sub because errors exit the Sub
+	ErrorCheck("ScriptStart - Test")
+	
+End Sub
+
+Sub ScriptStop
+	'The following statement allows execution to continue by resuming execution after the problem statement
+	On Error Resume Next	'Place this at the beginning of sections of code that should resume if there are errors
+
+	'The following line will cause an error
+	MyUndefinedObject.UndefinedMethod()
+ 
+	'Optional Error Checking - The ErrorCheck can be called after each statement to determine if a particular statement caused an error
+	ErrorCheck("ScriptStop")
+End Sub
+
+'
+' Subroutine that shows the use of "On Error GoTo 0" to exit the subroutine
+' Parameters:   None
+' Return Value: None
+' Notes: Any errors generated in this Sub can be handeled after the Test() call. 
+'        See ScriptStart above for the example.
+'
+Sub Test
+	On Error GoTo 0	'Exist Subroutine on error
+
+	View.OutputLine("Entering Test")
+
+	'Code that generates an error
+	badCode.CreatesErrors()
+	
+	'Additional Code - this code is not run because "On Error GoTo 0" specifies that the error from "badCode.CreatesErrors()" exits the subroutine
+	View.OutputLine("This line should not be seen! The function should have already exited!")
+	'ErrorCheck will also never be called
+	ErrorCheck("ScriptStop")
+End Sub
+
+
+'
+' Error Checking wrapper outputs error information to the ScriptView Output Pane and clears the error
+' Parameters:
+'     contextString - A string describing the context where ErrorCheck was called from
+' Return Value: None
+' Notes: Using the code "On Error Resume Next" as the first statement in a subroutine/function
+' allows the script to resume after an error and 
+'
+Sub ErrorCheck(contextString)
+	'DO NOT PUT "On Error Resume Next" here because the pending error is cleared and the error processing below would be skipped
+
+	'Optional step to output and clear error
+	If Err Then 
+		'Outputs error to output pane
+		If Len(CStr(contextString)) Then
+			View.OutputLine(CStr(contextString) & ": Error # " & CStr(Err.Number) & " " & Err.Description)
+		Else
+			View.OutputLine("Error # " & CStr(Err.Number) & " " & Err.Description)
+		End If
+		
+		Err.Clear   ' Clear the error.
+	End If
+End Sub
+
+		
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

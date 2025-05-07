@@ -1,0 +1,87 @@
+'	CreateReport.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Collects information during a run and creates a report when the 
+'	project is stopped.
+'
+'	Notes:		To obtain statistics for a different field, delete the field in the 
+'			object pane, add a new field and rename it "Field1". The new name will 
+'			be reflected in the report. To use a 429 label, replace "Field1" with 
+'			"Msg1" and change "Field1.Name" to "Msg1.LabelName"	
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+Dim total, hi, low, count, bFirst 
+hi = 0
+low = 0
+total = 0
+count = 0
+bfirst = 1 'True
+	
+Sub ScriptStart
+End Sub
+
+Sub ScriptStop
+	View.Output TextStreamTest("report1.txt")
+End Sub
+
+Sub Field1_OnValueChange(varValue)
+	count = count + 1
+	total = total + varValue
+	
+	If bFirst Then
+		hi = varValue
+		low = varValue
+		bFirst = 0 'False
+	End If
+	
+	If (varValue > hi) Then
+		hi = varValue
+	End If
+	
+	If (varValue < low) Then
+		low = varValue
+	End If
+End Sub
+
+Function TextStreamTest(filename)
+   Dim average
+   average = total / count
+   Const ForReading = 1, ForWriting = 2, ForAppending = 8 
+      'Appending->Open a file and write to the end of the file.
+   Const TristateUseDefault = -2, TristateTrue = -1, TristateFalse = 0
+   Dim fso, f, ts, Name
+   Set fso = CreateObject("Scripting.FileSystemObject")
+   
+   'To append the file, comment out the following line after the script has run once.
+   fso.CreateTextFile filename
+   
+   Set f = fso.GetFile(filename)
+   Set ts = f.OpenAsTextStream(ForAppending, TristateUseDefault)
+   
+   'Output text to a file
+   Name = Field1.Name 'Change to .LabelName for 429 labels.
+   ts.Write "Report for *" & fieldname & "*"
+   ts.WriteBlankLines(1)
+   ts.WriteLine "The maximum value was " & hi
+   ts.WriteLine "The minimum value was " & low
+   ts.WriteLine "The average value is  " & average
+   ts.WriteBlankLines(1)
+   ts.Close
+
+   'Now read the file back
+   Set ts = f.OpenAsTextStream(ForReading, TristateUseDefault)
+   
+   'Set the function return value to the file contents
+   TextStreamTest = ts.ReadAll
+   ts.Close
+End Function
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

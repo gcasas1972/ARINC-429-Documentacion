@@ -1,0 +1,253 @@
+'
+'	CommonFunctions : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	Library of common functions
+'	 
+'	Option Explict     - Force explicit declaration of all variables
+'	GetFileName        - Select Open/Save As filename
+'	SaveStringToFile   - Save any formated string as a file
+'	ReadStringFromFile - Read a file into a single string
+'	AppendStringToFile - Append a formated string to a file
+'	BinStr             - Converts the decimal value to a binary string
+'	ShiftRight         - Shifts the bits to the right the specified number of positions
+'	ShiftLeft          - Shifts the bits to the left the specified number of positions
+'	Pow2               - Raise 2 to a power
+'	ErrorCheck         - Outputs error information to ScriptView Output Pane and clears error
+'
+
+
+'
+' Force explicit declaration of all variables
+'  We recomend using this whenever possible
+'
+Option Explicit
+
+
+'  
+' Select Open/Save As filename
+' Parameters: 
+'     bOpen: True=Open Dialog Box, False=Save Dialog Box
+'     filterStr: Filters that are displayed in the Type list box of the dialog box
+' Return Value: String containing Path and Filename to selected item
+' Notes:
+'      filterStr example: "Text files (*.txt)|*.txt|Web Files (.htm;.html)|*.htm;*.html|All files (*.*)|*.*" 
+'      filter is initialized to first item  
+'      flags: FileMustExist=4096, HideReadOnly=4, ReadOnly=1, CreatePrompt=8192, OverwritePrompt=2
+'                                     
+Function GetFileName (bOpen, filterStr) 
+	Dim oCmnCtrl				'Object - Common Dialog 
+	Set oCmnCtrl = createobject("MSComDlg.CommonDialog")
+	With oCmnCtrl
+		.Filter = filterStr		'set the filter
+		.FilterIndex = 1		'filter is initialized to first item 
+		.MaxFileSize = 260  
+		If bOpen Then			'Show the "OPEN" dialog
+			.flags = 4 Or 4096	'file must NOT be read only and must exist to show up
+			.DialogTitle = "Open File" 
+			.showopen()							  
+		Else     			'Show the "SAVE AS" dialog 
+			.flags = 4		'file must NOT be read only
+			.DialogTitle = "Save As"  
+			.showsave()                   		
+		End If
+	End With
+	GetFileName = oCmnCtrl.Filename	'This is the filename
+	Set oCmnCtrl = Nothing			'Free oCmnCtrl object
+End Function
+
+
+'
+' Save any formated string as a file
+' Parameters:
+'     dataStr: Formated string
+'     fileName: Path and filename to the save location
+' Return Value: Always True
+'
+Function SaveStringToFile (dataStr, fileName)
+	Dim fso, ts
+	Set fso = CreateObject("Scripting.FileSystemObject")
+	Set ts = fso.CreateTextFile(fileName)  
+	ts.WriteLine (dataStr)
+	ts.Close    
+	Set ts = Nothing
+	Set fso = Nothing
+	SaveStringToFile = True	' Set the return value
+End Function
+
+
+'
+' Read a file into a single string
+' Parameters:
+'     fileName: Path and filename of file to read
+' Return Value: String representing the entire contents of the file
+'
+Function ReadStringFromFile(fileName)
+	Dim fso, ts
+	Const ForReading = 1
+	Set fso = CreateObject("Scripting.FileSystemObject")
+	Set ts = fso.OpenTextFile(fileName, ForReading)  
+	ReadStringFromFile = ts.ReadAll
+	ts.Close
+	Set ts = Nothing
+	Set fso = Nothing
+End Function
+
+
+'
+' Append a formated string to a file
+' Parameters:
+'     dataStr: formated string
+'     fileName: Path and filename to file
+'     bNewLine: True=Write the data with a trailing newline character
+' Return Value: Always True
+'
+Function AppendStringToFile(dataStr, fileName, bNewLine)
+	Dim fso, ts
+	Const ForAppending = 8
+	Set fso = CreateObject("Scripting.FileSystemObject")
+	Set ts = fso.OpenTextFile(fileName, ForAppending)
+	If bNewLine Then
+		ts.WriteLine dataStr
+	Else
+		ts.Write dataStr
+	End If
+	ts.Close
+	Set ts = Nothing
+	Set fso = Nothing
+	AppendStringToFile = True	' Set the return value
+End Function
+
+
+'
+' Converts the decimal value to a binary string
+' Parameters:
+'     InNumber: Decimal value to be converted
+' Return Value: Binary string representation of the decimal value
+' Notes:
+'     Uses ShiftRight function
+'
+Function BinStr(InNumber)
+	While InNumber
+		If InNumber AND 1 Then
+			BinStr = "1" & BinStr
+		Else
+			BinStr = "0" & BinStr
+		End IF
+		'Right Shift by 1
+		InNumber = ShiftRight(InNumber, 1) 
+	WEnd
+End Function
+
+'
+' Shifts the bits to the right the specified number of positions
+' Parameters:
+'     Value: value to use for operation 
+'     shiftCount: number of positions to shift, valid range is 0 thru 31
+' Return Value: New value
+' Notes:
+'     Fill bits coming in from left are 0 
+'     Uses Pow2 function
+'
+Function ShiftRight(Value, ShiftCount)    
+	If ShiftCount = 0 Then    
+		ShiftRight = Value
+	ElseIf ShiftCount > 0 And ShiftCount < 32 Then  
+		If Value And &H80000000 Then
+			ShiftRight = (Value And Not &H80000000) \ 2
+			ShiftRight = ShiftRight Or &H40000000
+			ShiftRight = ShiftRight \ Pow2(ShiftCount - 1)
+		Else
+			ShiftRight = Value \ Pow2(ShiftCount)
+		End If
+	End If
+End Function
+
+
+'
+' Shifts the bits to the left the specified number of positions
+' Parameters:
+'     Value: value to use for operation 
+'     shiftCount: number of positions to shift, valid range is 0 thru 31
+' Return Value: New value
+' Notes:
+'     Fill bits coming in from right are 0 
+'     Uses Pow2 function
+'
+Function ShiftLeft(Value, ShiftCount)
+	Dim mask 
+	If ShiftCount = 0 Then    
+		' ret unchanged
+		ShiftLeft = Value
+	ElseIf ShiftCount > 0 And ShiftCount < 32 Then  
+		' mask out bits that are pushed over the edge anyway
+		mask = Pow2(31 - ShiftCount)
+		ShiftLeft = Value And (mask - 1)
+		' shift
+		ShiftLeft = ShiftLeft * Pow2(ShiftCount)
+		' set sign bit
+		If Value And mask Then
+			ShiftLeft = ShiftLeft Or &H80000000
+		End If
+	End If
+End Function
+
+
+'
+' Raise 2 to a power
+' Parameters:
+'     Exponent: the power, valid range is 0 thru 31
+' Return Value: New value
+' Notes: To optimize this function, move the declaration
+'        of the alPow2 array to the global space
+'
+Function Pow2(Exponent)
+	Dim alPow2(31)
+	Dim i   
+	
+	If Exponent >= 0 And Exponent < 32 Then  
+		' initialize lookup table
+		If alPow2(0) = 0 Then
+			alPow2(0) = 1
+			For i = 1 To 30
+				alPow2(i) = alPow2(i - 1) * 2
+			Next
+			alPow2(31) = &H80000000
+		End If
+		' return
+		Pow2 = alPow2(Exponent)
+	End If
+End Function
+
+'
+' Error Checking wrapper outputs error information to the ScriptView Output Pane and clears the error
+' Parameters:
+'     contextString - A string describing the context where ErrorCheck was called from
+' Return Value: None
+' Notes: Using the code "On Error Resume Next" as the first statement in a subroutine/function
+' allows the script to resume after an error and 
+'
+Sub ErrorCheck(contextString)
+	'DO NOT PUT "On Error Resume Next" here because the pending error is cleared and the error processing below would be skipped
+
+	'Optional step to output and clear error
+	If Err Then 
+		'Outputs error to output pane
+		If Len(CStr(contextString)) Then
+			View.OutputLine(CStr(contextString) & ": Error # " & CStr(Err.Number) & " " & Err.Description)
+		Else
+			View.OutputLine("Error # " & CStr(Err.Number) & " " & Err.Description)
+		End If
+		
+		Err.Clear   ' Clear the error.
+	End If
+End Sub
+
+		
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

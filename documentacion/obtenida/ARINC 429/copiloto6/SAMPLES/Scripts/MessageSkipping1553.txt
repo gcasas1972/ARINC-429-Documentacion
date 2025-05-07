@@ -1,0 +1,63 @@
+'	MessageSkipping1553.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Uses the script timers to poll a Remote Terminal for a "no response" and
+'	skips the transmission of the message if true
+'
+'	Notes:		Message error values can be found in the Ballard board header files	
+'
+'	Databuses:	MIL-STD-1553
+'
+
+'Globals
+Const NO_RESPONSE = 32768 	'Set when we timeout waiting for response (0x8000)
+
+Sub ScriptStart   
+    'Initialize Timers		  
+	View.EnableTimer1(True)  
+	View.SetTimerInterval1(5000) 	' Five Seconds
+	'Signal beginning
+	View.OutputLine ("")
+	View.OutputLine "Interval = 5 seconds" 
+	If (BCMsg1.Skip) Then
+		View.OutputLine "Skip = true" 
+	Else
+		View.OutputLine "Skip = false"
+	End If
+	View.OutputLine ("")
+	View.OutputLine ("Begin") 
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("End")
+End Sub  
+
+Sub OnScriptTimer1
+	Dim err
+
+	If BCMsg1.Skip Then
+		'Test if RT is available
+		BCMsg1.TransmitMsg	'Msg will transmit once every interval if Skip is set
+		err = CLng(BCMsg1.MsgError)
+		If ((err And NO_RESPONSE) = 0) Then
+	    	BCMsg1.Skip = False   
+	    	View.OutputLine "RT is available, clearing the skip bit"
+	    End If
+	Else
+		'Test if message has a "no response" status
+		err = CLng(BCMsg1.MsgError)
+	    If (err And NO_RESPONSE) Then
+	    	BCMsg1.Skip = True   
+	    	View.OutputLine "No Response from RT, setting the skip bit"
+	    End If
+	End If
+	
+End Sub  
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

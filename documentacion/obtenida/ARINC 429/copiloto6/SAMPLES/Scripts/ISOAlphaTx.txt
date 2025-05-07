@@ -1,0 +1,153 @@
+'	ISOAlphaTx.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Encodes user supplied strings into ISO
+'	Alphabet No. 5 Messages 
+'
+'	Notes:
+' 	1. Requires:
+'		a. ISOMsg    - ARINC 429 Label 356 (ISO Alphabet No. 5)
+'		b. WordCount - Field (ISO#5 Char, bits  9-16)
+'		c. Spares    - Field (ISO#5 Char, bits 17-22)
+'		d. CH1       - Field (ISO#5 Char, bits  9-15)
+'		e. CH2       - Field (ISO#5 Char, bits 16-22)
+'		f. CH3       - Field (ISO#5 Char, bits 23-29)
+'  		g. SSM	     - Field (ISO#5 Char, bits 30-31)		
+' 	2. Use a timer to allow other threads to run between messages
+' 	3. Each data word can hold up to 3 characters from the string 
+' 	4. Convert sample to use Label 357 by:
+'		a. Change Spares to UnitAddress
+'		b. Set UnitAddress in SetStandBy function
+'
+'	Databuses:	ARINC 429
+'
+
+'Constants
+Const SSM_INTERMEDIATE = 0   	'SSM for all data words except last
+Const SSM_STX = 1               'SSM for initial word   (Start Text)
+Const SSM_ETX = 2               'SSM for final word     (End Text)
+
+'Globals
+Dim nWords, nIndex			
+Dim bDone, bTransmitting 
+Dim Message, Title, Default, MyString
+Default = CStr("<Enter Your String Here>")
+Message = CStr("Enter string to send or press Cancel to exit") 
+Title   = CStr("CoPilot Script ISO Alphabet No. 5 Input")
+ 
+'Functions
+Function SetStandBy
+	WordCount.ValueEngr = 0
+	Spares.ValueEngr    = 0  
+	CH3.ValueEngr		= 2	'ASCII Character code for "STX" 
+	SSM.ValueEngr       = SSM_STX
+End Function  
+
+Function BeginTx
+	View.OutputLine "Sending: " & MyString
+	                       
+	nIndex = 0
+	
+	'Calc number of words needed to transmit MyString
+	If (0 <> (Len(MyString) Mod 3)) Then
+		nWords = Fix(Len(MyString) / 3) + 1
+	Else
+		nWords = Fix(Len(MyString) / 3)
+	End If
+
+    'Temp Output
+    View.OutputLine "    String Length = " & Len(MyString)
+    View.OutputLine "    Num Words     = " & nWords
+	 
+	'Format first message in transimission
+	WordCount.ValueEngr = nWords
+	Spares.ValueEngr    = 0 'always zero for Label 356
+	CH3.ValueEngr		= 2	'ASCII Character code for "STX" 
+	SSM.ValueEngr       = SSM_STX
+	               
+	'The next transmission will flag a start of text with WordCount = nWords
+	bTransmitting = True
+End Function
+ 
+'Sub-Routines           
+Sub ScriptStart 
+	View.OutputLine ("BEGIN - script") 
+	
+	'Init message to stand-by mode 
+	SetStandBy     
+	   
+	'Init others
+	bTransmitting = False
+	bDone  = False
+	nWords = 0
+	nIndex = 0
+	
+	'Init timer
+	View.EnableTimer1(True)
+	View.SetTimerInterval1(1000) 'One seconds 
+End Sub 
+
+Sub ScriptStop
+	View.OutputLine ("END - script")
+End Sub
+
+Sub OnScriptTimer1
+	If (False = bDone) And (False = bTransmitting) Then
+		MyString = InputBox(Message, Title, Default)
+		If Len(MyString) Then 
+			Default = MyString
+			BeginTx
+		Else
+			bDone = True
+			View.OutputLine "DONE"
+		End If
+	End If       
+End Sub   
+ 
+Sub ISOMsg_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+	If (0 <> CLng(timetag)) Then
+	
+		If (SSM_ETX = CLng(SSM.ValueEngr)) Then 
+			bTransmitting = False
+		    SetStandBy
+			Exit Sub
+		End If
+		
+		If (True = bTransmitting) Then
+		    'write 3 characters to the data word 
+		    For i = 1 To 3 
+		    	Dim charVal
+			    If (nIndex < Len(MyString)) Then
+			    	charVal = Asc(Mid(MyString,nIndex+1,1))
+			    Else
+			    	charVal = 0	
+		    	End If
+		        
+		        Select Case i
+		        	Case 1		CH1.ValueEngr = charVal
+		        	Case 2 		CH2.ValueEngr = charVal
+		        	Case Else   CH3.ValueEngr = charVal
+		        End Select
+		        	
+		    	nIndex = nIndex + 1
+		    Next
+		     
+			'set SSM    
+			If (nIndex >= Len(MyString)) Then
+				'Tag for end of text
+				SSM.ValueEngr = SSM_ETX
+			Else
+			    SSM.ValueEngr = SSM_INTERMEDIATE
+			End If
+		End If   
+		
+	End If  '0 <> TimeTag
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

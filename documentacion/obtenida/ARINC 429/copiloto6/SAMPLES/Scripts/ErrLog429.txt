@@ -1,0 +1,110 @@
+'	ErrLog429.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'   
+'	Monitors a single Message and counts errors and
+'	totals. When project is stopped a report is sent
+'	to the output pane of Script View. 
+'	Notes:		Errors can be missed if the error frequency is 
+'			very large.     
+'
+'	Databuses:	ARINC 429
+' 
+
+'Define error values (found in header file) 
+Const ERR_ANY   = 64	'0x0040
+Const ERR_GAP   = 32	'0x0020    	
+Const ERR_PAR   = 16	'0x0010
+Const ERR_LONG  = 8	'0x0008
+Const ERR_BIT   = 4	'0x0004
+Const ERR_SHORT = 2	'0x0002
+
+'Define counters
+Dim totalSent, totalErr
+Dim totalGap, totalPar, totalLong
+Dim totalBit, totalShort, totalOpLim
+
+Sub ScriptStart 
+	'Init all counters
+	totalSent     = 0
+	totalErr      = 0
+	totalGap      = 0
+	totalPar      = 0
+	totalLong     = 0
+	totalBit      = 0
+	totalShort    = 0
+	totalOpLim    = 0 
+	
+	View.OutputLine ("BEGIN")
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")    
+	View.OutputLine ("")    
+	'Print results  
+	View.OutputLine "************* Results *******************"       
+	View.OutputLine "Total Sent   = " & totalSent
+	View.OutputLine "Total Errors = " & totalErr 
+	View.OutputLine "Gap          = " & totalGap  
+	View.OutputLine "Parity       = " & totalPar 
+	View.OutputLine "Long Word    = " & totalLong     
+	View.OutputLine "Bit Time     = " & totalBit     
+	View.OutputLine "Short        = " & totalShort
+	View.OutputLine "OperatingLim = " & totalOpLim
+	View.OutputLine "*****************************************"       
+End Sub
+  
+'Event handler for message update
+Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+	Dim msgActivity  			'The message activity field holds the error flags
+	msgActivity = CLng(activity)
+	
+	If ERR_ANY And msgActivity Then
+		totalErr = totalErr + 1
+		
+		View.Output "Errors: "
+		
+		If ERR_GAP And msgActivity Then
+			totalGap = totalGap + 1
+			View.Output "Gap "
+		End If
+		
+		If ERR_PAR And msgActivity Then
+			totalPar = totalPar + 1
+			View.Output "Parity "
+		End If
+		
+		If ERR_LONG And msgActivity Then
+			totalLong = totalLong + 1
+			View.Output "Long-Word "
+		End If
+		
+		If ERR_BIT And msgActivity Then
+			totalBit = totalBit + 1
+			View.Output "Bit-Time "
+		End If
+		
+		If ERR_SHORT And msgActivity Then
+			totalShort = totalShort + 1
+			View.Output "Short "
+		End If 
+		
+		View.OutputLine ""
+		
+	End If
+	
+	totalSent = totalSent + 1   
+End Sub  
+
+Sub Msg1_OnLimitError(bHigh)
+	totalErr = totalErr + 1
+	totalOpLim = totalOpLim + 1
+	View.OutputLine "Operating Limit Error"
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

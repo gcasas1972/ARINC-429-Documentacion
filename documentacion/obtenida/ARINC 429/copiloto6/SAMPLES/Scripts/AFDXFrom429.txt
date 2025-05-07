@@ -1,0 +1,49 @@
+'	AFDXFrom429 : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2006 Ballard Technology, Inc.
+'
+'	Uses the script timer to transfer data from an ARINC 429
+'       message to an AFDX field
+'
+'	Databuses:	AFDX 
+'
+'	Objects:	Msg429      - 429 Receive Message
+'          	  	Field429ssm - 429 Field defined on bits 30 and 31 of Msg429
+'          	  	FieldAFDX   - AFDX Transmit Field
+'
+
+Sub ScriptStart
+	View.SetTimerInterval1(500)  '500 ms
+	View.EnableTimer1(True)    
+	View.OutputLine ("Begin")
+End Sub
+
+'View Timer Event Handler
+Sub OnScriptTimer1  
+	'Get the ARINC 429 SSM and put into the AFDX Status
+	Select Case CLng(Field429ssm.Value)
+		Case 0   'positive 
+			FieldAFDX.Status = 3    'normal operation 
+		Case 1   'no computed data
+			FieldAFDX.Status = 48   'no computed data
+		Case 2   'functional test
+			FieldAFDX.Status = 12   'funtional test
+		Case 3   'negative
+			FieldAFDX.Status = 3    'normal operation
+		Case Else
+			Exit Sub
+	End Select
+	       
+	'Get the data from 429 and put into AFDX
+	FieldAFDX.Value = CLng(Msg429.Value)
+End Sub
+  
+Sub ScriptStop
+	View.OutputLine ("End")
+End Sub 
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'''''''''''''''''''''''''''''''''''''''

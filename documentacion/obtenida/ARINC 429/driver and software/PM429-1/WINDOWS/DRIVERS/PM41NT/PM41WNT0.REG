@@ -1,0 +1,45 @@
+REGEDIT4
+
+;**
+;
+;  PM429-1 WIN32 DRIVER  Version 1.0  (06/27/2002)
+;  Copyright (c) 2002
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   PM41WNT0.REG -- PM429-1 32-bit Driver Registry File.
+;                          This registry file does not call out an interrupt.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the PM429-1 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard]
+"Group"="Extended Base"
+"ErrorControl"=dword:00000001
+"ImagePath"="System32\\DRIVERS\\Btiuniv.SYS"
+"Start"=dword:00000002
+"Type"=dword:00000001
+"DisplayName"="Ballard Tech Universal Driver"
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters]
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Ballard\Parameters\PM429-1]
+"SymbolicName"="PM429Card00"
+"IoBase"=dword:000002c0
+"IoSize"=dword:00000010
+"BusNumber"=dword:00000000
+"IoType"=dword:00000001
+"InterruptName"="PM429Interrupt"
+@="PM429-1"
+"InterfaceType"=dword:00000001
+"ResourceTypeMask"=dword:00000001

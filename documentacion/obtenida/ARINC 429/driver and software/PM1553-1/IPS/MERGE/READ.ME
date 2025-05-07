@@ -1,0 +1,25 @@
+
+mergerom: merges 2 Intel-Hex format files for use in programming PROMS
+	  for the SuMMIT-XT which uses a single 8-bit PROM for `autoinit'.
+
+Specifically, mergerom will merge the Intel-Hex files created by the
+Interactive Programming System (IPS) or any other Intel-Hex files which
+follow the same older, simpler format. Mergerom will not merge some of
+the newer Intel-Hex formats which use the extended addressing schemes. If
+this capability is required please contact your UTMC Field Applications
+Engineer.
+
+To get a usage line from `mergerom' type: mergerom -z
+
+usage: mergerom [-l lscfile] [-m mscfile] [-v]
+        -l lscfile      specify the least significant byte file to merge
+        -m mscfile      specify the most significant byte file to merge
+        -v      Print version number and exit
+
+If no arguments or only one argument is specified on the command line then
+mergerom will prompt the user for the lsc and/or msc file name(s). The lsc
+file name is used to derive the name of the output file which is given a
+``.xt'' file extension. For example, ``mergerom -l my.lsc -m your.msc'', 
+will create a merged Intel-Hex file under the name ``my.xt''.
+
+

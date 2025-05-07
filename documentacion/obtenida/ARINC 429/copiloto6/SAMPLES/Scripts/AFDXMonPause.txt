@@ -1,0 +1,37 @@
+'	AFDXMonPause : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2006 Ballard Technology, Inc.
+'
+'	Uses the script timer to toggle the Monitor pause 
+'	state every five seconds
+'
+'	Databuses:	AFDX 
+'
+'	Objects:	AFDXMon1 - AFDX Sequential Monitor
+'
+
+Sub ScriptStart   
+	View.EnableTimer1(True)
+	View.SetTimerInterval1(5000)	'Five seconds
+	View.OutputLine ("Begin")
+End Sub 
+
+Sub OnScriptTimer1  
+	If AFDXMon1.Pause Then
+		AFDXMon1.Pause = False
+		View.OutputLine "Pause = False"
+	Else
+		AFDXMon1.Pause = True
+		View.OutputLine "Pause = True"
+	End If
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("End")
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'''''''''''''''''''''''''''''''''''''''

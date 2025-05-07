@@ -1,0 +1,13 @@
+LIBRARY BTIISA
+
+EXPORTS
+   BTI_Init
+   BTI_Deinit
+   BTI_Open
+   BTI_Close
+   BTI_IOControl
+   BTI_PowerUp
+   BTI_PowerDown
+   BTI_Read
+   BTI_Write
+   BTI_Seek

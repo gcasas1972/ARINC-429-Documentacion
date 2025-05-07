@@ -1,0 +1,79 @@
+'	Export1553Mon2Excel.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Opens a Microsoft Excel worksheet, then stores MIL-STD-1553 
+'	data from Field1 into the file. When the script is stopped Excel 
+'	is sent a close command which prompts the user to save the file.
+'	Notes:		Field1 - a Mil-Std-1553 Field (renamed from MIL1553Field1)
+' 			BCMsg1 - a Mil-Std-1553 BC Message
+'
+'	Databuses:	MIL-STD-1553
+'
+
+'Globals
+Dim objExcel
+Dim ExcelSheet
+Dim iRowCount
+
+
+Sub ScriptStart
+	Field1.ValueEngr = 0
+
+	'Open Excel and make it visible
+	Set objExcel = CreateObject("Excel.Application")
+	objExcel.Visible = True
+	objExcel.UserControl = True
+    
+	'Create new workbook
+	objExcel.Workbooks.Add
+	Set ExcelSheet = objExcel.ActiveSheet
+
+	'Delete the worksheets not being used
+	objExcel.DisplayAlerts = False
+	objExcel.Worksheets("Sheet2").Delete
+	objExcel.Worksheets("Sheet3").Delete
+	objExcel.DisplayAlerts = True
+    
+	'Rename The Worksheet
+	ExcelSheet.Name = "Data1"
+
+	'Write Column Names
+	iRowCount = 1
+	ExcelSheet.Cells(iRowCount, 1).Value = "MsgTimeTag"
+	ExcelSheet.Cells(iRowCount, 2).Value = "Data"
+	ExcelSheet.Cells(iRowCount, 3).Value = "Delta Time (ms)"
+	ExcelSheet.Cells(iRowCount, 4).Value = "Delta Value"
+End Sub
+
+
+Sub ScriptStop
+	'Use the following line the close excel ... it will prompt for save!
+	ExcelSheet.Application.Quit
+End Sub
+
+
+Sub BCMsg1_OnMsgUpdate(datawords, cwd1, cwd2, swd1, swd2, errors, activity, timetag, timetagh, MsgRespTime1, MsgRespTime2)
+	iRowCount = iRowCount+1
+	ExportData(iRowCount)
+End Sub
+
+
+Sub ExportData(iRow)
+	ExcelSheet.Cells(iRow, 1).Value = BCMsg1.MsgTimeTag
+	ExcelSheet.Cells(iRow, 2).Value = Field1.ValueEngr
+
+	If (iRow > 2) Then
+		'Time
+		ExcelSheet.Cells(iRow, 3).Value = CStr( "=(a" & iRow & " - a" & (iRow-1) & ")/1000" )
+		'Data
+		ExcelSheet.Cells(iRow, 4).Value = CStr( "=b" & iRow & " - b" & (iRow-1) )
+	End If
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

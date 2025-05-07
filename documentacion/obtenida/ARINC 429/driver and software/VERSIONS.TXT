@@ -1,0 +1,228 @@
+
+
+                     WINDOWS DRIVER CD VERSION HISTORY
+
+                               March 29, 2013
+
+                Copyright 2009-2013 by Ballard Technology, Inc.
+
+
+                                ------------
+
+
+     CD-WIN-027 [March 29, 2013]
+     ----------
+
+     BTIDriver
+
+          * Updated BTICARD to accomodate Write Protect Flash feature
+
+
+
+     CD-WIN-026 [March 13, 2013]
+     ----------
+
+     BTIDriver
+
+          * Updated BTICARD to fix use of DIO banks on AB3000 and Mx5 devices
+
+          * Fixed VB headers to declare functions returning VOID as subroutines
+
+
+
+     CD-WIN-025 [January 30, 2013]
+     ----------
+
+     BTIDriver
+
+          * Updated BTICARD to fix SysMonClear()
+
+          * Updated BTITST32 to work with AB3000 running Windows
+
+
+
+     CD-WIN-024 [January 4, 2013]
+     ----------
+
+     BTIDriver
+
+          * Updated BTICARD to handle ARINC 429 20R1T channel configuration
+
+
+
+     CD-WIN-023 [September 26, 2012]
+     ----------
+
+     * Added drivers for PM1553-5
+
+
+
+     CD-WIN-022 [August 10, 2012]
+     ----------
+
+     BTIDriver
+
+          * Added AB3000 functionality
+
+          * Fixed BTICARD objects being allocated on the stack
+
+          * Added Java examples
+
+
+
+     CD-WIN-021 [April 27, 2012]
+     ----------
+
+     BTIDriver
+
+          * Fix to BIT function for Mx5
+
+          * Added VisualStudio 2010 projects for examples
+
+          * Added support for 64-bit LabVIEW
+
+
+
+     CD-WIN-020 [June 10, 2011]
+     ----------
+
+     BTIDriver
+
+          * Added support for Mx5, with additional examples
+
+          * Updated BTITST32 to support Mx5
+
+          * Updated VB, VB.NET, and C# headers
+
+          * Fix to LabVIEW drivers and translation DLLs
+
+
+
+     CD-WIN-019 [January 14, 2011]
+     ----------
+
+     BTIDriver
+
+          * Added BTI708 to the USB Adapter
+
+          * Updated VB, VB.NET, and C# headers
+
+          * Fix to translation DLLs
+
+
+
+     CD-WIN-018 [October 8, 2010]
+     ----------
+
+     BTIDriver
+
+          * Updates to BTI1553, BTI717, and BTICARD
+
+          * Updated VB, VB.NET, and C# headers
+
+          * Fixes to LabVIEW drivers and translation DLLs
+
+     Lx-AFDX-1
+
+          * Updated driver
+
+
+
+     CD-WIN-017 [April 12, 2010]
+     ----------
+
+     Fixed bug in USB kernel driver
+
+
+
+     CD-WIN-016 [March 3, 2010)
+     ----------
+
+     BTIDriver
+
+          * Headers point to Borland libraries when compiled under
+            Borland compilers
+
+          * Modified prototypes to match documentation
+
+          * Various fixes to examples
+
+
+
+     CD-WIN-015 [January 22, 2010]
+     ----------
+
+     Added a Driver Installer application on CD AUTORUN
+
+     BTIDriver
+
+          * Added support for USB Adapters
+
+          * Added Windows NT support for OmniBus PCI/cPCI cards
+
+     LabVIEW
+
+          * Fixes to VIs that were passing 2-dimensional arrays
+           (ListDataBlk, ListMultiBlock)
+
+
+
+     CD-WIN-014 [October 23, 2009]
+     ----------
+
+     BTIDriver
+
+          * Added 64-bit DLLs for building 64-bit
+            applications
+
+          * Added support for ARINC 708 5G products
+
+          * Added support for AB22XX and AB23XX products
+
+          * Added additional examples
+
+          * Improved BTI429_SchedBuild algorithm (added
+            BTI429_SchedMode to select schedule mode)
+
+          * Made CommProcess functions thread safe
+
+          * Fixed problem in BTI1553 library with external
+            triggering of errors
+
+          * Fixed initialization of values for 5G 1553
+            products
+
+     LabVIEWRT
+
+          * Fixed misaligned memory access bug
+
+
+                                ------------
+
+
+          SAFETY WARNING:  Ballard products are of commercial
+          grade and therefore are neither designed,
+          manufactured, nor tested to standards required for
+          use in critical applications where a failure or
+          deficiency of the product may lead to injury,
+          death, or damage to property.  Without prior
+          specific approval in writing by the president of
+          Ballard Technology, Inc., Ballard products are not
+          authorized for use in such critical applications.
+
+          This software is provided as a laboratory tool.
+          For any application it is the responsibility of the
+          user to verify the suitability, correctness, and
+          safety of using this software or data derived
+          therefrom.
+
+
+                                ------------
+
+
+     Ballard Technology would appreciate hearing your questions,
+     comments, and suggestions concerning this product.
+
+     Ballard Technology, Inc.
+     www.ballardtech.com
+     support@ballardtech.com

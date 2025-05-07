@@ -1,0 +1,403 @@
+;**
+;*
+;*  CM1553-3 INF INSTALLATION FILE  Version 1.3.3  (07/30/2012)
+;*  Copyright (c) 2000-2012
+;*  Ballard Technology, Inc.
+;*  www.ballardtech.com
+;*  support@ballardtech.com
+;*  ALL RIGHTS RESERVED
+;*
+;**
+
+[Version]
+Signature="$CHICAGO$"
+Provider=%CompanyName%
+ClassGuid={5971FC40-50C8-11D3-AA35-0040055658FB}
+Class=BTI_AVDBI
+DriverVer=07/30/2012,1.3.3.1
+CatalogFile=C13W32.CAT
+
+[DestinationDirs]
+DefaultDestDir=11
+Ballard.CopyDllFiles=11
+Ballard.CopyDll32Files=16425
+Ballard.CopyDll64Files=11
+Ballard.CopyWdmFiles=12
+Ballard.CopyWdm64Files=12
+Ballard.CopyVxdFiles=11
+
+[Manufacturer]
+%CompanyName%=Ballard.Mfg,ntia64,ntamd64
+
+[Ballard.Mfg]
+%C13A.DeviceDesc%   = C13A,  PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3A-34A6
+%C13B4.DeviceDesc%  = C13B4, PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B4-6EE6
+%C13B32.DeviceDesc% = C13B32,PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B32-9002
+%C13C.DeviceDesc%   = C13C,  PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3C-B726
+
+[Ballard.Mfg.ntia64]
+%C13A.DeviceDesc%   = C13A.ntia64,  PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3A-34A6
+%C13B4.DeviceDesc%  = C13B4.ntia64, PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B4-6EE6
+%C13B32.DeviceDesc% = C13B32.ntia64,PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B32-9002
+%C13C.DeviceDesc%   = C13C.ntia64,  PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3C-B726
+
+[Ballard.Mfg.ntamd64]
+%C13A.DeviceDesc%   = C13A.ntamd64,  PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3A-34A6
+%C13B4.DeviceDesc%  = C13B4.ntamd64, PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B4-6EE6
+%C13B32.DeviceDesc% = C13B32.ntamd64,PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B32-9002
+%C13C.DeviceDesc%   = C13C.ntamd64,  PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3C-B726
+
+[ControlFlags]
+ExcludeFromSelect.nt=PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3A-34A6,PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B4-6EE6,PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3B32-9002,PCMCIA\BALLARD_TECHNOLOGY__INC.-CM1553-3C-B726
+
+[SourceDisksFiles]
+C13W32.DLL=1
+BTIWDM.SYS=1
+BTIWDM64.SYS=1
+BTIKRNL.DLL=1
+BTIUNIV.VXD=1
+
+[SourceDisksNames]
+1=%C13.DiskId%,,
+
+[ClassInstall]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyVxdFiles
+
+[ClassInstall32]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdmFiles
+
+[ClassInstall32.ntia64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[ClassInstall32.ntamd64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[BallardClass_Reg_Add]
+HKR,,,,%Ballard.ClassDesc%
+HKR,,Icon,,-5
+
+[Ballard.ServiceInstall]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.ServiceInstall64]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM64.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.CopyDllFiles]
+BTIKRNL.DLL
+C13W32.DLL
+
+[Ballard.CopyDll32Files]
+BTIKRNL.DLL
+C13W32.DLL
+
+[Ballard.CopyDll64Files]
+BTIKRNL.DLL
+C13W32.DLL
+
+[Ballard.CopyVxdFiles]
+BTIUNIV.VXD
+
+[Ballard.CopyWdmFiles]
+BTIWDM.SYS
+
+[Ballard.CopyWdm64Files]
+BTIWDM64.SYS
+
+;------------------------------------------------------------------------------
+;  C13A - WIN64
+;------------------------------------------------------------------------------
+
+[C13A.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13AAddReg
+
+[C13A.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13A.ntia64.HW]
+AddReg=C13AHwAddReg
+
+[C13A.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13AAddReg
+
+[C13A.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13A.ntamd64.HW]
+AddReg=C13AHwAddReg
+
+;------------------------------------------------------------------------------
+;  C13B4 - WIN64
+;------------------------------------------------------------------------------
+
+[C13B4.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13B4AddReg
+
+[C13B4.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13B4.ntia64.HW]
+AddReg=C13B4HwAddReg
+
+[C13B4.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13B4AddReg
+
+[C13B4.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13B4.ntamd64.HW]
+AddReg=C13B4HwAddReg
+
+;------------------------------------------------------------------------------
+;  C13B32 - WIN64
+;------------------------------------------------------------------------------
+
+[C13B32.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13B32AddReg
+
+[C13B32.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13B32.ntia64.HW]
+AddReg=C13B32HwAddReg
+
+[C13B32.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13B32AddReg
+
+[C13B32.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13B32.ntamd64.HW]
+AddReg=C13B32HwAddReg
+
+;------------------------------------------------------------------------------
+;  C13C - WIN64
+;------------------------------------------------------------------------------
+
+[C13C.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13CAddReg
+
+[C13C.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13C.ntia64.HW]
+AddReg=C13CHwAddReg
+
+[C13C.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=C13CAddReg
+
+[C13C.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[C13C.ntamd64.HW]
+AddReg=C13CHwAddReg
+
+;------------------------------------------------------------------------------
+;  C13A - WIN2K
+;------------------------------------------------------------------------------
+
+[C13A.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=C13AAddReg
+
+[C13A.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[C13A.nt.HW]
+AddReg=C13AHwAddReg
+
+[C13AHwAddReg]
+HKR,,FriendlyName,,%C13A.DeviceDesc%
+
+[C13AAddReg]
+HKR,,Option_SymbolicName,,CM15533ACard
+HKR,,Option_InterruptEventName,,CM15533Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,0
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  C13B4 - WIN2K
+;------------------------------------------------------------------------------
+
+[C13B4.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=C13B4AddReg
+
+[C13B4.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[C13B4.nt.HW]
+AddReg=C13B4HwAddReg
+
+[C13B4HwAddReg]
+HKR,,FriendlyName,,%C13B4.DeviceDesc%
+
+[C13B4AddReg]
+HKR,,Option_SymbolicName,,CM15533B4Card
+HKR,,Option_InterruptEventName,,CM15533Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,0
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  C13B32 - WIN2K
+;------------------------------------------------------------------------------
+
+[C13B32.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=C13B32AddReg
+
+[C13B32.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[C13B32.nt.HW]
+AddReg=C13B32HwAddReg
+
+[C13B32HwAddReg]
+HKR,,FriendlyName,,%C13B32.DeviceDesc%
+
+[C13B32AddReg]
+HKR,,Option_SymbolicName,,CM15533B32Card
+HKR,,Option_InterruptEventName,,CM15533Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,0
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  C13C - WIN2K
+;------------------------------------------------------------------------------
+
+[C13C.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=C13CAddReg
+
+[C13C.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[C13C.nt.HW]
+AddReg=C13CHwAddReg
+
+[C13CHwAddReg]
+HKR,,FriendlyName,,%C13C.DeviceDesc%
+
+[C13CAddReg]
+HKR,,Option_SymbolicName,,CM15533CCard
+HKR,,Option_InterruptEventName,,CM15533Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,0
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  C13A - WIN98
+;------------------------------------------------------------------------------
+
+[C13A]
+CopyFiles=Ballard.CopyDllFiles,Ballard.CopyVxdFiles
+AddReg=Ballard.HwAddReg
+
+[C13A.HW]
+AddReg=C13AHwAddReg
+
+;------------------------------------------------------------------------------
+;  C13B4 - WIN98
+;------------------------------------------------------------------------------
+
+[C13B4]
+CopyFiles=Ballard.CopyDllFiles,Ballard.CopyVxdFiles
+AddReg=Ballard.HwAddReg
+
+[C13B4.HW]
+AddReg=C13B4HwAddReg
+
+;------------------------------------------------------------------------------
+;  C13B32 - WIN98
+;------------------------------------------------------------------------------
+
+[C13B32]
+CopyFiles=Ballard.CopyDllFiles,Ballard.CopyVxdFiles
+AddReg=Ballard.HwAddReg
+
+[C13B32.HW]
+AddReg=C13B32HwAddReg
+
+;------------------------------------------------------------------------------
+;  C13C - WIN98
+;------------------------------------------------------------------------------
+
+[C13C]
+CopyFiles=Ballard.CopyDllFiles,Ballard.CopyVxdFiles
+AddReg=Ballard.HwAddReg
+
+[C13C.HW]
+AddReg=C13CHwAddReg
+
+;------------------------------------------------------------------------------
+;  WIN98
+;------------------------------------------------------------------------------
+
+[Ballard.HwAddReg]
+HKR,,DevLoader,0,*CONFIGMG
+HKR,,DeviceDriver,0,BTIUNIV.VXD
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings]
+CompanyName           = "Ballard Technology, Inc."
+Ballard.ServiceName   = "Ballard Technology Universal Driver"
+Ballard.ServiceDesc   = "Ballard Technology Universal Driver"
+Ballard.ClassDesc     = "Avionics Databus Interface"
+C13.DiskId            = "CM1553-3 Driver Software for Windows"
+C13A.DeviceDesc       = "CM1553-3A (PCMCIA MIL-STD-1553 Interface Card)"
+C13B4.DeviceDesc      = "CM1553-3B4 (PCMCIA MIL-STD-1553 Interface Card)"
+C13B32.DeviceDesc     = "CM1553-3B32 (PCMCIA MIL-STD-1553 Interface Card)"
+C13C.DeviceDesc       = "CM1553-3C (PCMCIA MIL-STD-1553 Interface Card)"

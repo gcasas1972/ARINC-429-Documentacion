@@ -1,0 +1,99 @@
+'	DiscreteInOuts_BusBox.txt.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2003 Ballard Technology, Inc.
+'
+'	Uses the script timer to read/write discrete digital inputs and outputs
+'	with the BusBox. 
+'	Note: Other cards have different digital inputs/outputs available)
+'
+'	Information:
+' 	  Requires XBB    - BusBox Card object
+' 	  All digital io signals (inputs and outputs are TTL compatable) max
+' 	  voltage range of 0-5V
+' 	  DIO1/1/2/3/4 are internal signals on the BusBox
+' 	  LED is the OUTPUT LED on the databus connector side (not power led)
+'	  XTRIG* is a active low signal on pin 22 of the d-sub
+'
+'	Databuses:	N/A
+'
+'
+'
+Sub ScriptStart
+	'Init LED on
+	Call XBB.ExtDIOWr(0,5,True)
+
+	View.OutputLine ("Hello World")
+	View.SetTimerInterval1(100)
+	View.EnableTimer1(True)
+	
+	'Shows the available Digital I/O
+	View.OutputLine("0IN(TRIG) = " & Xbb.IsInputDiscrete(0,0) )  
+	View.OutputLine("1INPUT    = " & Xbb.IsInputDiscrete(0,1) )  
+	View.OutputLine("2INPUT    = " & Xbb.IsInputDiscrete(0,2) )  
+	View.OutputLine("3INPUT    = " & Xbb.IsInputDiscrete(0,3) )
+	View.OutputLine("4INPUT    = " & Xbb.IsInputDiscrete(0,4) )  
+	View.OutputLine("5INPUT    = " & Xbb.IsInputDiscrete(0,5) )  
+	View.OutputLine("0OUTPUT   = " & Xbb.IsOutputDiscrete(0,0) )
+	View.OutputLine("1OUTPUT   = " & Xbb.IsOutputDiscrete(0,1) )  
+	View.OutputLine("2OUTPUT   = " & Xbb.IsOutputDiscrete(0,2) )  
+	View.OutputLine("3OUTPUT   = " & Xbb.IsOutputDiscrete(0,3) )  
+	View.OutputLine("4OUTPUT   = " & Xbb.IsOutputDiscrete(0,4) )  
+	View.OutputLine("5OUT(LED) = " & Xbb.IsOutputDiscrete(0,5) )  
+	View.OutputLine("")
+	View.OutputLine("Running...")
+End Sub
+
+Sub OnScriptTimer1
+'Toggle the LED
+	'LEDVal = XBB.ExtDIORd(0,5)
+	'Call XBB.ExtDIOWr(0,5,Not LEDVal)
+	
+'Led is the state of EXTTRIG* (GND=ON)
+	'If XBB.ExtDIORd(0,0) Then
+	'	View.OutputLine("XTRIG = TRUE" )
+	'	Call XBB.ExtDIOWr(0,5,True)
+	'Else
+	'	Call XBB.ExtDIOWr(0,5,False)
+	'End If
+	
+'Led is the state of DIO1 (in)
+	'If XBB.ExtDIORd(0,1) Then
+	'	View.OutputLine("DIO1 = TRUE" )
+	'	Call XBB.ExtDIOWr(0,5,True)
+	'Else
+	'	Call XBB.ExtDIOWr(0,5,False)
+	'End If
+
+'Led is the state of DIO2 (in)
+	If XBB.ExtDIORd(0,2) Then
+		View.OutputLine("DIO2 = TRUE" )
+		Call XBB.ExtDIOWr(0,5,True)
+	Else
+		Call XBB.ExtDIOWr(0,5,False)
+	End If
+	
+'DIO3 & DIO4 (outputs) are the state of EXTTRIG* (GND=ON)
+	If XBB.ExtDIORd(0,0) Then
+		View.OutputLine("XTRIG = TRUE" )
+		Call XBB.ExtDIOWr(0,3,True)
+		Call XBB.ExtDIOWr(0,4,True)
+	Else
+		Call XBB.ExtDIOWr(0,3,False)
+		Call XBB.ExtDIOWr(0,4,False)
+	End If
+End Sub
+
+Sub OnScriptTimer2
+	'TODO: Enter Timer2 code here (must have non-zero interval and be enabled)
+End Sub
+
+Sub ScriptStop
+	'TODO: Enter Exit code here
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

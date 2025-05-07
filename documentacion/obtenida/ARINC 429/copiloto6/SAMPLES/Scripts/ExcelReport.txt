@@ -1,0 +1,203 @@
+'	ExcelReport.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Monitors a single BC-Msg, counts errors and totals. 
+'	When project Is stopped Data Is written To an MS Excel worksheet.
+'	The worksheet must be saved to a different location and/or name. 
+'
+'	To modify this for ARINC 429 change the BCMsg to a 429 Msg and 
+'	change the "MSGERR_" values according to the ARINC 429 header file.
+'					
+'	Notes:		Errors can be missed if the error frequency is very high.
+'
+'			Customize this sample by adding more messages/RTs/SAs or fields. Modify the
+'               	MS Excel Worksheet to fit your custom reporting needs.
+'
+'			An existing MS Excel worksheet must exist at the FILENAME location 
+'			for this sample to execute properly.
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+                   
+'Define error values (found in header file)                      
+Const MSGERR_NORESP    = 32768 '0x8000 
+Const MSGERR_ANY       = 16384 '0x4000
+Const MSGERR_PROTOCOL  = 8192  '0x2000 
+Const MSGERR_SYNC      = 4096  '0x1000
+Const MSGERR_DATACOUNT = 2048  '0x0800
+Const MSGERR_MANCH     = 32    '0x0020
+Const MSGERR_PARITY    = 16    '0x0010
+Const MSGERR_RETRY     = 4     '0x0004
+Const MSGERR_SYSTEM    = 2     '0x0002 
+    
+'Define template file path.
+Dim FILENAME
+FILENAME = "c:\copilot projects\Samples\Scripts\ExcelScriptReport.XLS"
+
+'Global Variables
+Dim description, prevTime
+
+'Global Counter Variables
+Dim totalSent, totalErr
+Dim norespCount, protocolCount, syncCount, dataCount
+Dim manchCount, parityCount, retryCount, systemCount
+     
+Sub ScriptStart    
+	'Init all counters
+	totalSent     = 0
+	totalErr      = 0
+	norespCount   = 0
+	protocolCount = 0
+	syncCount     = 0
+	dataCount     = 0
+	manchCount    = 0
+	parityCount   = 0
+	retryCount    = 0
+	systemCount   = 0 
+	prevTime      = 0
+	
+	View.OutputLine ("BEGIN")
+End Sub
+
+Sub ScriptStop 
+	View.OutputLine ("END")     
+         
+    ' Create the Excel Report
+	SaveToXL
+End Sub  
+
+Sub SaveToXL()
+	Dim seconds
+    seconds = CLng(CopShell.RunTime)/1000
+    
+    ' Change description to match your report
+    description = CStr("BCMsg A BC->RT 03-R-03-03")
+     
+    ' Save data to Excel for reports
+	Dim MyXL
+	Dim MySheet
+
+	' Create MS Excel object.
+	Set MyXL = CreateObject("Excel.Application")
+	' Show Excel.
+	MyXL.Visible = True
+	' Open the file.
+	MyXL.Workbooks.Open FILENAME
+       
+    ' Write data to file for processing
+    Set MySheet = MyXL.ActiveSheet 
+
+    MySheet.Cells( 5, 3).Value = CStr(BCMsg.Name)
+    MySheet.Cells( 6, 3).Value = CStr(description)
+    MySheet.Cells( 7, 3).Value = CStr(seconds)
+    MySheet.Cells(10, 3).Value = totalSent 
+    MySheet.Cells(11, 3).Value = totalErr  
+    MySheet.Cells(14, 3).Value = norespCount
+    MySheet.Cells(15, 3).Value = protocolCount
+    MySheet.Cells(16, 3).Value = syncCount
+    MySheet.Cells(17, 3).Value = dataCount
+    MySheet.Cells(18, 3).Value = manchCount 
+    MySheet.Cells(19, 3).Value = parityCount
+    MySheet.Cells(20, 3).Value = retryCount
+    MySheet.Cells(21, 3).Value = systemCount
+        
+    ' Save the Report to the project folder
+    Dim fName
+    Dim initialName
+    initialName = CStr(CopShell.ProjectDir) & "\ScriptReport"
+    View.OutputLine "Filename " & CStr(initialName)
+    
+    Do
+    	fName = MyXL.Application.GetSaveAsFilename(initialName,"Microsoft Excel Files (*.xls), *.xls")
+    Loop Until fName <> False
+    
+    ' If error occurs here, you could have this file open already. Close previous file and save.
+	MyXL.Workbooks(1).SaveAs(fName)
+
+    ' Release objects
+    Set MySheet = Nothing
+    Set MyXL    = Nothing
+    
+    View.OutputLine "Save Complete!" 
+End Sub
+ 
+'Event Handler for update of BCMsg  
+Sub BCMsg_OnMsgUpdate(datawords, cwd1, cwd2, swd1, swd2, errors, activity, timetag, timetagh, MsgRespTime1, MsgRespTime2)
+	Dim curTime
+	curTime = CLng(timetag)
+
+	If prevTime <> curTime Then
+		totalSent = totalSent + 1	
+	End If
+	
+	prevTime = curTime	
+
+	Dim errVal
+	errVal = CLng(errors)    
+
+	'MSGERR_NORESP is a special case
+	If MSGERR_NORESP And errVal Then 
+		totalErr = totalErr + 1
+		View.Output "Errors: "
+
+		norespCount = norespCount + 1
+		View.Output "NoResp "
+
+		View.OutputLine ""
+		
+		Exit Sub
+	End If
+	
+	If MSGERR_ANY And errVal Then  
+		
+		totalErr = totalErr + 1
+		View.Output "Errors: "
+		
+		If MSGERR_PROTOCOL And errVal Then
+			 protocolCount = protocolCount + 1
+			 View.Output "Protocol "
+		End If
+
+		If MSGERR_SYNC And errVal Then
+			 syncCount = syncCount + 1
+			 View.Output "Sync "
+		End If       
+		
+		If MSGERR_DATACOUNT And errVal Then
+			 dataCount = dataCount + 1
+			 View.Output "DataCount "
+		End If  
+		
+		If MSGERR_MANCH And errVal Then
+			 manchCount = manchCount + 1
+			 View.Output "Manchester "
+		End If 
+		
+		If MSGERR_PARITY And errVal Then
+			 parityCount = parityCount + 1
+			 View.Output "Parity "
+		End If  
+		
+		If MSGERR_RETRY And errVal Then
+			 retryCount = retryCount + 1
+			 View.Output "Retry "
+		End If  
+		
+		If MSGERR_SYSTEM And errVal Then
+			 systemCount = systemCount + 1
+			 View.Output "System "
+		End If
+		
+		View.OutputLine ""
+		
+	End If  
+	
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

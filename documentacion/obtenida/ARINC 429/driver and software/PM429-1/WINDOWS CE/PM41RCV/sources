@@ -1,0 +1,39 @@
+WINCEREL=1
+RELEASETYPE=LOCAL
+_ISVINCPATH=$(_WINCEROOT)\public\common\sdk\inc;
+_OEMINCPATH=$(_WINCEROOT)\public\common\oak\inc;$(_WINCEROOT)\public\common\sdk\inc;
+TARGETNAME=PM41RCV
+FILE_VIEW_ROOT_FOLDER= \
+  ReadMe.txt \
+  StdAfx.cpp \
+  prelink.bat \
+  postlink.bat \
+
+FILE_VIEW_RESOURCE_FOLDER= \
+
+FILE_VIEW_INCLUDES_FOLDER= \
+  StdAfx.h \
+  PM41.h \
+
+SOURCES= \
+  PM41RCV.cpp \
+  PM41.cpp \
+
+TARGETTYPE=PROGRAM
+PRECOMPILED_CXX=1
+EXEENTRY=mainWCRTStartup
+PRECOMPILED_PCH=StdAfx.pch
+TARGETLIBS= \
+  $(_PROJECTROOT)\cesysgen\sdk\lib\$(_CPUINDPATH)\coredll.lib \
+
+PRECOMPILED_OBJ=StdAfx.obj
+PRECOMPILED_INCLUDE=StdAfx.h
+POSTLINK_PASS_CMD=postlink.bat
+PRELINK_PASS_CMD=prelink.bat
+FILE_VIEW_PARAMETER_FOLDER= \
+  PM41RCV.bib \
+  PM41RCV.reg \
+  PM41RCV.dat \
+  PM41RCV.db \
+  ProjSysgen.bat \
+

@@ -1,0 +1,43 @@
+'	ChangingDataAddRndNoise.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Reads a Value and Add Random Noise, then Transmit the new Value
+'	Notes:		Msg1 contains the original data. The current value of Msg1 with the noise 
+'			is written to Msg2.
+'
+'			This example assumes Msg1 and Msg2 are ARINC 429 labels.
+' 			To apply this example to a 1553 Field, use any data value as the source
+' 			in place of Msg1. "Msg2" would be renamed to your field object name. Also,
+' 			a 1553 BC Message could be used as the event handler object.
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+
+'Globals
+Const ERRORVAL = 50
+
+
+Sub ScriptStart
+   Randomize
+   Msg2.ValueEngr = 0				'Initialized to 0
+End Sub
+
+
+Sub ScriptStop
+End Sub
+
+
+'Event handler for update of Msg1 changes the data
+Sub Msg1_OnMsgUpdate(ValueRaw, activity, timetag, timetagh, mintime, maxtime)
+   Value = (ERRORVAL * Rnd)	- (ERRORVAL/2)		'Random Number between +/-ERRORVAL
+   Msg2.ValueEngr = Value + Msg1.ValueEngr
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

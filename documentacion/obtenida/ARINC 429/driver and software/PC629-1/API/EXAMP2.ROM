@@ -1,0 +1,55 @@
+;***************300210XXXXXXXXXX
+;629SCR  Version 2.1  (05/12/92)
+;Ballard Technology  Everett, WA, USA.
+;Go to www.ballardtech.com or email support@ballardtech.com
+
+;VERSION: 2.1
+;RELEASE: 05/12/92
+;SCRIPT: EXAMP2.SCR
+;DATE: 07/05/02
+;TIME: 12:00:00
+
+;NOTICE:  This software is provided as a laboratory tool.  For any application
+;it is the responsibility of the user to verify the suitability, correctness,
+;and safety of using this software or data derived therefrom.  Please refer 
+;to the Ballard Technology "Safety Warning".
+
+ER6 00			;Direct   reg 6  ABSW=0
+IR0 38			;Indirect reg 0  ALTI=0  BI=1 (BLOCK)  CIDSW=1  CID=8
+IR1 32			;Indirect reg 1  SG1=0  TI=32 (TI=26.00ms SG=17.69ms)
+IR2 08			;Indirect reg 2  SG0=0  TG=08 (TG=9.69ms SG=17.69ms)
+IR3 04			;Indirect reg 3  RP=1 (RPP1 & no MPP)  XP=0 (XPP1)
+IR4 00			;Indirect reg 4  BM=0 (2 64K x 16)  ERFEN=0  INTEN=0  GO=0
+
+PROMFILL FF
+
+ORG 00000000 1064 0060 3FFE FFFF	;XPPCELL XMITGEARLEFT
+ORG 00000008 4064 0062 BFFE FFFF	;XPPCELL XMITGEARNOSE
+ORG 00000100 2064 0061 BFFE FFFF	;XPPCELL XMITGEARRIGHT
+ORG 000000F8 01 FF FF 				;YMOD 0
+
+ORG 00008320 FFFF 7DFE FFFF FFFF	;MONCELL XMITGEARLEFT
+ORG 000089A0 0040 7FFE 0134 80FF	;RPPCELL RCVLEVER
+
+OFFSETINIT 0000
+
+
+
+ORG 0000FFE0 3208					;CID=0 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFE2 3208					;CID=1 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFE4 3208					;CID=2 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFE6 3208					;CID=3 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFE8 3208					;CID=4 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFEA 3208					;CID=5 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFEC 3208					;CID=6 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFEE 3208					;CID=7 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFF0 3208					;CID=8 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFF2 3208					;CID=9 TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFF4 3208					;CID=A TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFF6 3208					;CID=B TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFF8 3208					;CID=C TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFFA 3208					;CID=D TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFFC 3208					;CID=E TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+ORG 0000FFFE 3208					;CID=F TI=32 (26.00ms) TG=08 (9.69ms) SG=0 (17.69ms)
+
+IR4 01								;Card started when loaded

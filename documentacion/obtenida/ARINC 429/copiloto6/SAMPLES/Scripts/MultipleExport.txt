@@ -1,0 +1,66 @@
+'	MultipleExport.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2004 Ballard Technology, Inc.
+'       
+'	This example exports data from a connected Monitor View every 10 seconds.
+'	When exporting the sequential monitor object (Mon) is used to obtain the 
+'	connected Monitor View, the monitor is stopped, data is exported from the
+'	Monitor View, then the monitor is restarted.
+'
+'	By changing the parameter of the 'Mon.GetMonView(MON_1553, 0)' from 'MON_1553'
+'	to 'MON_429' the connected 429 Monitor View can be attached.
+'
+'	Required objects:
+'	 Mon     - A Sequential Monitor object
+'
+'	Databuses:	1553, 429
+'
+'	Topics Covered:
+'	 Exporting Monitor data
+'	 Use of timer/event trigger
+'	 Use of global variables to cache data
+'
+'	Note: Requires CoPilot 4.1 or later.
+
+Option Explicit 
+
+Const FileRoot = "Export"    
+Const MON_429  = 0
+Const MON_1553 = 1  
+
+Dim ExportCount   
+
+Sub ScriptStart 
+	ExportCount = 0  
+	View.SetTimerInterval1(10000)   '10 Seconds
+	View.EnableTimer1(True) 
+	View.OutputLine ("BEGIN")
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("END")
+End Sub
+
+'View Timer Event Handler called everytime 'TimerInterval1' goes off
+'Create file name, stop monitor, export data, restarts monitor
+Sub OnScriptTimer1   
+	Dim MonView
+	Dim FileName  
+	
+	FileName = FileRoot & ExportCount & ".xls"
+	
+	'This sample is getting the MIL-STD-1553 Monitor View connected to the 'Mon' object
+	Set MonView = Mon.GetMonView(MON_1553, 0)   
+
+	'Stop the monitor
+	Mon.Run = False
+	Call MonView.ExportData(FileName, 0)   
+	Set MonView = Nothing
+
+	'Re-Start the monitor (count goes back to Zero)
+	Mon.Run = True
+	View.OutputLine "Exporting #" & ExportCount 
+	
+	ExportCount = ExportCount + 1     
+	
+End Sub

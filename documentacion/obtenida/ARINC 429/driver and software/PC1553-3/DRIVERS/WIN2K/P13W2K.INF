@@ -1,0 +1,235 @@
+;**
+;*
+;*  PC1553-3 INF INSTALLATION FILE  Version 1.2.3  (07/30/2012)
+;*  Copyright (c) 2000-2012
+;*  Ballard Technology, Inc.
+;*  www.ballardtech.com
+;*  support@ballardtech.com
+;*  ALL RIGHTS RESERVED
+;*
+;**
+
+[Version]
+Signature="$CHICAGO$"
+Provider=%CompanyName%
+ClassGuid={5971FC40-50C8-11D3-AA35-0040055658FB}
+Class=BTI_AVDBI
+DriverVer=07/30/2012,1.2.3.1
+CatalogFile=P13W32.CAT
+
+[DestinationDirs]
+DefaultDestDir=11
+Ballard.CopyDllFiles=11
+Ballard.CopyDll32Files=16425
+Ballard.CopyDll64Files=11
+Ballard.CopyWdmFiles=12
+Ballard.CopyWdm64Files=12
+Ballard.CopyVxdFiles=11
+
+[Manufacturer]
+%CompanyName%=Ballard.Mfg,ntia64,ntamd64
+
+[Ballard.Mfg]
+%P13.DeviceDesc%=P13,*BTI_P130
+
+[Ballard.Mfg.ntia64]
+%P13.DeviceDesc%=P13.ntia64,*BTI_P130
+
+[Ballard.Mfg.ntamd64]
+%P13.DeviceDesc%=P13.ntamd64,*BTI_P130
+
+
+
+
+[ControlFlags]
+
+
+[SourceDisksFiles]
+P13W32.DLL=1
+BTIWDM.SYS=1
+BTIWDM64.SYS=1
+BTIKRNL.DLL=1
+BTIUNIV.VXD=1
+
+[SourceDisksNames]
+1=%P13.DiskId%,,
+
+[ClassInstall]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyVxdFiles
+
+[ClassInstall32]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdmFiles
+
+[ClassInstall32.ntia64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[ClassInstall32.ntamd64]
+AddReg=BallardClass_Reg_Add
+CopyFiles=Ballard.CopyWdm64Files
+
+[BallardClass_Reg_Add]
+HKR,,,,%Ballard.ClassDesc%
+HKR,,Icon,,-5
+
+[Ballard.ServiceInstall]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.ServiceInstall64]
+DisplayName    = %Ballard.ServiceName%
+Description    = %Ballard.ServiceDesc%
+ServiceType    = 1					;SERVICE_KERNEL_DRIVER
+StartType      = 3					;SERVICE_DEMAND_START
+ErrorControl   = 1					;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\BTIWDM64.SYS
+LoadOrderGroup = Extended Base
+
+[Ballard.CopyDllFiles]
+BTIKRNL.DLL
+P13W32.DLL
+
+[Ballard.CopyDll32Files]
+BTIKRNL.DLL
+P13W32.DLL
+
+[Ballard.CopyDll64Files]
+BTIKRNL.DLL
+P13W32.DLL
+
+[Ballard.CopyVxdFiles]
+BTIUNIV.VXD
+
+[Ballard.CopyWdmFiles]
+BTIWDM.SYS
+
+[Ballard.CopyWdm64Files]
+BTIWDM64.SYS
+
+;------------------------------------------------------------------------------
+;  P13 - WIN64
+;------------------------------------------------------------------------------
+
+[P13.ntia64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=P13AddReg
+LogConfig=P13LogConfig0,P13LogConfig1,P13LogConfig2,P13LogConfig3
+
+[P13.ntia64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[P13.ntia64.HW]
+AddReg=P13HwAddReg
+
+[P13.ntamd64]
+CopyFiles=Ballard.CopyWdm64Files,Ballard.CopyDll32Files
+AddReg=P13AddReg
+LogConfig=P13LogConfig0,P13LogConfig1,P13LogConfig2,P13LogConfig3
+
+[P13.ntamd64.Services]
+AddService=Ballard64,2,Ballard.ServiceInstall64
+
+[P13.ntamd64.HW]
+AddReg=P13HwAddReg
+
+;------------------------------------------------------------------------------
+;  P13 - WIN2K
+;------------------------------------------------------------------------------
+
+[P13.nt]
+CopyFiles=Ballard.CopyWdmFiles,Ballard.CopyDllFiles
+AddReg=P13AddReg
+LogConfig=P13LogConfig0,P13LogConfig1,P13LogConfig2,P13LogConfig3
+
+[P13.nt.Services]
+AddService=Ballard,2,Ballard.ServiceInstall
+
+[P13.nt.HW]
+AddReg=P13HwAddReg
+
+[P13.nt.FactDef]
+ConfigPriority=HARDRECONFIG
+IOConfig=2C0-2C7
+MemConfig=CC000-CCFFF
+IRQConfig=2
+
+[P13HwAddReg]
+HKR,,FriendlyName,,%P13.DeviceDesc%
+
+[P13AddReg]
+HKR,,Option_SymbolicName,,PC1553Card
+HKR,,Option_InterruptEventName,,PC1553Interrupt
+HKR,,Option_CreateInterruptEventObject,0x00010001,0
+HKR,,Option_SpeedUpMemory,0x00010001,0
+HKR,,Option_IsUSB,0x00010001,0
+HKR,,Option_WarnSurpriseRemoval,0x00010001,0
+HKR,,Option_PulseEvent,0x00010001,0
+HKR,,Option_DontConnectInterrupt,0x00010001,0
+HKR,,Option_UserEnumerate,0x00010001,0
+HKR,,Option_UserNumber,0x00010001,-1
+HKR,,Option_UserType,0x00010001,-1
+
+;------------------------------------------------------------------------------
+;  P13 - WIN98
+;------------------------------------------------------------------------------
+
+[P13]
+CopyFiles=Ballard.CopyVxdFiles,Ballard.CopyDllFiles
+AddReg=Ballard.HwAddReg
+LogConfig=P13LogConfig0,P13LogConfig1,P13LogConfig2,P13LogConfig3
+
+[P13.HW]
+AddReg=P13HwAddReg
+
+;------------------------------------------------------------------------------
+;  WIN98
+;------------------------------------------------------------------------------
+
+[Ballard.HwAddReg]
+HKR,,DevLoader,0,*CONFIGMG
+HKR,,DeviceDriver,0,BTIUNIV.VXD
+
+;------------------------------------------------------------------------------
+;  P13 Logical Configurations
+;------------------------------------------------------------------------------
+
+[P13LogConfig0]
+ConfigPriority=HARDRECONFIG
+IOConfig=02C0-02C7
+MemConfig=CC000-CCFFF
+IrqConfig=2,3,5,10,11,12,14,15
+
+[P13LogConfig1]
+ConfigPriority=HARDRECONFIG
+IOConfig=02C0-02C7
+MemConfig=CC000-CCFFF
+
+[P13LogConfig2]
+ConfigPriority=HARDRECONFIG
+IOConfig=8@0000-03FF%FFF8
+MemConfig=1000@000C8000-000EFFFF%FFFFF000
+IrqConfig=2,3,5,10,11,12,14,15
+
+[P13LogConfig3]
+ConfigPriority=HARDRECONFIG
+IOConfig=8@0000-03FF%FFF8
+MemConfig=1000@000C8000-000EFFFF%FFFFF000
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+
+[Strings]
+CompanyName           = "Ballard Technology, Inc."
+Ballard.ServiceName   = "Ballard Technology Universal Driver"
+Ballard.ServiceDesc   = "Ballard Technology Universal Driver"
+Ballard.ClassDesc     = "Avionics Databus Interface"
+P13.DiskId            = "PC1553-3 Driver Software for Windows"
+P13.DeviceDesc        = "PC1553-3 (ISA MIL-STD-1553 Interface Card)"

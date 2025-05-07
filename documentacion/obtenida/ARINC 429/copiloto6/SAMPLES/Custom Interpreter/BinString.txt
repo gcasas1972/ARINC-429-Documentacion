@@ -1,0 +1,90 @@
+'	BinString.txt: COPILOT CUSTOM INTERPRETER SCRIPT SAMPLE
+'
+'	Copyright 2004
+'       
+'	Ballard Technology, Inc.
+'	(800) 829-1553
+'	www.ballardtech.com
+'	support@ballardtech.com
+'
+'	NOTES:
+'		Each script block below is labeled with the intended Custom 
+'		Interpreter script tab. Overwrite the text in the script tab 
+'		with the appropriate script block from the text below.
+'
+'		Global variables and helper functions may be defined on any 
+'		of the Custom Interpreter script tabs. All functions and 
+'		global variables can be called/used from any of the Custom 
+'		Interpreter script tabs.
+'
+'	DESCRIPTION:
+'		CoPilot interpreter definition outputs a binary string for 
+'		the ValueToString function.
+'
+ 
+'********************************
+'*	Value --> Double        *
+'********************************
+
+Function ValueToDouble( inValue )
+ 
+	ValueToDouble = CDbl(inValue)
+ 
+	'Check if above max
+	If ValueToDouble > Script.RangeMax Then
+		ValueToDouble = Script.RangeMax
+	End If
+ 
+	'Check if below min
+	If ValueToDouble < Script.RangeMin Then
+		ValueToDouble = Script.RangeMin
+	End If
+End Function
+
+'********************************
+'*	Double --> Value        *
+'********************************
+
+Function DoubleToValue( inDouble )
+	'Check if above max
+	If inDouble > Script.RangeMax Then
+		inDouble = Script.RangeMax
+	End If
+ 
+	'Check if below min
+	If inDouble < Script.RangeMin Then
+		inDouble = Script.RangeMin
+	End If
+ 
+	DoubleToValue = CLng(inDouble)
+End Function
+
+'********************************
+'*	Value --> String        *
+'********************************
+
+Function ValueToString( inValue )
+ ValueToString = Cstr(BinStr(inValue)) 
+End Function
+ 
+Function BinStr(InNumber)
+	While InNumber
+		If InNumber AND 1 Then
+			BinStr = "1" & BinStr
+		Else
+			BinStr = "0" & BinStr
+		End IF
+
+		'Right Shift by 1... or Divide by 2
+		InNumber = CLng( Int(InNumber / 2) )
+	WEnd
+End Function
+
+'********************************
+'*	String --> Value        *
+'********************************
+
+Function StringToValue( inString)
+	'Type cast the input value using the Double-To-Value Conversion
+	StringToValue = DoubleToValue( CDbl(inString) )
+End Function

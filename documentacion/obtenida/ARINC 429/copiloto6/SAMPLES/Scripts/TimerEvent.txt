@@ -1,0 +1,50 @@
+'	TimerEvent.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	Demonstrate the use of CoPilot script timers.
+'
+'	Notes:		This sample uses a MIL-STD-1553 message scheduled to transmit every 1ms.
+'			To change this sample to work with ARINC-429 do the following:
+'			1. Replace "BCMsg1" with "Msg1"
+'			2. Adjust the timer intervals to be longer than the max-transmit interval of Msg1 
+'
+'	Databuses:	ALL
+'
+
+Sub ScriptStart   
+    'Initialize Timers		  
+	View.EnableTimer1(True)  
+	View.EnableTimer2(True)
+	View.SetTimerInterval1(500) 	' Half Second
+	View.SetTimerInterval2(1000) 	' One Second 
+	'Signal beginning
+	View.OutputLine ("")
+	View.OutputLine "Interval1 = " & CStr(500) & "ms" 
+	View.OutputLine "Interval2 = " & CStr(1000) & "ms"
+	View.OutputLine ("")
+	View.OutputLine ("Begin") 
+End Sub
+
+Sub ScriptStop
+	View.OutputLine ("End")
+End Sub  
+
+Sub OnScriptTimer1
+	Dim curTime
+	curTime = CLng(BCMsg1.MsgTimeTag) 
+	View.OutputLine "Timer1 - Time = " & CStr(curTime/1000000)
+End Sub  
+
+Sub OnScriptTimer2
+	Dim curTime
+	curTime = CLng(BCMsg1.MsgTimeTag)
+	View.OutputLine "Timer2 - Time = " & CStr(curTime/1000000)
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''

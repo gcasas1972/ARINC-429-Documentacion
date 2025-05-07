@@ -1,0 +1,448 @@
+REGEDIT4
+
+;**
+;
+;  PC1553-3 WIN32 DRIVER  Version 1.4  (02/20/1998)
+;  Copyright (c) 1998
+;  Ballard Technology, Inc.
+;  www.ballardtech.com
+;  support@ballardtech.com
+;  ALL RIGHTS RESERVED
+;
+;  NAME:   P13W98.REG -- PC1553-3 32-bit Driver Registry File.
+;
+;**
+
+;**
+;
+;  This file installs the required registry keys to operate
+;  the PC1553-3 32-bit Driver.  To install, open the folder
+;  containing this file and double click on it.  Windows will
+;  update the required registry keys.
+;
+;**
+
+[HKEY_LOCAL_MACHINE\Enum\Root\*BTI_P130]
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Class\BTI_AVDBI]
+"Icon"="-5"
+@="Avionics Databus Interface"
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Class\BTI_AVDBI\0000]
+"DevLoader"="*CONFIGMG"
+"DeviceDriver"="BTIUNIV.VXD"
+
+[HKEY_LOCAL_MACHINE\Enum\Root\*BTI_P130\0001]
+"Class"="BTI_AVDBI"
+"ConfigFlags"=hex:00,00,00,00
+"DeviceDesc"="PC1553-3 (MIL-STD-1553 Interface Card)"
+"Mfg"="Ballard Technology, Inc."
+"HardwareID"="*BTI_P130"
+"Driver"="BTI_AVDBI\\0000"
+
+"ForcedConfig"=hex: \		;Forced logical configuration
+00,04,00,00, \				;Version			;CONFIGMG_VERSION
+00,00,00,00, \				;Priority			;LCPRI_FORCECONFIG
+							;
+							;Memory Resource Descriptor
+							;
+2c,00,00,00, \				;Descriptor length
+01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+							;MEM_DES			;Memory Descriptor
+01,00, \					;MD_Count			;Count of MEM_RANGE structures
+14,00, \					;MD_Type			;MType_Range=0x0014
+00,c0,0c,00, \				;MD_Alloc_Base		;Allocated start address
+ff,cf,0c,00, \				;MD_Alloc_End		;Allocated end address
+00,00, \					;MD_Flags			;Descriptor flags
+00,00, \					;MD_Reserved		;Reserved
+							;MEM_RANGE			;Memory Range
+00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+00,10,00,00, \				;MR_nBytes			;Count of bytes
+00,c0,0c,00, \				;MR_Min				;Min Address
+ff,ff,0e,00, \				;MR_Max				;Max Address
+00,00, \					;MR_Flags			;Flags
+00,00, \					;MR_Reserved;
+							;
+							;I/O Resource Descriptor
+							;
+20,00,00,00, \				;Descriptor length
+02,00,00,00, \				;ResType_IO			;0x00000002
+							;IO_DES				;I/O Descriptor
+01,00, \					;IOD_Count			;Count of IO_RANGE structures
+0c,00, \					;IOD_Type			;IOType_Range=0x000C
+c0,02, \					;IOD_Alloc_Base;    ;Allocated base port address
+c7,02, \					;IOD_Alloc_End;     ;Allocated end port address
+00,00, \					;IOD_DesFlags;      ;Descriptor flags
+00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+03, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+							;IO_RANGE			;I/O Range
+f8,ff, \					;IOR_Align			;Mask for base alignment
+08,00, \					;IOR_nPorts			;Number of ports
+00,01, \					;IOR_Min			;Min port address
+ff,03, \					;IOR_Max			;Max port address
+00,00, \					;IOR_RangeFlags		;Flags
+00, \						;IOR_Alias			;Alias offset
+03, \						;IOR_Decode			;Address specified
+							;
+00,00,00,00					;Terminator
+
+[HKEY_LOCAL_MACHINE\Enum\Root\*BTI_P130\0001\LogConfig]
+
+"set by factory"=hex: \		;Logical configuration 0
+00,04,00,00, \				;Version			;CONFIGMG_VERSION
+00,00,00,00, \				;Priority			;LCPRI_FORCECONFIG
+							;
+							;Memory Resource Descriptor
+							;
+2c,00,00,00, \				;Descriptor length
+01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+							;MEM_DES			;Memory Descriptor
+01,00, \					;MD_Count			;Count of MEM_RANGE structures
+14,00, \					;MD_Type			;MType_Range=0x0014
+00,00,00,00, \				;MD_Alloc_Base		;Allocated start address
+00,00,00,00, \				;MD_Alloc_End		;Allocated end address
+00,00, \					;MD_Flags			;Descriptor flags
+00,00, \					;MD_Reserved		;Reserved
+							;MEM_RANGE			;Memory Range
+00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+00,10,00,00, \				;MR_nBytes			;Count of bytes
+00,c0,0c,00, \				;MR_Min				;Min Address
+ff,ff,0e,00, \				;MR_Max				;Max Address
+00,00, \					;MR_Flags			;Flags
+00,00, \					;MR_Reserved;
+							;
+							;I/O Resource Descriptor
+							;
+20,00,00,00, \				;Descriptor length
+02,00,00,00, \				;ResType_IO			;0x00000002
+							;IO_DES				;I/O Descriptor
+01,00, \					;IOD_Count			;Count of IO_RANGE structures
+0c,00, \					;IOD_Type			;IOType_Range=0x000C
+00,00, \					;IOD_Alloc_Base;    ;Allocated base port address
+00,00, \					;IOD_Alloc_End;     ;Allocated end port address
+00,00, \					;IOD_DesFlags;      ;Descriptor flags
+00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+00, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+							;IO_RANGE			;I/O Range
+f8,ff, \					;IOR_Align			;Mask for base alignment
+08,00, \					;IOR_nPorts			;Number of ports
+00,01, \					;IOR_Min			;Min port address
+ff,03, \					;IOR_Max			;Max port address
+00,00, \					;IOR_RangeFlags		;Flags
+00, \						;IOR_Alias			;Alias offset
+03, \						;IOR_Decode			;Address specified
+							;
+00,00,00,00					;Terminator
+
+"without interrupt"=hex: \	;Logical configuration 0
+00,04,00,00, \				;Version			;CONFIGMG_VERSION
+00,30,00,00, \				;Priority			;LCPRI_NORMAL
+							;
+							;Memory Resource Descriptor
+							;
+2c,00,00,00, \				;Descriptor length
+01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+							;MEM_DES			;Memory Descriptor
+01,00, \					;MD_Count			;Count of MEM_RANGE structures
+14,00, \					;MD_Type			;MType_Range=0x0014
+00,00,00,00, \				;MD_Alloc_Base		;Allocated start address
+00,00,00,00, \				;MD_Alloc_End		;Allocated end address
+00,00, \					;MD_Flags			;Descriptor flags
+00,00, \					;MD_Reserved		;Reserved
+							;MEM_RANGE			;Memory Range
+00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+00,10,00,00, \				;MR_nBytes			;Count of bytes
+00,c0,0c,00, \				;MR_Min				;Min Address
+ff,cf,0c,00, \				;MR_Max				;Max Address
+00,00, \					;MR_Flags			;Flags
+00,00, \					;MR_Reserved;
+							;
+							;I/O Resource Descriptor
+							;
+20,00,00,00, \				;Descriptor length
+02,00,00,00, \				;ResType_IO			;0x00000002
+							;IO_DES				;I/O Descriptor
+01,00, \					;IOD_Count			;Count of IO_RANGE structures
+0c,00, \					;IOD_Type			;IOType_Range=0x000C
+00,00, \					;IOD_Alloc_Base;    ;Allocated base port address
+00,00, \					;IOD_Alloc_End;     ;Allocated end port address
+00,00, \					;IOD_DesFlags;      ;Descriptor flags
+00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+00, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+							;IO_RANGE			;I/O Range
+ff,ff, \					;IOR_Align			;Mask for base alignment
+08,00, \					;IOR_nPorts			;Number of ports
+c0,02, \					;IOR_Min			;Min port address
+c7,02, \					;IOR_Max			;Max port address
+00,00, \					;IOR_RangeFlags		;Flags
+00, \						;IOR_Alias			;Alias offset
+03, \						;IOR_Decode			;Address specified
+							;
+00,00,00,00					;Terminator
+
+"with interrupt"=hex: \		;Logical configuration 0
+00,04,00,00, \				;Version			;CONFIGMG_VERSION
+00,30,00,00, \				;Priority			;LCPRI_NORMAL
+							;
+							;Memory Resource Descriptor
+							;
+2c,00,00,00, \				;Descriptor length
+01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+							;MEM_DES			;Memory Descriptor
+01,00, \					;MD_Count			;Count of MEM_RANGE structures
+14,00, \					;MD_Type			;MType_Range=0x0014
+00,00,00,00, \				;MD_Alloc_Base		;Allocated start address
+00,00,00,00, \				;MD_Alloc_End		;Allocated end address
+00,00, \					;MD_Flags			;Descriptor flags
+00,00, \					;MD_Reserved		;Reserved
+							;MEM_RANGE			;Memory Range
+00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+00,10,00,00, \				;MR_nBytes			;Count of bytes
+00,c0,0c,00, \				;MR_Min				;Min Address
+ff,ff,0e,00, \				;MR_Max				;Max Address
+00,00, \					;MR_Flags			;Flags
+00,00, \					;MR_Reserved;
+							;
+							;I/O Resource Descriptor
+							;
+20,00,00,00, \				;Descriptor length
+02,00,00,00, \				;ResType_IO			;0x00000002
+							;IO_DES				;I/O Descriptor
+01,00, \					;IOD_Count			;Count of IO_RANGE structures
+0c,00, \					;IOD_Type			;IOType_Range=0x000C
+00,00, \					;IOD_Alloc_Base;    ;Allocated base port address
+00,00, \					;IOD_Alloc_End;     ;Allocated end port address
+00,00, \					;IOD_DesFlags;      ;Descriptor flags
+00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+00, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+							;IO_RANGE			;I/O Range
+f8,ff, \					;IOR_Align			;Mask for base alignment
+08,00, \					;IOR_nPorts			;Number of ports
+00,01, \					;IOR_Min			;Min port address
+ff,03, \					;IOR_Max			;Max port address
+00,00, \					;IOR_RangeFlags		;Flags
+00, \						;IOR_Alias			;Alias offset
+03, \						;IOR_Decode			;Address specified
+							;
+							;IRQ Resource Descriptor
+							;
+10,00,00,00, \				;Descriptor length
+04,00,00,00, \				;ResType_IRQ		;0x00000004
+							;IRQ_DES			;IRQ Descriptor
+00,00, \					;IRQD_Flags			;Descriptor flags
+00,00, \					;IRQD_Alloc_Num		;Allocated IRQ number
+2c,dc, \					;IRQD_Req_Mask		;Mask of possible IRQs
+00,00, \					;IRQD_Reserved		;Reserved
+							;
+00,00,00,00					;Terminator
+
+;**
+;
+;  Remove the comments below to operate a second PC1553-3
+;  card in the same computer.
+;
+;**
+
+;[HKEY_LOCAL_MACHINE\Enum\Root\*BTI_P130\0002]
+;"Class"="BTI_AVDBI"
+;"ConfigFlags"=hex:00,00,00,00
+;"DeviceDesc"="PC1553-3 (MIL-STD-1553 Interface Card)"
+;"Mfg"="Ballard Technology, Inc."
+;"HardwareID"="*BTI_P130"
+;"Driver"="BTI_AVDBI\\0000"
+;
+;"ForcedConfig"=hex: \		;Forced logical configuration
+;00,04,00,00, \				;Version			;CONFIGMG_VERSION
+;00,00,00,00, \				;Priority			;LCPRI_FORCECONFIG
+;							;
+;							;Memory Resource Descriptor
+;							;
+;2c,00,00,00, \				;Descriptor length
+;01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+;							;MEM_DES			;Memory Descriptor
+;01,00, \					;MD_Count			;Count of MEM_RANGE structures
+;14,00, \					;MD_Type			;MType_Range=0x0014
+;00,d0,0c,00, \				;MD_Alloc_Base		;Allocated start address
+;ff,df,0c,00, \				;MD_Alloc_End		;Allocated end address
+;00,00, \					;MD_Flags			;Descriptor flags
+;00,00, \					;MD_Reserved		;Reserved
+;							;MEM_RANGE			;Memory Range
+;00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+;00,10,00,00, \				;MR_nBytes			;Count of bytes
+;00,c0,0c,00, \				;MR_Min				;Min Address
+;ff,ff,0e,00, \				;MR_Max				;Max Address
+;00,00, \					;MR_Flags			;Flags
+;00,00, \					;MR_Reserved;
+;							;
+;							;I/O Resource Descriptor
+;							;
+;20,00,00,00, \				;Descriptor length
+;02,00,00,00, \				;ResType_IO			;0x00000002
+;							;IO_DES				;I/O Descriptor
+;01,00, \					;IOD_Count			;Count of IO_RANGE structures
+;0c,00, \					;IOD_Type			;IOType_Range=0x000C
+;d0,02, \					;IOD_Alloc_Base;    ;Allocated base port address
+;d7,02, \					;IOD_Alloc_End;     ;Allocated end port address
+;00,00, \					;IOD_DesFlags;      ;Descriptor flags
+;00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+;03, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+;							;IO_RANGE			;I/O Range
+;f8,ff, \					;IOR_Align			;Mask for base alignment
+;08,00, \					;IOR_nPorts			;Number of ports
+;00,01, \					;IOR_Min			;Min port address
+;ff,03, \					;IOR_Max			;Max port address
+;00,00, \					;IOR_RangeFlags		;Flags
+;00, \						;IOR_Alias			;Alias offset
+;03, \						;IOR_Decode			;Address specified
+;							;
+;00,00,00,00					;Terminator
+;
+;[HKEY_LOCAL_MACHINE\Enum\Root\*BTI_P130\0002\LogConfig]
+;
+;"set by factory"=hex: \		;Logical configuration 0
+;00,04,00,00, \				;Version			;CONFIGMG_VERSION
+;00,00,00,00, \				;Priority			;LCPRI_FORCECONFIG
+;							;
+;							;Memory Resource Descriptor
+;							;
+;2c,00,00,00, \				;Descriptor length
+;01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+;							;MEM_DES			;Memory Descriptor
+;01,00, \					;MD_Count			;Count of MEM_RANGE structures
+;14,00, \					;MD_Type			;MType_Range=0x0014
+;00,00,00,00, \				;MD_Alloc_Base		;Allocated start address
+;00,00,00,00, \				;MD_Alloc_End		;Allocated end address
+;00,00, \					;MD_Flags			;Descriptor flags
+;00,00, \					;MD_Reserved		;Reserved
+;							;MEM_RANGE			;Memory Range
+;00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+;00,10,00,00, \				;MR_nBytes			;Count of bytes
+;00,c0,0c,00, \				;MR_Min				;Min Address
+;ff,ff,0e,00, \				;MR_Max				;Max Address
+;00,00, \					;MR_Flags			;Flags
+;00,00, \					;MR_Reserved;
+;							;
+;							;I/O Resource Descriptor
+;							;
+;20,00,00,00, \				;Descriptor length
+;02,00,00,00, \				;ResType_IO			;0x00000002
+;							;IO_DES				;I/O Descriptor
+;01,00, \					;IOD_Count			;Count of IO_RANGE structures
+;0c,00, \					;IOD_Type			;IOType_Range=0x000C
+;00,00, \					;IOD_Alloc_Base;    ;Allocated base port address
+;00,00, \					;IOD_Alloc_End;     ;Allocated end port address
+;00,00, \					;IOD_DesFlags;      ;Descriptor flags
+;00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+;00, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+;							;IO_RANGE			;I/O Range
+;f8,ff, \					;IOR_Align			;Mask for base alignment
+;08,00, \					;IOR_nPorts			;Number of ports
+;00,01, \					;IOR_Min			;Min port address
+;ff,03, \					;IOR_Max			;Max port address
+;00,00, \					;IOR_RangeFlags		;Flags
+;00, \						;IOR_Alias			;Alias offset
+;03, \						;IOR_Decode			;Address specified
+;							;
+;00,00,00,00					;Terminator
+;
+;"without interrupt"=hex: \	;Logical configuration 0
+;00,04,00,00, \				;Version			;CONFIGMG_VERSION
+;00,30,00,00, \				;Priority			;LCPRI_NORMAL
+;							;
+;							;Memory Resource Descriptor
+;							;
+;2c,00,00,00, \				;Descriptor length
+;01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+;							;MEM_DES			;Memory Descriptor
+;01,00, \					;MD_Count			;Count of MEM_RANGE structures
+;14,00, \					;MD_Type			;MType_Range=0x0014
+;00,00,00,00, \				;MD_Alloc_Base		;Allocated start address
+;00,00,00,00, \				;MD_Alloc_End		;Allocated end address
+;00,00, \					;MD_Flags			;Descriptor flags
+;00,00, \					;MD_Reserved		;Reserved
+;							;MEM_RANGE			;Memory Range
+;00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+;00,10,00,00, \				;MR_nBytes			;Count of bytes
+;00,c0,0c,00, \				;MR_Min				;Min Address
+;ff,cf,0c,00, \				;MR_Max				;Max Address
+;00,00, \					;MR_Flags			;Flags
+;00,00, \					;MR_Reserved;
+;							;
+;							;I/O Resource Descriptor
+;							;
+;20,00,00,00, \				;Descriptor length
+;02,00,00,00, \				;ResType_IO			;0x00000002
+;							;IO_DES				;I/O Descriptor
+;01,00, \					;IOD_Count			;Count of IO_RANGE structures
+;0c,00, \					;IOD_Type			;IOType_Range=0x000C
+;00,00, \					;IOD_Alloc_Base;    ;Allocated base port address
+;00,00, \					;IOD_Alloc_End;     ;Allocated end port address
+;00,00, \					;IOD_DesFlags;      ;Descriptor flags
+;00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+;00, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+;							;IO_RANGE			;I/O Range
+;ff,ff, \					;IOR_Align			;Mask for base alignment
+;08,00, \					;IOR_nPorts			;Number of ports
+;c0,02, \					;IOR_Min			;Min port address
+;c7,02, \					;IOR_Max			;Max port address
+;00,00, \					;IOR_RangeFlags		;Flags
+;00, \						;IOR_Alias			;Alias offset
+;03, \						;IOR_Decode			;Address specified
+;							;
+;00,00,00,00					;Terminator
+;
+;"with interrupt"=hex: \		;Logical configuration 0
+;00,04,00,00, \				;Version			;CONFIGMG_VERSION
+;00,30,00,00, \				;Priority			;LCPRI_NORMAL
+;							;
+;							;Memory Resource Descriptor
+;							;
+;2c,00,00,00, \				;Descriptor length
+;01,00,00,00, \				;Resource type		;ResType_Mem=0x00000001
+;							;MEM_DES			;Memory Descriptor
+;01,00, \					;MD_Count			;Count of MEM_RANGE structures
+;14,00, \					;MD_Type			;MType_Range=0x0014
+;00,00,00,00, \				;MD_Alloc_Base		;Allocated start address
+;00,00,00,00, \				;MD_Alloc_End		;Allocated end address
+;00,00, \					;MD_Flags			;Descriptor flags
+;00,00, \					;MD_Reserved		;Reserved
+;							;MEM_RANGE			;Memory Range
+;00,f0,ff,ff, \				;MR_Align			;Mask for base alignment
+;00,10,00,00, \				;MR_nBytes			;Count of bytes
+;00,c0,0c,00, \				;MR_Min				;Min Address
+;ff,ff,0e,00, \				;MR_Max				;Max Address
+;00,00, \					;MR_Flags			;Flags
+;00,00, \					;MR_Reserved;
+;							;
+;							;I/O Resource Descriptor
+;							;
+;20,00,00,00, \				;Descriptor length
+;02,00,00,00, \				;ResType_IO			;0x00000002
+;							;IO_DES				;I/O Descriptor
+;01,00, \					;IOD_Count			;Count of IO_RANGE structures
+;0c,00, \					;IOD_Type			;IOType_Range=0x000C
+;00,00, \					;IOD_Alloc_Base;    ;Allocated base port address
+;00,00, \					;IOD_Alloc_End;     ;Allocated end port address
+;00,00, \					;IOD_DesFlags;      ;Descriptor flags
+;00, \						;IOD_Alloc_Alias;   ;Allocated port aliases
+;00, \						;IOD_Alloc_Decode;  ;Allocated alias decode key
+;							;IO_RANGE			;I/O Range
+;f8,ff, \					;IOR_Align			;Mask for base alignment
+;08,00, \					;IOR_nPorts			;Number of ports
+;00,01, \					;IOR_Min			;Min port address
+;ff,03, \					;IOR_Max			;Max port address
+;00,00, \					;IOR_RangeFlags		;Flags
+;00, \						;IOR_Alias			;Alias offset
+;03, \						;IOR_Decode			;Address specified
+;							;
+;							;IRQ Resource Descriptor
+;							;
+;10,00,00,00, \				;Descriptor length
+;04,00,00,00, \				;ResType_IRQ		;0x00000004
+;							;IRQ_DES			;IRQ Descriptor
+;00,00, \					;IRQD_Flags			;Descriptor flags
+;00,00, \					;IRQD_Alloc_Num		;Allocated IRQ number
+;2c,dc, \					;IRQD_Req_Mask		;Mask of possible IRQs
+;00,00, \					;IRQD_Reserved		;Reserved
+;							;
+;00,00,00,00					;Terminator

@@ -1,0 +1,38 @@
+'	MonitorCount.txt : COPILOT SCRIPT EXAMPLE
+'
+'	Copyright 2002 Ballard Technology, Inc.
+'       
+'	This Monitor Count sample script records MAXCOUNT number of records then
+' 	pauses the sequential record object (Mon1). The monitor object in the
+' 	hardware tree must be active and configured to monitor data (i.e. "All").
+'
+'	The recording state of the monitor is controlled by "Mon1.Count".
+' 	When the count (number of records) is EQUAL or ABOVE the MAXCOUNT Mon1
+' 	is paused.
+'
+'	Databuses:	MIL-STD-1553, ARINC 429
+'
+
+'Globals
+Const MAXCOUNT = 500
+
+Sub ScriptStart
+	'Make Sure the monitor is not set to pause on start
+	Mon1.Pause = False
+End Sub
+
+Sub ScriptStop
+End Sub
+
+Sub Mon1_OnCountChange(Count)
+	If CDbl(Count) >= MAXCOUNT Then
+		Mon1.Pause = True		'Pause the monitor when above MAXCOUNT
+	End If
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''
+'	Ballard Technology, Inc.      '
+'	(800) 829-1553                '
+'	www.ballardtech.com           '
+'	support@ballardtech.com       '
+'''''''''''''''''''''''''''''''''''''''
